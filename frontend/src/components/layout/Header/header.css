@@ -1,0 +1,31 @@
+header {
+  height: 12vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+header img {
+  max-height: 10vh;
+  margin-left: 2vmax;
+}
+
+header h1 {
+  color: #0163a2;
+  display: inline-block;
+  width: 70vw;
+  text-align: center;
+}
+
+header.smallHeader {
+  height: 7vh;
+  justify-content: unset;
+}
+header.smallHeader img {
+  margin: 0 2vh;
+  max-height: 6vh;
+}
+header.smallHeader h1 {
+  font-size: 1.3vw;
+  width: unset;
+}

@@ -1,0 +1,123 @@
+.navigation-container{
+    position: relative;
+    .profileDetails{
+        position: fixed;
+        right: 3vw;
+        top:2%;
+        h3{
+          margin: 0 0 1.5vh;
+          font-family: "Tillana";
+          font-size: 1.4vw;
+        }
+        .logout-container{
+          display: flex;
+          align-items: center;
+          img{
+            max-height: 2vw;
+            margin-left: 0.8vw;
+          }
+          button{
+            background-color: #89C8FD;
+            color:#000;
+            font-size: 1.2vw;
+            padding: 7px 20px;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            font-family: "Poppins";
+          }
+        }
+      }
+    nav{
+        position: fixed;
+        left: 0;
+        width: 15vw;
+        height: 80vh;
+        top: calc(1.5vh + 7vh);
+        display: flex;
+        flex-direction: column;
+        background-color: #005EA5;
+        .menu-toggle-button {
+            background-color: #005EA5;
+            align-self: self-end;
+            border: none;
+            padding: 0;
+            img{
+                max-width: 4vw;
+                max-height: 4vw;
+                &.hide{
+                    transform: rotate(-180deg);
+                }
+            }
+        }
+        .menu-button{
+            width: 14vw;
+            color:#fff;
+            font-size: 1.5vw;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            font-family: "Poppins";
+            &:hover{
+                opacity: 0.7;
+            }
+        }
+
+        &.hide{
+            width: 4vw;
+            .menu{
+                display: none;
+            }
+        }
+      }
+}
+
+/* CSS for navigation styling */
+  
+  .menu {
+    position: relative;
+    padding-top: 5vh;
+    &:first-of-type{
+        padding-top: 2vh;
+    }
+  }
+  
+  .menu-button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .submenu {
+    display: none;
+    background-color: #EEF6FB;
+    padding: 0.5vw;
+    border-radius: 5px;
+    font-family: "Work Sans";
+    font-size: 1.4vw;
+    text-align: center;
+  }
+  
+  .menu:hover .submenu {
+    display: block;
+  }
+  
+  .submenu a {
+    display: block;
+    color:#000;
+    text-decoration: none;
+    padding: 5px 0 10px;
+  }
+  
+  .submenu a:hover {
+    opacity: 0.7;
+  }
+
+  .beNeutral{
+    margin-left: 16vw;
+    margin-top: 1vh;
+  }
+  .shiftLeft{
+    margin-top: 1vh;
+    margin-left: 5vw;
+  }
+  

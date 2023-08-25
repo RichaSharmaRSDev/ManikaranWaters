@@ -5,12 +5,16 @@ const {
   updateCustomer,
   deleteCustomer,
   getCustomerDetails,
+  getAllCustomersBasicDetails,
 } = require("../controllers/customerController");
 const { isAuthenticatedUser, authorizedroles } = require("../middleware/auth");
 
 const router = express.Router();
 
 router.route("/customers").get(isAuthenticatedUser, getAllCustomers);
+router
+  .route("/customersbasic")
+  .get(isAuthenticatedUser, getAllCustomersBasicDetails);
 router.route("/customer/new").post(isAuthenticatedUser, createCustomer);
 router
   .route("/customer/:customerId")

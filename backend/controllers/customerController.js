@@ -9,11 +9,31 @@ exports.createCustomer = catchAsyncError(async (req, res, next) => {
   res.status(201).json({ success: true, customer });
 });
 
-//get all customers
+//get all customers all details
 exports.getAllCustomers = catchAsyncError(async (req, res) => {
-  const resultsPerPage = 2;
+  const resultsPerPage = 15;
   const customerCount = await Customer.countDocuments();
   const apiFeature = new ApiFeatures(Customer.find(), req.query)
+    .search()
+    .filter()
+    .pagination(resultsPerPage);
+  const customers = await apiFeature.query;
+
+  res.status(200).json({
+    success: true,
+    customers,
+    customerCount,
+  });
+});
+
+//get all customers basic details
+exports.getAllCustomersBasicDetails = catchAsyncError(async (req, res) => {
+  const resultsPerPage = 15;
+  const customerCount = await Customer.countDocuments();
+  const apiFeature = new ApiFeatures(
+    Customer.find().select("-deliveries -payments -createdAt"),
+    req.query
+  )
     .search()
     .filter()
     .pagination(resultsPerPage);
