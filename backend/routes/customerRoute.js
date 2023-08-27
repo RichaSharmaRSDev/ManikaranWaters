@@ -6,6 +6,7 @@ const {
   deleteCustomer,
   getCustomerDetails,
   getAllCustomersBasicDetails,
+  getAllCustomersNameId,
 } = require("../controllers/customerController");
 const { isAuthenticatedUser, authorizedroles } = require("../middleware/auth");
 
@@ -15,6 +16,9 @@ router.route("/customers").get(isAuthenticatedUser, getAllCustomers);
 router
   .route("/customersbasic")
   .get(isAuthenticatedUser, getAllCustomersBasicDetails);
+router
+  .route("/customersidname")
+  .get(isAuthenticatedUser, getAllCustomersNameId);
 router.route("/customer/new").post(isAuthenticatedUser, createCustomer);
 router
   .route("/customer/:customerId")

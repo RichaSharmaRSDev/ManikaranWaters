@@ -6,14 +6,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearErrors, login, register } from "../../actions/userAction";
 import { useNavigate } from "react-router-dom";
 import Title from "../layout/Title";
+import { useAlert } from "react-alert";
 
 const LoginSignUp = () => {
-  console.log("signup");
+  const alert = useAlert();
   const dispatch = useDispatch();
-
   const { error, loading, isAuthenticated } = useSelector(
     (state) => state.user
   );
+
+  useEffect(() => {
+    // if (error) {
+    //   alert.error(error);
+    //   dispatch(clearErrors());
+    // }
+    if (isAuthenticated) {
+      alert.success("Logged In Successfulyy");
+    }
+  }, [dispatch, error, alert, isAuthenticated]);
 
   const loginTab = useRef(null);
   const registerTab = useRef(null);
@@ -30,8 +40,9 @@ const LoginSignUp = () => {
 
   const { name, email, password } = user;
 
-  const loginSubmit = (e) => {
+  const loginSubmit = async (e) => {
     e.preventDefault();
+
     dispatch(login(loginEmail, loginPassword));
   };
 

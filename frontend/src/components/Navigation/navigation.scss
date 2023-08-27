@@ -112,6 +112,9 @@
     opacity: 0.7;
   }
 
+
+  // common code for other components
+
   .beNeutral{
     margin-left: 16vw;
     margin-top: 1vh;
@@ -119,5 +122,79 @@
   .shiftLeft{
     margin-top: 1vh;
     margin-left: 5vw;
+  }
+  .common-heading{
+    color: #0163A2;
+    text-align: center;
+    margin-top: 0;
+    font-family: "Cinzel";
+  }
+  .common-heading-form{
+    font-family: "Overlock";
+  }
+  .common-cta{
+    background-color: #FEC41B;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    color: #000;
+    font-family: "Poppins";
+    font-weight: 700;
+    font-size: 1.4vw;
+    width: 20vw;
+    padding: 0.5vw 1vw;
+    margin: 0 auto;
+    &:hover{
+      cursor: pointer;
+    }
+  }
+  .common-cta-blue{
+    background-color: #89C8FD;
+    min-width: 17vw;
+    height: 4vw;   
+    width: unset; 
+  }
+  .createForm{
+    width: 80vw;
+    height: 80vh;
+    margin: 0 auto;
+    background-color: #F2F8FD;
+    .fields-wrapper{
+      display: flex;
+      flex-direction: column;
+      gap: 1.5vw;
+      width: max-content;
+      margin: 0 auto;
+      padding-top: 2vw;
+      height: 70vh;
+      .fields{
+        label{
+          font-family: 'Comic Neue';
+          margin-right: 10px;
+          font-size: 1.2vw;
+          font-weight: 700;
+          display: inline-flex;
+          align-items: center;
+          width: 12vw;
+          img{
+            width: 1.2vw;
+            margin-right: 5px;
+          }
+        }
+        input,select{
+          font-size: 1.3vw;
+        }
+        .extraNote{
+          font-size: 1vw;
+          font-family: 'Poppins';
+          margin-bottom: 0;
+          text-transform: capitalize;
+          color: green;
+        }
+      }
+    }
+    button[type=submit]{
+      margin-top: auto;
+      margin-bottom: 2vh;
+    }
   }
   

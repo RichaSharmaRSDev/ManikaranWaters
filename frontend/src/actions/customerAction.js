@@ -16,6 +16,71 @@ export const getCustomers = () => async (dispatch) => {
   }
 };
 
+export const getAllCustomersBasicDetails = () => async (dispatch) => {
+  try {
+    dispatch({ type: "AllCustomersBasicRequest" });
+    const { data } = await axios.get(`/api/v1/customersbasic`);
+    dispatch({
+      type: "AllCustomersBasicSuccess",
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: "AllCustomersBasicFail",
+      payload: error.response.data.messsage,
+    });
+  }
+};
+export const getCustomersIdName = () => async (dispatch) => {
+  try {
+    dispatch({ type: "AllCustomersIdNameRequest" });
+    const { data } = await axios.get(`/api/v1/customersidname`);
+    dispatch({
+      type: "AllCustomersIdNameSuccess",
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: "AllCustomersIdNameFail",
+      payload: error.response.data.messsage,
+    });
+  }
+};
+
+export const createNewCustomer = (formData) => async (dispatch) => {
+  try {
+    dispatch({ type: "CreateNewCustomerRequest" });
+    const { data } = await axios.post("/api/v1/customer/new", formData); // Add request data if needed
+    dispatch({
+      type: "CreateNewCustomerSuccess",
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: "CreateNewCustomerFail",
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const frequencyCustomers = (days) => async (dispatch) => {
+  try {
+    dispatch({ type: "frequencyCustomerRequest" });
+    const { data } = await axios.get(
+      `/api/v1/customersbasic?frequency=${days}`
+    );
+    dispatch({
+      type: "frequencyCustomerSuccess",
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: "frequencyCustomerFail",
+      payload: error.response.data.message,
+    });
+  }
+};
+
 export const clearErrors = () => async (dispatch) => {
   dispatch({ type: "clearErrors" });
 };

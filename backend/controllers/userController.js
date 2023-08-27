@@ -71,9 +71,7 @@ exports.forgetPassword = catchAsyncError(async (req, res, next) => {
   )}/api/v1/password/reset/${resetToken}`;
 
   const message = `Please reset your password, \n\n ${resetPasswordUrl}`;
-  console.log("check2", user.email);
   try {
-    console.log("check2", user.email);
     await sendEmail({
       email: user.email,
       subject: "Manikaran Water - Recovery Password Mail",

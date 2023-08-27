@@ -1,0 +1,25 @@
+.frequency-cta-wrapper{
+    display: flex;
+    justify-content: space-around;
+}
+
+.customer-list{
+    table{width: 99%;}
+    .customer-list-header{
+        background-color: #0163A2;
+        color: #fff;
+        th{
+            font-family: 'Work Sans';
+            font-weight: 100;
+            font-size: 1.5vw;
+        }
+    }
+    .customer-card{
+        &:nth-child(odd){
+            background-color: #DEEEF9;
+        }
+        &:nth-child(even){
+            background-color: #F2F8FD;
+        }
+    }
+}

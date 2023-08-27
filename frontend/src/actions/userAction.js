@@ -21,7 +21,6 @@ export const login = (email, password) => async (dispatch) => {
 
 // Register
 export const register = (userData) => async (dispatch) => {
-  console.log("test2", userData);
   try {
     dispatch({ type: "RegisterUserRequest" });
 

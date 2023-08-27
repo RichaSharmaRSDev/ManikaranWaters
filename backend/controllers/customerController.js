@@ -46,6 +46,20 @@ exports.getAllCustomersBasicDetails = catchAsyncError(async (req, res) => {
   });
 });
 
+//get all customers name and Id
+exports.getAllCustomersNameId = catchAsyncError(async (req, res) => {
+  const apiFeature = new ApiFeatures(
+    Customer.find().select("customerId name -_id"),
+    req.query
+  );
+  const customers = await apiFeature.query;
+
+  res.status(200).json({
+    success: true,
+    customers,
+  });
+});
+
 // Get Customer's Details
 exports.getCustomerDetails = catchAsyncError(async (req, res, next) => {
   const customer = await Customer.findOne({

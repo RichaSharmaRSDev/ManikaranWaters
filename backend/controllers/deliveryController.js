@@ -8,8 +8,8 @@ const ApiFeatures = require("../utils/apiFeatures");
 exports.createDelivery = catchAsyncError(async (req, res, next) => {
   const {
     customerId,
-    deliveredQuantity = 0,
-    deliveryDate: requestedDeliveryDate,
+    deliveredQuantity,
+    deliveryDate,
     returnedJars,
     amountReceived,
     paymentMode,
@@ -21,59 +21,56 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Customer not found", 404));
   }
 
-  let finalDeliveryDate;
-
-  if (requestedDeliveryDate) {
-    finalDeliveryDate = new Date(requestedDeliveryDate);
-  } else {
-    finalDeliveryDate = new Date(Date.now() + 5.5 * 60 * 60 * 1000); // Set delivery date to today's date
-  }
-
   const delivery = await Delivery.create({
     customer: customerId,
-    deliveryDate: finalDeliveryDate,
+    deliveryDate,
     deliveredQuantity,
     returnedJars,
     amountReceived,
     paymentMode,
   });
+
   let payment;
   if (amountReceived && paymentMode) {
     payment = await Payment.create({
       customer: customerId,
-      paymentDate: finalDeliveryDate,
+      paymentDate: deliveryDate,
+      amount: amountReceived,
+      paymentMode,
+    });
+
+    customer.payments.push({
+      paymentDate: deliveryDate,
       amount: amountReceived,
       paymentMode,
     });
   }
 
-  // Update the lastDeliveryDate for the associated customer
-  customer.lastDeliveryDate = finalDeliveryDate;
-
   // Add the delivery details to the deliveries array in the customer document
   customer.deliveries.push({
-    deliveryDate: finalDeliveryDate,
+    deliveryDate: deliveryDate,
     deliveredQuantity,
     returnedJars,
     amountReceived,
     paymentMode,
   });
   customer.deliveries.sort((a, b) => a.deliveryDate - b.deliveryDate);
+  // Update the lastDeliveryDate for the associated customer
+  const latestDelivery = customer.deliveries.reduce((latest, delivery) => {
+    return delivery.deliveryDate > latest ? delivery.deliveryDate : latest;
+  }, new Date(0));
+  customer.lastDeliveryDate = latestDelivery;
 
-  if (amountReceived && paymentMode) {
-    customer.payments.push({
-      paymentDate: finalDeliveryDate,
-      amount: amountReceived,
-      paymentMode,
-    });
-  }
   // Update currentJars and extraJars based on deliveries
-  const totalDeliveredQuantity = customer.deliveries.reduce(
-    (total, delivery) => total + delivery.deliveredQuantity,
-    0
-  );
-  customer.currentJars = totalDeliveredQuantity - (delivery.returnedJars || 0);
-  customer.extraJars = customer.currentJars - customer.allotment;
+  if (delivery.deliveredQuantity || delivery.returnedJars) {
+    const totalDeliveredQuantity = customer.deliveries.reduce(
+      (total, delivery) => total + (delivery.deliveredQuantity || 0),
+      0
+    );
+    customer.currentJars =
+      totalDeliveredQuantity - (delivery.returnedJars || 0);
+    customer.extraJars = customer.currentJars - customer.allotment;
+  }
   customer.lastUpdated = Date.now() + 5.5 * 60 * 60 * 1000;
 
   await customer.save();

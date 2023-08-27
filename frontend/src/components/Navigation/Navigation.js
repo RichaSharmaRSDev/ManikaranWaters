@@ -6,10 +6,12 @@ import { useDispatch, useSelector } from "react-redux";
 import logoutSvg from "../../assets/sign-out-alt.svg";
 import "./navigation.scss";
 import expandCollapseLogo from "../../assets/expandCollapse.svg";
+import { useAlert } from "react-alert";
 import { toggleNavigation } from "../../actions/navigationAction";
 
 const Navigation = () => {
   const dispatch = useDispatch();
+  const alert = useAlert();
   let { showNavigation } = useSelector((state) => state.navigation);
 
   const toggleNavigationInside = () => {
@@ -17,17 +19,21 @@ const Navigation = () => {
     dispatch(toggleNavigation(showNavigation));
   };
 
-  const { user, loading, isAuthenticated } = useSelector((state) => state.user);
+  const { user, loading, isAuthenticated, error } = useSelector(
+    (state) => state.user
+  );
 
   useEffect(() => {
+    if (error) {
+      alert.error(error);
+    }
     if (isAuthenticated === false) {
       Navigate("/");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, alert, error]);
 
   function logoutUser() {
     dispatch(logout());
-    console.log("Logout Successfully");
   }
   return (
     <>
@@ -56,9 +62,10 @@ const Navigation = () => {
             <div className="menu">
               <button className="menu-button">Customer</button>
               <div className="submenu">
+                <Link to="/customer/new">Create New Customer</Link>
                 <Link to="/customers">Customer Details</Link>
-                <Link to="/customers/daily">Daily Customers</Link>
-                <Link to="/customers/alternate">Alternate Customers</Link>
+                <Link to="/customers/frequency">Customers Habits</Link>
+                <Link to="/customers/allDetails">Customers All Details</Link>
               </div>
             </div>
 
