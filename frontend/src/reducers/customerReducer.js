@@ -3,8 +3,12 @@ export const customerReducer = (state = { customers: [] }, action) => {
     case "AllCustomersRequest":
     case "AllCustomersIdNameRequest":
     case "AllCustomersBasicRequest":
-    case "CreateNewCustomerRequest":
     case "frequencyCustomerRequest":
+      return {
+        loading: true,
+        customers: [],
+      };
+    case "CreateNewCustomerRequest":
       return {
         loading: true,
         customer: [],
@@ -16,11 +20,16 @@ export const customerReducer = (state = { customers: [] }, action) => {
         customerCount: action.payload.customerCount,
       };
     case "AllCustomersIdNameSuccess":
-    case "AllCustomersBasicSuccess":
       return {
         loading: false,
         customers: action.payload.customers,
         successIdName: action.payload.success,
+      };
+    case "AllCustomersBasicSuccess":
+      return {
+        loading: false,
+        customers: action.payload.customers,
+        successBasic: action.payload.success,
       };
     case "frequencyCustomerSuccess":
       return {
@@ -31,8 +40,8 @@ export const customerReducer = (state = { customers: [] }, action) => {
     case "CreateNewCustomerSuccess":
       return {
         loading: false,
-        customers: action.payload.customer,
-        success: action.payload.success,
+        customer: action.payload.customer,
+        successCreate: action.payload.success,
       };
     case "AllCustomersFail":
     case "AllCustomersIdNameFail":

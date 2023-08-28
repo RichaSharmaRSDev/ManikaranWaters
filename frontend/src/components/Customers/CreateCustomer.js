@@ -11,12 +11,13 @@ import Type from "../../assets/rectangle-list.svg";
 import Navigation from "../Navigation/Navigation";
 import { createNewCustomer } from "../../actions/customerAction";
 import { useAlert } from "react-alert";
+import Title from "../layout/Title.js";
 
 const CreateCustomer = () => {
   const alert = useAlert();
   const { showNavigation } = useSelector((state) => state.navigation);
   const dispatch = useDispatch();
-  const { loading, success } = useSelector((state) => state.user);
+  const { loading, successCreate } = useSelector((state) => state.customers);
 
   const initialState = {
     name: "",
@@ -27,6 +28,7 @@ const CreateCustomer = () => {
     frequency: "",
     allotment: "",
     rate: "",
+    currentJars: "",
   };
   const [formData, setFormData] = useState(initialState);
 
@@ -37,13 +39,16 @@ const CreateCustomer = () => {
 
   const handleCreateCustomerSubmit = (e) => {
     e.preventDefault();
-    const currentJars = parseInt(formData.allotment);
-    dispatch(createNewCustomer({ currentJars, ...formData }));
+    formData.currentJars = parseInt(formData.allotment);
+    dispatch(createNewCustomer(formData));
+    setFormData(initialState);
   };
 
   useEffect(() => {
-    alert.success("Customer Created Succesfully");
-  }, [alert, success]);
+    if (successCreate === true) {
+      alert.success("Customer Created Succesfully");
+    }
+  }, [alert, successCreate]);
 
   return (
     <>
@@ -51,6 +56,7 @@ const CreateCustomer = () => {
         <Loader />
       ) : (
         <>
+          <Title title={"Create New Customer"} />
           <Navigation />
           <div className={showNavigation ? "beNeutral" : "shiftLeft"}>
             <h2 className="common-heading common-heading-form">

@@ -30,22 +30,6 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
     paymentMode,
   });
 
-  let payment;
-  if (amountReceived && paymentMode) {
-    payment = await Payment.create({
-      customer: customerId,
-      paymentDate: deliveryDate,
-      amount: amountReceived,
-      paymentMode,
-    });
-
-    customer.payments.push({
-      paymentDate: deliveryDate,
-      amount: amountReceived,
-      paymentMode,
-    });
-  }
-
   // Add the delivery details to the deliveries array in the customer document
   customer.deliveries.push({
     deliveryDate: deliveryDate,
@@ -61,6 +45,12 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
   }, new Date(0));
   customer.lastDeliveryDate = latestDelivery;
 
+  //BilledAmount
+  if (deliveredQuantity) {
+    customer.billedAmount =
+      customer.billedAmount + deliveredQuantity * customer.rate;
+  }
+
   // Update currentJars and extraJars based on deliveries
   if (delivery.deliveredQuantity || delivery.returnedJars) {
     const totalDeliveredQuantity = customer.deliveries.reduce(
@@ -71,6 +61,32 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
       totalDeliveredQuantity - (delivery.returnedJars || 0);
     customer.extraJars = customer.currentJars - customer.allotment;
   }
+
+  //updating payment too if they paid at time of delivery
+  let payment;
+  if (amountReceived && paymentMode) {
+    payment = await Payment.create({
+      customer: customerId,
+      paymentDate: deliveryDate,
+      amount: amountReceived,
+      paymentMode,
+    });
+
+    customer.payments.push({
+      paymentDate: deliveryDate,
+      amount: amountReceived,
+      paymentMode,
+    });
+
+    //Update paid Amount
+    const paidAmount = customer.paidAmount + payment.amount;
+    customer.paidAmount = paidAmount;
+
+    //Update Remaining Amount
+    const remainingAmount = (customer.billedAmount || 0) - (paidAmount || 0);
+    customer.remainingAmount = remainingAmount;
+  }
+
   customer.lastUpdated = Date.now() + 5.5 * 60 * 60 * 1000;
 
   await customer.save();

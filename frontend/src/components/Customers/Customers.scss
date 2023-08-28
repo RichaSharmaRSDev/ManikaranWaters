@@ -11,7 +11,7 @@
         th{
             font-family: 'Work Sans';
             font-weight: 100;
-            font-size: 1.5vw;
+            font-size: 1.2vw;
         }
     }
     .customer-card{
@@ -20,6 +20,9 @@
         }
         &:nth-child(even){
             background-color: #F2F8FD;
+        }
+        td{
+            font-size: 1.2vw;
         }
     }
 }

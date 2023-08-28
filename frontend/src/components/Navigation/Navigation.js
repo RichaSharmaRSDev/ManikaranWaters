@@ -80,7 +80,7 @@ const Navigation = () => {
             <div className="menu">
               <button className="menu-button">Payment</button>
               <div className="submenu">
-                <Link to="/payments">Payments Details</Link>
+                <Link to="/payment/new">Create Payment</Link>
               </div>
             </div>
 

@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import "./App.css";
 import FrequencyCustomers from "./components/Customers/FrequencyCustomers.js";
 import CustomersAllDetails from "./components/Customers/CustomersAllDetails.js";
+import CreatePayment from "./components/Payment/CreatePayment.js";
 
 function App() {
   const { loading } = useSelector((state) => state.user);
@@ -99,6 +100,14 @@ function App() {
           element={
             <AuthenticatedRoute>
               <NewDelivery />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/payment/new"
+          element={
+            <AuthenticatedRoute>
+              <CreatePayment />
             </AuthenticatedRoute>
           }
         />
