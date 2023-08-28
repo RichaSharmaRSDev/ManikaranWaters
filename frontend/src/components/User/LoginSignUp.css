@@ -1,6 +1,6 @@
 .LoginSignUpContainer {
   width: 80vw;
-  height: calc(100vh - 200px);
+  height: 84vh;
   max-width: 100%;
   display: flex;
   justify-content: center;
@@ -92,7 +92,7 @@
   border: none;
   background-color: #0365a3;
   color: white;
-  font: 300 1.5vmax "Poppins";
+  font: 700 1.4vmax "Poppins";
   width: 65%;
   padding: 0.6vmax;
   cursor: pointer;
@@ -136,7 +136,7 @@
     height: 5vmax;
   }
   .login_signUp_toggle > p {
-    font: 300 1.5vmax "Roboto";
+    font: 300 1.5vmax "Work Sans";
   }
 
   .loginForm,
@@ -161,7 +161,6 @@
 
   .loginBtn,
   .signUpBtn {
-    font: 300 1.9vmax "Roboto";
     padding: 1.8vmax;
   }
 }

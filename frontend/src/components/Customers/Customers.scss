@@ -1,20 +1,17 @@
-.frequency-cta-wrapper{
+.ctas-wrapper{
     display: flex;
     justify-content: space-around;
 }
 
-.customer-list{
-    table{width: 99%;}
-    .customer-list-header{
-        background-color: #0163A2;
-        color: #fff;
+    table{width: 99%;
         th{
+            background-color: #0163A2;
+            color: #fff;
             font-family: 'Work Sans';
             font-weight: 100;
             font-size: 1.2vw;
         }
-    }
-    .customer-card{
+    tr{
         &:nth-child(odd){
             background-color: #DEEEF9;
         }

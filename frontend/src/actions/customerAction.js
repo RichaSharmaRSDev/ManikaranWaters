@@ -16,10 +16,10 @@ export const getCustomers = () => async (dispatch) => {
   }
 };
 
-export const getAllCustomersBasicDetails = () => async (dispatch) => {
+export const getAllCustomersBasicDetails = (page) => async (dispatch) => {
   try {
     dispatch({ type: "AllCustomersBasicRequest" });
-    const { data } = await axios.get(`/api/v1/customersbasic`);
+    const { data } = await axios.get(`/api/v1/customersbasic?page=${page}`);
     dispatch({
       type: "AllCustomersBasicSuccess",
       payload: data,
@@ -63,11 +63,11 @@ export const createNewCustomer = (formData) => async (dispatch) => {
   }
 };
 
-export const frequencyCustomers = (days) => async (dispatch) => {
+export const frequencyCustomers = (days, page) => async (dispatch) => {
   try {
     dispatch({ type: "frequencyCustomerRequest" });
     const { data } = await axios.get(
-      `/api/v1/customersbasic?frequency=${days}`
+      `/api/v1/customersbasic?frequency=${days}&page=${page}`
     );
     dispatch({
       type: "frequencyCustomerSuccess",

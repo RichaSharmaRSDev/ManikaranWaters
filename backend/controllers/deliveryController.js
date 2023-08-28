@@ -95,7 +95,7 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllDeliveries = catchAsyncError(async (req, res) => {
-  const resultsPerPage = 10;
+  const resultsPerPage = 20;
   const apiFeature = new ApiFeatures(Delivery.find(), req.query)
     .filter()
     .pagination(resultsPerPage);

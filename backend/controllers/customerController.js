@@ -11,7 +11,7 @@ exports.createCustomer = catchAsyncError(async (req, res, next) => {
 
 //get all customers all details
 exports.getAllCustomers = catchAsyncError(async (req, res) => {
-  const resultsPerPage = 15;
+  const resultsPerPage = 20;
   const customerCount = await Customer.countDocuments();
   const apiFeature = new ApiFeatures(Customer.find(), req.query)
     .search()
@@ -28,7 +28,7 @@ exports.getAllCustomers = catchAsyncError(async (req, res) => {
 
 //get all customers basic details
 exports.getAllCustomersBasicDetails = catchAsyncError(async (req, res) => {
-  const resultsPerPage = 15;
+  const resultsPerPage = 20;
   const customerCount = await Customer.countDocuments();
   const apiFeature = new ApiFeatures(
     Customer.find().select("-deliveries -payments -createdAt"),

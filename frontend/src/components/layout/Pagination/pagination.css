@@ -1,0 +1,29 @@
+.pagination-container {
+  width: 83%;
+  position: absolute;
+  bottom: 4vh;
+}
+.pagination {
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  width: 50vw;
+  margin: 1vw auto 0;
+  padding: 0;
+}
+.pagination li button {
+  width: 2vw;
+  height: 2vw;
+  background-color: unset;
+  border: 1px solid #0163a2;
+  border-radius: 50%;
+  color: #0163a2;
+  font-size: 1.2vw;
+  font-family: "Poppins";
+  font-weight: 700;
+}
+.pagination li button span {
+  display: block;
+  transform: scale(2.5, 1.5);
+  margin-top: -0.1vw;
+}

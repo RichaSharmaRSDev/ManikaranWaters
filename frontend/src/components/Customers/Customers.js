@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   clearErrors,
@@ -11,18 +11,23 @@ import { useAlert } from "react-alert";
 import "./Customers.scss";
 import CustomerTable from "./CustomerTable";
 import Title from "../layout/Title";
+import { Pagination } from "../layout/Pagination/Pagination";
 
 const Customers = () => {
   const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
   const { customers, loading, error, successBasic } = useSelector(
     (state) => state.customers
   );
   const { isAuthenticated } = useSelector((state) => state.user);
   const { showNavigation } = useSelector((state) => state.navigation);
   const alert = useAlert();
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
   useEffect(() => {
-    dispatch(getAllCustomersBasicDetails());
-  }, []);
+    dispatch(getAllCustomersBasicDetails(currentPage));
+  }, [currentPage]);
   useEffect(() => {
     if (successBasic) {
       alert.success("Reterived data successfully.");
@@ -41,14 +46,19 @@ const Customers = () => {
       {loading ? (
         <Loader />
       ) : (
-        <div>
+        <>
           <Title title={"Customer Details"} />
           <Navigation />
           <div className={showNavigation ? "beNeutral" : "shiftLeft"}>
             <h2 className="common-heading">Customers List</h2>
             <CustomerTable customers={customers} />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={10}
+              onPageChange={handlePageChange}
+            />
           </div>
-        </div>
+        </>
       )}
     </>
   );

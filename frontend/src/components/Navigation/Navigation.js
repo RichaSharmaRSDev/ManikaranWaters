@@ -40,7 +40,7 @@ const Navigation = () => {
       {loading ? (
         <Loader />
       ) : (
-        <div className="navigation-container">
+        <div className="navigated-container">
           <div className="profileDetails">
             <h3>Hi {user.name}!</h3>
             <div className="logout-container" onClick={logoutUser}>
@@ -59,13 +59,24 @@ const Navigation = () => {
                 alt="toggle"
               />
             </button>
+
             <div className="menu">
               <button className="menu-button">Customer</button>
               <div className="submenu">
                 <Link to="/customer/new">Create New Customer</Link>
                 <Link to="/customers">Customer Details</Link>
-                <Link to="/customers/frequency">Customers Habits</Link>
                 <Link to="/customers/allDetails">Customers All Details</Link>
+              </div>
+            </div>
+            <div className="menu">
+              <button className="menu-button">Customer Habits</button>
+              <div className="submenu">
+                <Link to="/customers/frequency/1">Daily Customers</Link>
+                <Link to="/customers/frequency/2">Alternate Customers</Link>
+                <Link to="/customers/frequency/3">Ternary Customers</Link>
+                <Link to="/customers/frequency/:input">
+                  Custom Interval Customers
+                </Link>
               </div>
             </div>
 
