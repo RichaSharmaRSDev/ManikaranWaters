@@ -5,12 +5,18 @@ import { customerReducer } from "./reducers/customerReducer";
 import { userReducer } from "./reducers/userReducer";
 import { navigationReducer } from "./reducers/navigationReducer";
 import paymentReducer from "./reducers/paymentReducer";
+import expenseReducer from "./reducers/expenseReducer";
+import deliveryReducer from "./reducers/deliveryReducer";
+import jarCountReducer from "./reducers/jarCountReducer";
 
 const reducer = combineReducers({
   customers: customerReducer,
   payments: paymentReducer,
   user: userReducer,
   navigation: navigationReducer,
+  expenses: expenseReducer,
+  deliveries: deliveryReducer,
+  jars: jarCountReducer,
 });
 
 let initialState = {};

@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-  getAllDeliveries,
+  getDeliveriesForDay,
   createDelivery,
   getDeliveryDetails,
   updateDelivery,
@@ -10,7 +10,7 @@ const { isAuthenticatedUser } = require("../middleware/auth");
 
 const router = express.Router();
 
-router.route("/deliveries").get(getAllDeliveries);
+router.route("/deliveries/:deliveryDate?").get(getDeliveriesForDay);
 router.route("/delivery/new").post(createDelivery);
 router
   .route("/delivery/:id")

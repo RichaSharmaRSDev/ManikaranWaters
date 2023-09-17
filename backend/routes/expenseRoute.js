@@ -8,6 +8,6 @@ const {
 const router = express.Router();
 
 router.route("/expense/new").post(isAuthenticatedUser, createExpense);
-router.route("/expense/:date?").get(isAuthenticatedUser, getExpensesForDate);
+router.route("/expenses/:date?").get(isAuthenticatedUser, getExpensesForDate);
 
 module.exports = router;

@@ -3,6 +3,8 @@ const initialState = {
   delivery: null,
   payment: null,
   error: null,
+  newDelivery: null,
+  deliveryTotal: null,
 };
 
 const deliveryReducer = (state = initialState, action) => {
@@ -13,21 +15,58 @@ const deliveryReducer = (state = initialState, action) => {
         loading: true,
         error: null,
       };
+    case "allDeliveryRequest":
+      return {
+        deliveries: [],
+        deliveryCount: null,
+        deliveryTotal: {},
+        loading: true,
+        error: null,
+      };
     case "createDeliverySuccess":
       return {
         ...state,
         loading: false,
-        delivery: action.payload.delivery,
-        payment: action.payload.payment,
+        newDelivery: action.payload,
+        error: null,
+        success: true,
+      };
+    case "allDeliverySuccess":
+      return {
+        loading: false,
+        deliveries: action.payload.deliveriesWithCustomerDetails,
+        deliveryCount: action.payload.deliveryCount,
+        deliveryTotal: action.payload.finalDeliveryTotal,
         error: null,
       };
     case "createDeliveryFail":
       return {
         ...state,
         loading: false,
-        delivery: null,
-        payment: null,
+        newDelivery: null,
         error: action.payload,
+      };
+    case "allDeliveryFail":
+      console.log(action.payload);
+      return {
+        ...state,
+        loading: false,
+        delivery: null,
+        deliveryTotal: null,
+        error: action.payload,
+      };
+    case "clearNewDelivery":
+      return {
+        ...state,
+        loading: false,
+        newDelivery: null,
+        error: null,
+        success: true,
+      };
+    case "clearErrors":
+      return {
+        ...state,
+        error: null,
       };
     default:
       return state;

@@ -11,7 +11,6 @@ const customerSchema = mongoose.Schema(
     },
     zone: {
       type: String,
-      enum: ["A", "B", "C", "D", "E", "F"],
       required: [true, "Please Enter Customer's Zone"],
     },
     customerId: {
@@ -113,14 +112,22 @@ const customerSchema = mongoose.Schema(
 customerSchema.pre("save", async function (next) {
   // Generate and set the customerId based on zone and a unique number
   if (!this.customerId) {
-    const lastCustomer = await this.constructor
-      .findOne({ zone: this.zone })
-      .sort({ customerId: -1 });
-    const lastNumber = lastCustomer
-      ? parseInt(lastCustomer.customerId.slice(1))
-      : 0;
-    this.customerId = this.zone + (lastNumber + 1);
+    const customersInZone = await this.constructor
+      .find({ zone: this.zone })
+      .select("customerId")
+      .exec();
+
+    const customerNumbers = customersInZone.map((customer) => {
+      const numStr = customer.customerId.slice(this.zone.length);
+      return parseInt(numStr, 10);
+    });
+
+    const highestNumber = Math.max(...customerNumbers, 0);
+    const nextNumber = highestNumber + 1;
+
+    this.customerId = this.zone + nextNumber.toString();
   }
+
   if (this.customerType === "subscription") {
     if (!this.frequency) {
       // Set default allotment, e.g., 1 day

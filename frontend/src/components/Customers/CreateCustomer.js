@@ -9,7 +9,10 @@ import Zone from "../../assets/map.svg";
 import Ruppee from "../../assets/indian-rupee-sign.svg";
 import Type from "../../assets/rectangle-list.svg";
 import Navigation from "../Navigation/Navigation";
-import { createNewCustomer } from "../../actions/customerAction";
+import {
+  createNewCustomer,
+  clearNewCustomer,
+} from "../../actions/customerAction";
 import { useAlert } from "react-alert";
 import Title from "../layout/Title.js";
 
@@ -17,7 +20,9 @@ const CreateCustomer = () => {
   const alert = useAlert();
   const { showNavigation } = useSelector((state) => state.navigation);
   const dispatch = useDispatch();
-  const { loading, successCreate } = useSelector((state) => state.customers);
+  const { loading, successCreate, newCustomer, newCustomerError } = useSelector(
+    (state) => state.customers
+  );
 
   const initialState = {
     name: "",
@@ -27,8 +32,8 @@ const CreateCustomer = () => {
     customerType: "",
     frequency: "",
     allotment: "",
+    securityMoney: "",
     rate: "",
-    currentJars: "",
   };
   const [formData, setFormData] = useState(initialState);
 
@@ -39,16 +44,20 @@ const CreateCustomer = () => {
 
   const handleCreateCustomerSubmit = (e) => {
     e.preventDefault();
-    formData.currentJars = parseInt(formData.allotment);
     dispatch(createNewCustomer(formData));
     setFormData(initialState);
   };
 
+  const handleCloseModal = () => {
+    dispatch(clearNewCustomer());
+    setFormData(initialState);
+  };
+
   useEffect(() => {
-    if (successCreate === true) {
-      alert.success("Customer Created Succesfully");
+    if (newCustomerError) {
+      alert.error(newCustomerError);
     }
-  }, [alert, successCreate]);
+  }, [newCustomerError, alert]);
 
   return (
     <>
@@ -131,6 +140,7 @@ const CreateCustomer = () => {
                       placeholder="Frequency"
                       value={formData.frequency}
                       onChange={handleInputChange}
+                      min="1"
                     />
                   </div>
                 )}
@@ -146,6 +156,7 @@ const CreateCustomer = () => {
                     placeholder="Rate"
                     value={formData.rate}
                     onChange={handleInputChange}
+                    min="1"
                     required
                   />
                 </div>
@@ -156,7 +167,7 @@ const CreateCustomer = () => {
                     Phone No:
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     name="phoneNo"
                     placeholder="Phone No"
                     value={formData.phoneNo}
@@ -176,6 +187,22 @@ const CreateCustomer = () => {
                     placeholder="Allotment of Jars"
                     value={formData.allotment}
                     onChange={handleInputChange}
+                    min="0"
+                    required
+                  />
+                </div>
+                <div className="fields">
+                  <label htmlFor="securityMoney">
+                    <img src={Allotment} alt="zone" />
+                    Security Money:
+                  </label>
+                  <input
+                    type="number"
+                    name="securityMoney"
+                    placeholder="Security Money"
+                    value={formData.securityMoney}
+                    onChange={handleInputChange}
+                    min="0"
                     required
                   />
                 </div>
@@ -199,6 +226,51 @@ const CreateCustomer = () => {
               </div>
             </form>
           </div>
+          {newCustomer && (
+            <div className="modal create-customer-modal">
+              <div className="modal-bg"></div>
+              <div className="modal-text">
+                {successCreate && <h3>Customer Created Successfully</h3>}
+                <div className="values">
+                  <span>Name:</span> <span>{newCustomer.name}</span>
+                </div>
+                <div className="values">
+                  <span>CustomerId:</span> <span>{newCustomer.customerId}</span>
+                </div>
+                <div className="values">
+                  <span>Zone:</span> <span>{newCustomer.zone}</span>
+                </div>
+                <div className="values">
+                  <span>Rate:</span> <span>{newCustomer.rate}</span>
+                </div>
+                <div className="values">
+                  <span>Phone No:</span> <span>{newCustomer.phoneNo}</span>
+                </div>
+                <div className="values">
+                  <span>Allotment:</span> <span>{newCustomer.allotment}</span>
+                </div>
+                <div className="values">
+                  <span>Security Money:</span>{" "}
+                  <span>{newCustomer.securityMoney}</span>
+                </div>
+                <div className="values">
+                  <span>Customer Type:</span>{" "}
+                  <span>{newCustomer.customerType}</span>
+                </div>
+                {newCustomer.customerType === "subscription" && (
+                  <div className="values">
+                    <span>Frequency:</span> <span>{newCustomer.frequency}</span>
+                  </div>
+                )}
+                <div className="values">
+                  <span>Address:</span> <span>{newCustomer.address}</span>
+                </div>
+                <div className="closeModal" onClick={handleCloseModal}>
+                  &#x2715;
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </>

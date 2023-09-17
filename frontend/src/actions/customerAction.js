@@ -47,6 +47,24 @@ export const getCustomersIdName = () => async (dispatch) => {
   }
 };
 
+export const getCustomersByNextDeliveryDate =
+  (date, page) => async (dispatch) => {
+    try {
+      dispatch({ type: "AllCustomersPredictionsRequest" });
+      const { data } = await axios.get(
+        `/api/v1/customerspredictions?date=${date}&page=${page}`
+      );
+      dispatch({
+        type: "AllCustomersPredictionsSuccess",
+        payload: data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "AllCustomersPredictionsFail",
+        payload: error.response.data.messsage,
+      });
+    }
+  };
 export const createNewCustomer = (formData) => async (dispatch) => {
   try {
     dispatch({ type: "CreateNewCustomerRequest" });
@@ -61,6 +79,10 @@ export const createNewCustomer = (formData) => async (dispatch) => {
       payload: error.response.data.message,
     });
   }
+};
+
+export const clearNewCustomer = () => async (dispatch) => {
+  dispatch({ type: "clearNewCustomer" });
 };
 
 export const frequencyCustomers = (days, page) => async (dispatch) => {

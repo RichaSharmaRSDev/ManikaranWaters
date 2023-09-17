@@ -8,7 +8,7 @@ import AlertTemplate from "react-alert-template-basic";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const options = {
-  timeout: 2000,
+  timeout: 1500,
   position: positions.BOTTOM_CENTER,
   transition: transitions.SCALE,
 };

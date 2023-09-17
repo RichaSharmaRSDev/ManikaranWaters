@@ -31,18 +31,20 @@ exports.getAllCustomersBasicDetails = catchAsyncError(async (req, res) => {
   const resultsPerPage = 20;
   const customerCount = await Customer.countDocuments();
   const apiFeature = new ApiFeatures(
-    Customer.find().select("-deliveries -payments -createdAt"),
+    Customer.find().select("-deliveries -payments -createdAt -zone"),
     req.query
   )
     .search()
     .filter()
     .pagination(resultsPerPage);
   const customers = await apiFeature.query;
+  const customerFeatureCount = customers.length;
 
   res.status(200).json({
     success: true,
     customers,
     customerCount,
+    customerFeatureCount,
   });
 });
 
@@ -59,6 +61,80 @@ exports.getAllCustomersNameId = catchAsyncError(async (req, res) => {
     customers,
   });
 });
+
+//get all customers by NextDelivery date
+exports.getCustomersByNextDeliveryDate = catchAsyncError(async (req, res) => {
+  const { date } = req.query;
+
+  if (!date) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Date parameter is required" });
+  }
+
+  const startDate = new Date(date);
+  const endDate = new Date(date);
+  endDate.setHours(23, 59, 59, 999);
+
+  const apiFeature = new ApiFeatures(
+    Customer.find({
+      nextDelivery: { $gte: startDate, $lte: endDate },
+    }).select("-deliveries -payments -createdAt"),
+    req.query
+  ).pagination(20);
+
+  const customers = await apiFeature.query;
+
+  // const customers = await Customer.find({
+  //   nextDelivery: { $gte: startDate, $lte: endDate },
+  // }).select("-deliveries -payments -createdAt");
+
+  const customerCount = customers.length;
+
+  res.status(200).json({
+    success: true,
+    customers,
+    customerCount,
+  });
+});
+
+// exports.getCustomersByNextDeliveryDate = catchAsyncError(async (req, res) => {
+//   const { date } = req.query;
+//   console.log("test1", date);
+
+//   if (!date) {
+//     return res
+//       .status(400)
+//       .json({ success: false, message: "Date parameter is required" });
+//   }
+
+//   const startDate = new Date(date);
+//   const endDate = new Date(date);
+//   endDate.setHours(23, 59, 59, 999);
+
+//   // Create an instance of ApiFeatures for customers
+//   const resultsPerPage = 20;
+//   console.log("test2", startDate, endDate, req.query);
+
+//   const apiFeature = new ApiFeatures(
+//     Customer.find({
+//       nextDelivery: { $gte: startDate, $lte: endDate },
+//     }).select("-deliveries -payments -createdAt"),
+//     req.query
+//   )
+//     .search()
+//     .filter()
+//     .pagination(resultsPerPage);
+
+//   // Retrieve the filtered and paginated customers
+//   const customers = await apiFeature.query;
+
+//   res.status(200).json({
+//     success: true,
+//     customers,
+//     customerCount: customers.length,
+//   });
+// });
 
 // Get Customer's Details
 exports.getCustomerDetails = catchAsyncError(async (req, res, next) => {

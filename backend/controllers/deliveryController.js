@@ -13,6 +13,7 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
     returnedJars,
     amountReceived,
     paymentMode,
+    deliveryAssociateName,
   } = req.body;
 
   const customer = await Customer.findOne({ customerId });
@@ -25,6 +26,7 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
     customer: customerId,
     deliveryDate,
     deliveredQuantity,
+    deliveryAssociateName,
     returnedJars,
     amountReceived,
     paymentMode,
@@ -34,6 +36,7 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
   customer.deliveries.push({
     deliveryDate: deliveryDate,
     deliveredQuantity,
+    deliveryAssociateName,
     returnedJars,
     amountReceived,
     paymentMode,
@@ -51,15 +54,25 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
       customer.billedAmount + deliveredQuantity * customer.rate;
   }
 
+  const remainingAmount =
+    (customer.billedAmount || 0) - (customer.paidAmount || 0);
+  customer.remainingAmount = remainingAmount;
+
   // Update currentJars and extraJars based on deliveries
   if (delivery.deliveredQuantity || delivery.returnedJars) {
-    const totalDeliveredQuantity = customer.deliveries.reduce(
-      (total, delivery) => total + (delivery.deliveredQuantity || 0),
-      0
-    );
-    customer.currentJars =
-      totalDeliveredQuantity - (delivery.returnedJars || 0);
-    customer.extraJars = customer.currentJars - customer.allotment;
+    if (delivery.deliveredQuantity || delivery.returnedJars) {
+      const deliveredQuantity = delivery.deliveredQuantity || 0;
+      const returnedJars = delivery.returnedJars || 0;
+
+      // Update currentJars based on delivered and returned jars
+      customer.currentJars += deliveredQuantity - returnedJars;
+
+      // Update extraJars based on the difference between currentJars and allotment
+      customer.extraJars = customer.currentJars - customer.allotment;
+      if (customer.extraJars < 0) {
+        customer.extraJars = 0;
+      }
+    }
   }
 
   //updating payment too if they paid at time of delivery
@@ -83,7 +96,8 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
     customer.paidAmount = paidAmount;
 
     //Update Remaining Amount
-    const remainingAmount = (customer.billedAmount || 0) - (paidAmount || 0);
+    const remainingAmount =
+      (customer.billedAmount || 0) - (customer.paidAmount || 0);
     customer.remainingAmount = remainingAmount;
   }
 
@@ -94,16 +108,74 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
   res.status(201).json({ success: true, delivery, payment });
 });
 
-exports.getAllDeliveries = catchAsyncError(async (req, res) => {
+exports.getDeliveriesForDay = catchAsyncError(async (req, res) => {
   const resultsPerPage = 20;
   const apiFeature = new ApiFeatures(Delivery.find(), req.query)
     .filter()
     .pagination(resultsPerPage);
+
+  if (req.query.deliveryDate) {
+    const startDate = new Date(req.query.deliveryDate);
+    const endDate = new Date(startDate);
+    endDate.setHours(23, 59, 59, 999);
+    endDate.setTime(endDate.getTime() + 5.5 * 60 * 60 * 1000);
+    apiFeature.query = apiFeature.query
+      .where("deliveryDate")
+      .gte(startDate)
+      .lt(endDate);
+  }
+
   const deliveries = await apiFeature.query;
+  const deliveryCount = deliveries.length;
+  const deliveriesWithCustomerDetails = await Promise.all(
+    deliveries.map(async (delivery) => {
+      try {
+        const customer = await Customer.findOne({
+          customerId: delivery.customer,
+        });
+        if (!customer) {
+          throw new Error("Customer not found");
+        }
+
+        return {
+          ...delivery.toObject(),
+          customerId: customer.customerId,
+          customerName: customer.name,
+        };
+      } catch (error) {
+        console.error("Error retrieving customer details:", error);
+        return delivery.toObject();
+      }
+    })
+  );
+
+  //get delivered jars , returned Jars and their difference
+  const totalDeliveredJars = deliveries.reduce((accumulator, delivery) => {
+    if (typeof delivery.deliveredQuantity === "number") {
+      return accumulator + delivery.deliveredQuantity;
+    }
+    return accumulator;
+  }, 0);
+
+  const totalReturnedJars = deliveries.reduce((accumulator, delivery) => {
+    if (typeof delivery.returnedJars === "number") {
+      return accumulator + delivery.returnedJars;
+    }
+    return accumulator;
+  }, 0);
+
+  const diff = (totalDeliveredJars || 0) - (totalReturnedJars || 0);
+  const finalDeliveryTotal = {
+    totalDeliveredJars: totalDeliveredJars,
+    totalReturnedJars: totalReturnedJars,
+    diff: diff,
+  };
 
   res.status(200).json({
     success: true,
-    deliveries,
+    deliveriesWithCustomerDetails,
+    deliveryCount,
+    finalDeliveryTotal,
   });
 });
 

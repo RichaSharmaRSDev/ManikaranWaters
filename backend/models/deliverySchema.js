@@ -9,6 +9,9 @@ const deliverySchema = mongoose.Schema({
   deliveryDate: {
     type: Date,
   },
+  deliveryAssociateName: {
+    type: String,
+  },
   deliveredQuantity: {
     type: Number,
   },

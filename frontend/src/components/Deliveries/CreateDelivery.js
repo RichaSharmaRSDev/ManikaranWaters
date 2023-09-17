@@ -1,34 +1,49 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createDelivery } from "../../actions/deliveryAction"; // Import your delivery action
+import { createDelivery, clearNewDelivery } from "../../actions/deliveryAction"; // Import your delivery action
 import Loader from "../../components/layout/Loader/Loader.js";
 import { getCustomersIdName } from "../../actions/customerAction";
 import IdLogo from "../../assets/id-badge.svg";
+import Name from "../../assets/id-card-clip-alt.svg";
+import CardLogo from "../../assets/credit-card.svg";
 import deliveryDateLogo from "../../assets/calendar-check.svg";
 import Navigation from "../Navigation/Navigation";
 import Ruppee from "../../assets/indian-rupee-sign.svg";
 import { useAlert } from "react-alert";
+import emptyJar from "../../assets/emptyJar.png";
+import filledJar from "../../assets/filledJar.png";
+import Title from "../layout/Title";
 
 const CreateDelivery = () => {
   const { showNavigation } = useSelector((state) => state.navigation);
   const dispatch = useDispatch();
   const { loading, isAuthenticated } = useSelector((state) => state.user);
-  const { customers, error } = useSelector((state) => state.customers);
-  const [matchedCustomer, setMatchedCustomerName] = useState("");
+  const { customers, error: customerError } = useSelector(
+    (state) => state.customers
+  );
+  const {
+    newDelivery,
+    error: deliveryError,
+    success,
+  } = useSelector((state) => state.deliveries) || {};
+  const [matchedCustomer, setMatchedCustomer] = useState("");
   const alert = useAlert();
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(getCustomersIdName());
     }
-    if (error) {
-      alert.error(error);
+    if (deliveryError) {
+      alert.error(deliveryError);
     }
-  }, [error]);
+  }, [deliveryError]);
 
   const initialState = {
     customerId: "",
-    deliveryDate: new Date(Date.now() + 5.5 * 60 * 60 * 1000),
+    deliveryDate: new Date(Date.now() + 5.5 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0],
     deliveredQuantity: 0,
+    deliveryAssociateName: "",
     returnedJars: 0,
     amountReceived: 0,
     paymentMode: "",
@@ -41,21 +56,31 @@ const CreateDelivery = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
 
     if (name === "customerId") {
+      const uppercaseValue = value.toUpperCase();
+      setFormData((prevData) => ({ ...prevData, [name]: uppercaseValue }));
+
       const matchedCustomer = customers.find(
         (customer) => customer.customerId === value
       );
-
       if (matchedCustomer) {
-        setMatchedCustomerName(matchedCustomer.name);
+        setMatchedCustomer(matchedCustomer.name);
       } else {
-        setMatchedCustomerName("");
+        setMatchedCustomer("");
       }
     }
   };
+  const handleYesterdayButton = () => {
+    const yesterdayDate = new Date(
+      Date.now() + 5.5 * 60 * 60 * 1000 - 24 * 60 * 60 * 1000
+    );
 
+    setFormData((prevData) => ({
+      ...prevData,
+      deliveryDate: yesterdayDate.toISOString().split("T")[0], // Format as "yyyy-mm-dd"
+    }));
+  };
   const handleDeliverySubmit = (e) => {
     e.preventDefault();
-    console.log(typeof formData.deliveryDate, formData.deliveryDate);
     const requiredFormData = Object.keys(formData).reduce((acc, key) => {
       if (formData[key] !== 0 && formData[key] !== "") {
         acc[key] = formData[key];
@@ -64,15 +89,22 @@ const CreateDelivery = () => {
     }, {});
 
     dispatch(createDelivery(requiredFormData));
+  };
+
+  const handleCloseModal = () => {
+    dispatch(clearNewDelivery());
     setFormData(initialState);
-    setMatchedCustomerName("");
+    setMatchedCustomer("");
   };
 
   const renderPaymentModeDropdown = () => {
     if (formData.amountReceived > 0) {
       return (
         <div className="fields">
-          <label htmlFor="paymentMode">Payment Mode: </label>
+          <label htmlFor="paymentMode">
+            <img src={CardLogo} alt="id" />
+            Payment Mode:{" "}
+          </label>
           <select
             name="paymentMode"
             value={formData.paymentMode}
@@ -95,6 +127,7 @@ const CreateDelivery = () => {
         <Loader />
       ) : (
         <>
+          <Title title={"Create New Entry"} />
           <Navigation />
           <div className={showNavigation ? "beNeutral" : "shiftLeft"}>
             <h2 className="common-heading common-heading-form">
@@ -106,6 +139,20 @@ const CreateDelivery = () => {
             >
               <div className="fields-wrapper">
                 <div className="fields">
+                  <label htmlFor="deliveryAssociateName">
+                    <img src={Name} alt="id" />
+                    Associate Name:{" "}
+                  </label>
+                  <input
+                    type="string"
+                    name="deliveryAssociateName"
+                    placeholder="Associate Name"
+                    value={formData.deliveryAssociateName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="fields">
                   <label htmlFor="customerId">
                     <img src={IdLogo} alt="id" />
                     Customer Id:{" "}
@@ -116,6 +163,7 @@ const CreateDelivery = () => {
                     placeholder="Customer Id"
                     value={formData.customerId}
                     onChange={handleInputChange}
+                    required
                   />
                   {matchedCustomer && (
                     <p className="extraNote">
@@ -135,25 +183,45 @@ const CreateDelivery = () => {
                     value={formData.deliveryDate}
                     onChange={handleInputChange}
                   />
+                  <button
+                    type="button"
+                    className="yesterdayButton"
+                    onClick={handleYesterdayButton}
+                  >
+                    {new Date(
+                      Date.now() - 24 * 60 * 60 * 1000
+                    ).toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                    })}
+                  </button>
                 </div>
                 <div className="fields">
-                  <label htmlFor="deliveredQuantity">Delivered Jars: </label>
+                  <label htmlFor="deliveredQuantity">
+                    <img className="large" src={filledJar} alt="date" />
+                    Delivered Jars:
+                  </label>
                   <input
                     type="number"
                     name="deliveredQuantity"
                     placeholder="delivered Jars"
                     value={formData.deliveredQuantity}
                     onChange={handleInputChange}
+                    min="0"
                   />
                 </div>
                 <div className="fields">
-                  <label htmlFor="returnedJars">Returned Jars: </label>
+                  <label htmlFor="returnedJars">
+                    <img className="large" src={emptyJar} alt="date" />
+                    Returned Jars:
+                  </label>
                   <input
                     type="number"
                     name="returnedJars"
                     placeholder="Returned Jars"
                     value={formData.returnedJars}
                     onChange={handleInputChange}
+                    min="0"
                   />
                 </div>
                 <div className="fields">
@@ -167,6 +235,7 @@ const CreateDelivery = () => {
                     placeholder="Amount Received"
                     value={formData.amountReceived}
                     onChange={handleInputChange}
+                    min="0"
                   />
                 </div>
                 {renderPaymentModeDropdown()}
@@ -176,6 +245,60 @@ const CreateDelivery = () => {
               </div>
             </form>
           </div>
+          {newDelivery && (
+            <div className="modal delivery-modal">
+              <div className="modal-bg"></div>
+              <div className="modal-text">
+                {success && <h3>Delivery Created Successfully</h3>}
+                <div className="values">
+                  <span>Associate Name:</span>{" "}
+                  <span>{newDelivery.deliveryAssociateName}</span>
+                </div>
+                <div className="values">
+                  <span>Customer Name:</span> <span>{matchedCustomer}</span>
+                </div>
+                <div className="values">
+                  <span>Customer Id:</span> <span>{newDelivery.customer}</span>
+                </div>
+                <div className="values">
+                  <span>Delivery Date:</span>{" "}
+                  <span>
+                    {new Date(newDelivery.deliveryDate).toLocaleDateString(
+                      "en-GB",
+                      { day: "2-digit", month: "short" }
+                    )}
+                  </span>
+                </div>
+                {newDelivery.deliveredQuantity && (
+                  <div className="values">
+                    <span>Delivered Jars:</span>{" "}
+                    <span>{newDelivery.deliveredQuantity}</span>
+                  </div>
+                )}
+                {newDelivery.returnedJars && (
+                  <div className="values">
+                    <span>Returned Jars:</span>{" "}
+                    <span>{newDelivery.returnedJars}</span>
+                  </div>
+                )}
+                {newDelivery.amountReceived && (
+                  <>
+                    <div className="values">
+                      <span>Amount Received:</span>{" "}
+                      <span>{newDelivery.amountReceived}</span>
+                    </div>
+                    <div className="values">
+                      <span>Payment Mode:</span>{" "}
+                      <span>{newDelivery.paymentMode}</span>
+                    </div>
+                  </>
+                )}
+                <div className="closeModal" onClick={handleCloseModal}>
+                  &#x2715;
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </>

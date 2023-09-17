@@ -1,0 +1,58 @@
+.jarCountForm {
+  overflow-y: scroll;
+  img {
+    width: 1.2vw;
+    margin-right: 5px;
+    &.brought {
+      transform: scaleX(-1);
+    }
+  }
+  .todaysDate {
+    font-family: Poppins;
+    font-weight: 700;
+  }
+  .fields-wrapper {
+    background-color: #f2f8fd;
+    min-height: 70vh;
+    height: max-content;
+    p {
+      margin-top: 0;
+      margin-bottom: 5px;
+      font-weight: 700;
+      text-decoration: underline;
+      font-family: Poppins;
+    }
+    .trips-container {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      label {
+        width: 15vw;
+      }
+      input {
+        width: 7vw;
+        margin-right: 5vw;
+      }
+    }
+    .trip-ctas {
+      display: flex;
+      gap: 20%;
+    }
+    .createTrip,
+    .closeTrip {
+      width: 130px;
+      height: 30px;
+      line-height: 30px;
+      border-radius: 5px;
+      text-align: center;
+      font-family: Poppins;
+      font-size: 14px;
+    }
+    .createTrip {
+      background-color: #198752;
+    }
+    .closeTrip {
+      background-color: #dc3545;
+    }
+  }
+}

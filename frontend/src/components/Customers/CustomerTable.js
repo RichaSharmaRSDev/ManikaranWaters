@@ -14,7 +14,6 @@ const CustomerTable = ({ customers }) => {
         <thead className="customer-list-header">
           <tr>
             <th className="customer-id">ID</th>
-            <th className="customer-zone">Zone</th>
             <th className="customer-name">Name</th>
             <th className="customer-security">
               Customer <br /> Type
@@ -59,9 +58,15 @@ const CustomerTable = ({ customers }) => {
         </thead>
         <tbody>
           {customers?.map((customer) => (
-            <tr key={customer._id} className="customer-card">
+            <tr
+              key={customer._id}
+              className={`customer-card ${
+                customer.remainingAmount >= 200 || customer.extraJars >= 1
+                  ? "needAttention"
+                  : ""
+              }`}
+            >
               <td className="customer-id">{customer.customerId}</td>
-              <td className="customer-zone">{customer.zone}</td>
               <td className="customer-name">{customer.name}</td>
               <td className="customer-name">{customer.customerType}</td>
               <td className="customer-phone">{customer.phoneNo}</td>
@@ -73,7 +78,9 @@ const CustomerTable = ({ customers }) => {
                 {customer.currentJars}
               </td>
               <td className="customer-allotment">{customer.allotment}</td>
-              <td className="customer-security">&#8377;{customer.security}</td>
+              <td className="customer-security">
+                &#8377;{customer.securityMoney}
+              </td>
               <td className="customer-name">{customer.extraJars}</td>
               <td className="customer-name">
                 {formatDate(customer.lastDeliveryDate)}

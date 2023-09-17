@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Loader from "../layout/Loader/Loader";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { logout } from "../../actions/userAction";
 import { useDispatch, useSelector } from "react-redux";
 import logoutSvg from "../../assets/sign-out-alt.svg";
@@ -12,7 +12,44 @@ import { toggleNavigation } from "../../actions/navigationAction";
 const Navigation = () => {
   const dispatch = useDispatch();
   const alert = useAlert();
+  const navigate = useNavigate();
   let { showNavigation } = useSelector((state) => state.navigation);
+  const [paymentModal, setPaymentModal] = useState(false);
+  const [deliveryModal, setDeliveryModal] = useState(false);
+  const [expenseModal, setExpenseModal] = useState(false);
+  const [predictionModal, setPredictionModal] = useState(false);
+  const [customerFrequencyModal, setCustomerFrequencyModal] = useState("");
+  const [customPaymentDate, setCustomPaymentDate] = useState("");
+  const [customDeliveryDate, setCustomDeliveryDate] = useState("");
+  const [customFrequencyNumber, setCustomFrequencyNumber] = useState("");
+  const [customExpenseDate, setCustomExpenseDate] = useState("");
+  const [customPredictionDate, setCustomPredictionDate] = useState("");
+
+  const handlePaymentModalSubmit = () => {
+    setPaymentModal(false);
+    navigate(`/payments?paymentDate=${customPaymentDate}`);
+    setCustomPaymentDate("");
+  };
+  const handleDeliveryModalSubmit = () => {
+    setDeliveryModal(false);
+    navigate(`/deliveries?deliveryDate=${customDeliveryDate}`);
+    setCustomDeliveryDate("");
+  };
+  const handleCustomerFrequencyModalSubmit = () => {
+    setCustomerFrequencyModal(false);
+    navigate(`/customers/frequency/${customFrequencyNumber}`);
+    setCustomerFrequencyModal("");
+  };
+  const handleExpenseModalSubmit = () => {
+    setExpenseModal(false);
+    navigate(`/expenses/${customExpenseDate}`);
+    setCustomExpenseDate("");
+  };
+  const handlePredictionModalSubmit = () => {
+    setPredictionModal(false);
+    navigate(`/customerspredictions?nextDelivery=${customPredictionDate}`);
+    setCustomPredictionDate("");
+  };
 
   const toggleNavigationInside = () => {
     showNavigation = !showNavigation;
@@ -68,47 +105,246 @@ const Navigation = () => {
                 <Link to="/customers/allDetails">Customers All Details</Link>
               </div>
             </div>
+
+            {/* Customer Habits */}
             <div className="menu">
               <button className="menu-button">Customer Habits</button>
               <div className="submenu">
                 <Link to="/customers/frequency/1">Daily Customers</Link>
                 <Link to="/customers/frequency/2">Alternate Customers</Link>
                 <Link to="/customers/frequency/3">Ternary Customers</Link>
-                <Link to="/customers/frequency/:input">
+                <div
+                  className="customCustomerFrequencyLink"
+                  to="#"
+                  onClick={() => setCustomerFrequencyModal(true)}
+                >
                   Custom Interval Customers
-                </Link>
+                </div>
               </div>
             </div>
 
+            {/* Enteries */}
             <div className="menu">
               <button className="menu-button">Entries</button>
               <div className="submenu">
                 <Link to="/delivery/new">New Delivery</Link>
-                <Link to="/deliveries/today">Today's Deliveries</Link>
+                <Link to="/payment/new">New Payment</Link>
               </div>
             </div>
 
+            {/* Reports */}
             <div className="menu">
-              <button className="menu-button">Payment</button>
+              <button className="menu-button">Reports</button>
               <div className="submenu">
-                <Link to="/payment/new">Create Payment</Link>
+                <Link to="/deliveries?deliveryDate=today">
+                  Today's Deliveries
+                </Link>
+                <Link to="/deliveries?deliveryDate=yesterday">
+                  Yesterday's Deliveries
+                </Link>
+                <div
+                  className="customDeliveryLink"
+                  to="#"
+                  onClick={() => setDeliveryModal(true)}
+                >
+                  Custom Deliveries
+                </div>
+                <hr></hr>
+                <Link to="/payments?paymentDate=today">Today's Payments</Link>
+                <Link to="/payments?paymentDate=yesterday">
+                  Yesterday's Payments
+                </Link>
+                <div
+                  className="customPaymentLink"
+                  to="#"
+                  onClick={() => setPaymentModal(true)}
+                >
+                  Custom Payments
+                </div>
               </div>
             </div>
 
+            {/* Expense */}
             <div className="menu">
               <button className="menu-button">Expense</button>
               <div className="submenu">
-                <Link to="/expenses">Expense Details</Link>
+                <Link to="/expense/new">Create Expense</Link>
+                <Link to="/expenses/today">Today's Expense</Link>
+                <Link to="/expenses/yesterday">Yesterday's Expense</Link>
+                <div
+                  className="customExpenseLink"
+                  to="#"
+                  onClick={() => setExpenseModal(true)}
+                >
+                  Custom Date Expenses
+                </div>
               </div>
             </div>
 
+            {/* Prediction */}
             <div className="menu">
               <button className="menu-button">Prediction</button>
               <div className="submenu">
-                <Link to="/customers">Expected Tomorrow's Deliveries</Link>
-                <Link to="/customers">Expected Today's Deliveries</Link>
+                <Link to="/customerspredictions?nextDelivery=tomorrow">
+                  Expected Tomorrow's Deliveries
+                </Link>
+                <Link to="/customerspredictions?nextDelivery=today">
+                  Expected Today's Deliveries
+                </Link>
+                <div
+                  className="customPredictionLink"
+                  to="#"
+                  onClick={() => setPredictionModal(true)}
+                >
+                  Custom Date Prediction
+                </div>
               </div>
             </div>
+
+            {/* Jar Count */}
+            <div className="menu">
+              <button className="menu-button">Jar Count</button>
+              <div className="submenu">
+                <Link to="/jarInventory/today">Today's Jar Count</Link>
+                <Link to="/jarInventory">Jar Inventory</Link>
+              </div>
+            </div>
+
+            {paymentModal && (
+              <div className="modal">
+                <div className="modal-bg"></div>
+                <div className="modal-text">
+                  <label className="customInputLabel">Enter Payment Date</label>
+                  <input
+                    className="customPayment"
+                    type="date"
+                    value={customPaymentDate}
+                    onChange={(e) => setCustomPaymentDate(e.target.value)}
+                  />
+                  <button
+                    className="submitPaymentdate common-cta-blue"
+                    onClick={handlePaymentModalSubmit}
+                  >
+                    Submit
+                  </button>
+                  <div
+                    className="closeModal"
+                    onClick={() => setPaymentModal(false)}
+                  >
+                    &#x2715;
+                  </div>
+                </div>
+              </div>
+            )}
+            {deliveryModal && (
+              <div className="modal">
+                <div className="modal-bg"></div>
+                <div className="modal-text">
+                  <label className="customInputLabel">
+                    Enter Delivery Date
+                  </label>
+                  <input
+                    className="customDelivery"
+                    type="date"
+                    value={customDeliveryDate}
+                    onChange={(e) => setCustomDeliveryDate(e.target.value)}
+                  />
+                  <button
+                    className="submitDeliverydate common-cta-blue"
+                    onClick={handleDeliveryModalSubmit}
+                  >
+                    Submit
+                  </button>
+                  <div
+                    className="closeModal"
+                    onClick={() => setDeliveryModal(false)}
+                  >
+                    &#x2715;
+                  </div>
+                </div>
+              </div>
+            )}
+            {customerFrequencyModal && (
+              <div className="modal">
+                <div className="modal-bg"></div>
+                <div className="modal-text">
+                  <label className="customInputLabel">Enter Customer's</label>
+                  <label className="customInputLabel">Frequency Number</label>
+                  <input
+                    className="customFrequencyInput"
+                    type="number"
+                    value={customFrequencyNumber}
+                    onChange={(e) => setCustomFrequencyNumber(e.target.value)}
+                  />
+                  <button
+                    className="submitFrequencynumber common-cta-blue"
+                    onClick={handleCustomerFrequencyModalSubmit}
+                  >
+                    Submit
+                  </button>
+                  <div
+                    className="closeModal"
+                    onClick={() => setCustomerFrequencyModal(false)}
+                  >
+                    &#x2715;
+                  </div>
+                </div>
+              </div>
+            )}
+            {expenseModal && (
+              <div className="modal">
+                <div className="modal-bg"></div>
+                <div className="modal-text">
+                  <label className="customInputLabel">Enter Expense Date</label>
+                  <input
+                    className="customExpense"
+                    type="date"
+                    value={customExpenseDate}
+                    onChange={(e) => setCustomExpenseDate(e.target.value)}
+                  />
+                  <button
+                    className="submitExpensedate common-cta-blue"
+                    onClick={handleExpenseModalSubmit}
+                  >
+                    Submit
+                  </button>
+                  <div
+                    className="closeModal"
+                    onClick={() => setExpenseModal(false)}
+                  >
+                    &#x2715;
+                  </div>
+                </div>
+              </div>
+            )}
+            {predictionModal && (
+              <div className="modal">
+                <div className="modal-bg"></div>
+                <div className="modal-text">
+                  <label className="customInputLabel">
+                    Enter Prediction Date
+                  </label>
+                  <input
+                    className="customPrediction"
+                    type="date"
+                    value={customPredictionDate}
+                    onChange={(e) => setCustomPredictionDate(e.target.value)}
+                  />
+                  <button
+                    className="submitPredictiondate common-cta-blue"
+                    onClick={handlePredictionModalSubmit}
+                  >
+                    Submit
+                  </button>
+                  <div
+                    className="closeModal"
+                    onClick={() => setPredictionModal(false)}
+                  >
+                    &#x2715;
+                  </div>
+                </div>
+              </div>
+            )}
           </nav>
         </div>
       )}

@@ -13,12 +13,14 @@ const delivery = require("./routes/deliveryRoute");
 const payment = require("./routes/paymentRoute");
 const report = require("./reports/reportRoutes");
 const expense = require("./routes/expenseRoute");
+const jar = require("./routes/jarInventoryRoute");
 app.use("/api/v1", customer);
 app.use("/api/v1", user);
 app.use("/api/v1", delivery);
 app.use("/api/v1", payment);
 app.use("/api/v1", report);
 app.use("/api/v1", expense);
+app.use("/api/v1", jar);
 
 // MiddleWare for Error
 app.use(errorMiddleware);

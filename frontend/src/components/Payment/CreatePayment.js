@@ -1,29 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createPayment } from "../../actions/paymentAction";
+import { createPayment, clearNewPayment } from "../../actions/paymentAction";
 import Loader from "../layout/Loader/Loader.js";
 import { getCustomersIdName } from "../../actions/customerAction";
 import IdLogo from "../../assets/id-badge.svg";
+import CardLogo from "../../assets/credit-card.svg";
 import deliveryDateLogo from "../../assets/calendar-check.svg";
 import Navigation from "../Navigation/Navigation";
 import Ruppee from "../../assets/indian-rupee-sign.svg";
 import { useAlert } from "react-alert";
+import Title from "../layout/Title";
 
 const CreatePayment = () => {
   const { showNavigation } = useSelector((state) => state.navigation);
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.user);
   const { customers } = useSelector((state) => state.customers);
-  const { loading, error, success } = useSelector((state) => state.payments);
-  const [matchedCustomer, setMatchedCustomerName] = useState("");
+  const { loading, error, success, newPayment } = useSelector(
+    (state) => state.payments
+  );
+  const [matchedCustomer, setMatchedCustomer] = useState("");
   const alert = useAlert();
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(getCustomersIdName());
     }
-    if (success) {
-      alert.success("Payment Created Successfully");
-    }
+
     if (error) {
       alert.error(error);
     }
@@ -31,7 +33,9 @@ const CreatePayment = () => {
 
   const initialState = {
     customerId: "",
-    paymentDate: new Date(Date.now() + 5.5 * 60 * 60 * 1000),
+    paymentDate: new Date(Date.now() + 5.5 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0],
     amount: 0,
     paymentMode: "",
   };
@@ -43,23 +47,29 @@ const CreatePayment = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
 
     if (name === "customerId") {
+      const uppercaseValue = value.toUpperCase();
+      setFormData((prevData) => ({ ...prevData, [name]: uppercaseValue }));
+
       const matchedCustomer = customers.find(
         (customer) => customer.customerId === value
       );
-
       if (matchedCustomer) {
-        setMatchedCustomerName(matchedCustomer.name);
+        setMatchedCustomer(matchedCustomer.name);
       } else {
-        setMatchedCustomerName("");
+        setMatchedCustomer("");
       }
     }
   };
 
-  const handleDeliverySubmit = (e) => {
+  const handlePaymentSubmit = (e) => {
     e.preventDefault();
     dispatch(createPayment(formData));
+  };
+
+  const handleCloseModal = () => {
+    dispatch(clearNewPayment());
     setFormData(initialState);
-    setMatchedCustomerName("");
+    setMatchedCustomer("");
   };
 
   return (
@@ -69,12 +79,13 @@ const CreatePayment = () => {
       ) : (
         <>
           <Navigation />
+          <Title title={"Create New Payment"} />
           <div className={showNavigation ? "beNeutral" : "shiftLeft"}>
             <h2 className="common-heading common-heading-form">
               Create Payment
             </h2>
             <form
-              onSubmit={handleDeliverySubmit}
+              onSubmit={handlePaymentSubmit}
               className="createForm paymentForm"
             >
               <div className="fields-wrapper">
@@ -89,6 +100,7 @@ const CreatePayment = () => {
                     placeholder="Customer Id"
                     value={formData.customerId}
                     onChange={handleInputChange}
+                    required
                   />
                   {matchedCustomer && (
                     <p className="extraNote">
@@ -120,11 +132,15 @@ const CreatePayment = () => {
                     placeholder="Amount Received"
                     value={formData.amount}
                     onChange={handleInputChange}
+                    min="1"
                     required
                   />
                 </div>
                 <div className="fields">
-                  <label htmlFor="paymentMode">Payment Mode: </label>
+                  <label htmlFor="paymentMode">
+                    <img src={CardLogo} alt="id" />
+                    Payment Mode:{" "}
+                  </label>
                   <select
                     name="paymentMode"
                     value={formData.paymentMode}
@@ -142,6 +158,42 @@ const CreatePayment = () => {
               </div>
             </form>
           </div>
+          {newPayment && (
+            <div className="modal payment-modal">
+              <div className="modal-bg"></div>
+              <div className="modal-text">
+                {success && <h3>Payment Created Successfully</h3>}
+                <div className="values">
+                  <span>Name:</span> <span>{matchedCustomer}</span>
+                </div>
+                <div className="values">
+                  <span>CustomerId:</span> <span>{newPayment.customer}</span>
+                </div>
+                <div className="values">
+                  <span>Payment Date:</span>{" "}
+                  {new Date(newPayment.paymentDate).toLocaleDateString(
+                    "en-GB",
+                    { day: "2-digit", month: "short" }
+                  )}
+                </div>
+                {newPayment.amount && (
+                  <>
+                    <div className="values">
+                      <span>Amount Received:</span>
+                      <span>{newPayment.amount}</span>
+                    </div>
+                    <div className="values">
+                      <span>Payment Mode:</span>
+                      <span>{newPayment.paymentMode}</span>
+                    </div>
+                  </>
+                )}
+                <div className="closeModal" onClick={handleCloseModal}>
+                  &#x2715;
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </>
