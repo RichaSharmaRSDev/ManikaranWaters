@@ -6,10 +6,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearErrors, login, register } from "../../actions/userAction";
 import { useNavigate } from "react-router-dom";
 import Title from "../layout/Title";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 
 const LoginSignUp = () => {
-  const alert = useAlert();
+  // const alert = useAlert();
   const dispatch = useDispatch();
   const { error, loading, isAuthenticated } = useSelector(
     (state) => state.user
@@ -17,11 +17,11 @@ const LoginSignUp = () => {
 
   useEffect(() => {
     // if (error) {
-    //   alert.error(error);
+    //   console.log(error);
     //   dispatch(clearErrors());
     // }
     if (isAuthenticated) {
-      alert.success("Logged In Successfulyy");
+      console.log("Logged In Successfulyy");
     }
   }, [dispatch, error, alert, isAuthenticated]);
 

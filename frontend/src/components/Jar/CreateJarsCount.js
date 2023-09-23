@@ -15,12 +15,12 @@ import moon from "../../assets/moon-stars.svg";
 import taken from "../../assets/truck-container.svg";
 import brought from "../../assets/truck-container-empty.svg";
 import Navigation from "../Navigation/Navigation";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 import Title from "../layout/Title";
 
 const CreateJarsCount = () => {
   const dispatch = useDispatch();
-  const alert = useAlert();
+  // const alert = useAlert();
   const { showNavigation } = useSelector((state) => state.navigation);
   const { isAuthenticated } = useSelector((state) => state.user);
   const { loading, error, jarForDay, success } = useSelector(
@@ -65,7 +65,7 @@ const CreateJarsCount = () => {
   }, [jarForDay, formattedDate]);
   useEffect(() => {
     if (success && successMsgAlert) {
-      alert.success(`${update ? "Upadted" : "Created"} successfully!`);
+      console.log(`${update ? "Upadted" : "Created"} successfully!`);
       setSuccessMsgAlert(false);
     }
   }, [success, successMsgAlert]);

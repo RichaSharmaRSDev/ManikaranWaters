@@ -4,7 +4,7 @@ import { allDeliveries, clearErrors } from "../../actions/deliveryAction";
 import Loader from "../layout/Loader/Loader";
 import { useLocation } from "react-router-dom";
 import Navigation from "../Navigation/Navigation";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 import Title from "../layout/Title";
 import { Pagination } from "../layout/Pagination/Pagination";
 import DeliveryTable from "./DeliveryTable";
@@ -43,7 +43,7 @@ const AllDeliveries = () => {
     deliveryDate = formatDate(customDeliveryDate);
   }
 
-  const alert = useAlert();
+  // const alert = useAlert();
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -52,10 +52,10 @@ const AllDeliveries = () => {
   }, [deliveryDate, currentPage]);
   useEffect(() => {
     if (success) {
-      alert.success("Received Deliveries Successfully.");
+      console.log("Received Deliveries Successfully.");
     }
     if (error) {
-      alert.error(error);
+      console.log(error);
       dispatch(clearErrors());
     }
   }, [success, error]);

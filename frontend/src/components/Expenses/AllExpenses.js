@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../layout/Loader/Loader";
 import Navigation from "../Navigation/Navigation";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 import Title from "../layout/Title";
 import { Pagination } from "../layout/Pagination/Pagination";
 import ExpenseTable from "./ExpenseTable";
@@ -41,7 +41,7 @@ const AllExpenses = () => {
     expenseDate = formatDate(customPaymentDate);
   }
 
-  const alert = useAlert();
+  // const alert = useAlert();
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -50,10 +50,10 @@ const AllExpenses = () => {
   }, [expenseDate, currentPage]);
   useEffect(() => {
     if (success) {
-      alert.success("Received Expenses Successfully.");
+      console.log("Received Expenses Successfully.");
     }
     if (error) {
-      alert.error(error);
+      console.log(error);
       dispatch(clearErrors());
     }
   }, [success, error]);

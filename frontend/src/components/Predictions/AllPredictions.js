@@ -7,7 +7,7 @@ import {
 import Loader from "../layout/Loader/Loader";
 import { Navigate, useLocation } from "react-router-dom";
 import Navigation from "../Navigation/Navigation";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 import HabitsCustomerTable from "../Customers/HabitsCustomerTable";
 import "../Customers/Table.scss";
 import Title from "../layout/Title";
@@ -30,7 +30,7 @@ const AllPredictions = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const nextDeliveryDateText = queryParams.get("nextDelivery");
-  const alert = useAlert();
+  // const alert = useAlert();
   const totalPages = Math.ceil(customersPredictionsCount / 20);
 
   function formatDate(date) {
@@ -61,10 +61,10 @@ const AllPredictions = () => {
   }, [nextDeliveryDate, currentPage]);
   useEffect(() => {
     if (successPrediction) {
-      alert.success("Received Deliveries Successfully.");
+      console.log("Received Deliveries Successfully.");
     }
     if (error) {
-      alert.error(error);
+      console.log(error);
       dispatch(clearErrors());
     }
   }, [successPrediction, error]);

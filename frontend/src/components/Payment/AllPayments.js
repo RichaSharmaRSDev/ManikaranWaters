@@ -4,7 +4,7 @@ import { allPayments, clearErrors } from "../../actions/paymentAction";
 import Loader from "../layout/Loader/Loader";
 import { useLocation } from "react-router-dom";
 import Navigation from "../Navigation/Navigation";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 import Title from "../layout/Title";
 import { Pagination } from "../layout/Pagination/Pagination";
 import PaymentTable from "./PaymentTable";
@@ -43,7 +43,7 @@ const AllPayments = () => {
     paymentDate = formatDate(customPaymentDate);
   }
 
-  const alert = useAlert();
+  // const alert = useAlert();
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -52,10 +52,10 @@ const AllPayments = () => {
   }, [paymentDate, currentPage]);
   useEffect(() => {
     if (success) {
-      alert.success("Received Payments Successfully.");
+      console.log("Received Payments Successfully.");
     }
     if (error) {
-      alert.error(error);
+      console.log(error);
       dispatch(clearErrors());
     }
   }, [success, error]);

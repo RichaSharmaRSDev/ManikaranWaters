@@ -7,7 +7,7 @@ import {
 import Loader from "../layout/Loader/Loader";
 import { Navigate } from "react-router-dom";
 import Navigation from "../Navigation/Navigation";
-import { useAlert } from "react-alert";
+// // import { useAlert } from "react-alert";
 import "./Table.scss";
 import CustomerTable from "./CustomerTable";
 import Title from "../layout/Title";
@@ -21,7 +21,7 @@ const Customers = () => {
   const { isAuthenticated } = useSelector((state) => state.user);
   const { showNavigation } = useSelector((state) => state.navigation);
   const totalPages = Math.ceil(customersCount / 20);
-  const alert = useAlert();
+  // // const alert = useAlert();
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -30,10 +30,10 @@ const Customers = () => {
   }, [currentPage]);
   useEffect(() => {
     if (successBasic) {
-      alert.success("Reterived data successfully.");
+      console.log("Reterived data successfully.");
     }
     if (error) {
-      alert.error(error);
+      console.log(error);
       dispatch(clearErrors());
     }
     if (isAuthenticated === false) {

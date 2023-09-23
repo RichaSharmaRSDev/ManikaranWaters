@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Navigation from "../Navigation/Navigation";
 import Loader from "../layout/Loader/Loader";
 import "./Table.scss";
-import { useAlert } from "react-alert";
+// // import { useAlert } from "react-alert";
 import { useParams } from "react-router-dom";
 import { Pagination } from "../layout/Pagination/Pagination";
 import Title from "../layout/Title";
@@ -15,7 +15,7 @@ const FrequencyCustomers = () => {
   const { showNavigation } = useSelector((state) => state.navigation);
   const { loading, customers, successfrequency, error, customerFeatureCount } =
     useSelector((state) => state.customers);
-  const alert = useAlert();
+  // const alert = useAlert();
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(customerFeatureCount / 20);
@@ -27,10 +27,10 @@ const FrequencyCustomers = () => {
   }, [input]);
   useEffect(() => {
     if (successfrequency === true) {
-      alert.success("Reterived data successfully.");
+      console.log("Reterived data successfully.");
     }
     if (error) {
-      alert.error(error);
+      console.log(error);
       dispatch(clearErrors());
     }
   }, [successfrequency, error]);

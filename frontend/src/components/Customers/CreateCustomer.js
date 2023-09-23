@@ -13,11 +13,11 @@ import {
   createNewCustomer,
   clearNewCustomer,
 } from "../../actions/customerAction";
-import { useAlert } from "react-alert";
+// // import { useAlert } from "react-alert";
 import Title from "../layout/Title.js";
 
 const CreateCustomer = () => {
-  const alert = useAlert();
+  // // const alert = useAlert();
   const { showNavigation } = useSelector((state) => state.navigation);
   const dispatch = useDispatch();
   const { loading, successCreate, newCustomer, newCustomerError } = useSelector(
@@ -55,9 +55,9 @@ const CreateCustomer = () => {
 
   useEffect(() => {
     if (newCustomerError) {
-      alert.error(newCustomerError);
+      console.log(newCustomerError);
     }
-  }, [newCustomerError, alert]);
+  }, [newCustomerError]);
 
   return (
     <>

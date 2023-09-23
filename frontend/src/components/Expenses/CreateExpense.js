@@ -6,7 +6,7 @@ import deliveryDateLogo from "../../assets/calendar-check.svg";
 import Navigation from "../Navigation/Navigation";
 import Ruppee from "../../assets/indian-rupee-sign.svg";
 import Type from "../../assets/rectangle-list.svg";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 import Title from "../layout/Title.js";
 
 const CreateExpenses = () => {
@@ -16,10 +16,10 @@ const CreateExpenses = () => {
   const { newExpenseError, newExpenseSuccess, newExpense } = useSelector(
     (state) => state.expenses
   );
-  const alert = useAlert();
+  // const alert = useAlert();
   useEffect(() => {
     if (newExpenseError) {
-      alert.error(newExpenseError);
+      console.log(newExpenseError);
     }
   }, [newExpenseError]);
 

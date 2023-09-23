@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../layout/Loader/Loader";
 import Navigation from "../Navigation/Navigation";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 import emptyJar from "../../assets/emptyJar.png";
 import filledJar from "../../assets/filledJar.png";
 import Title from "../layout/Title";
@@ -61,7 +61,7 @@ const AllJarsCount = () => {
     return date1.toLocaleDateString("en-IN", options);
   }
 
-  const alert = useAlert();
+  // const alert = useAlert();
   // const handleDateChange = (date) => {
   //   setDate(date);
   //   const customInventoryDate = new Date(date);

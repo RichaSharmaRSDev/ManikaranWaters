@@ -9,7 +9,7 @@ import CardLogo from "../../assets/credit-card.svg";
 import deliveryDateLogo from "../../assets/calendar-check.svg";
 import Navigation from "../Navigation/Navigation";
 import Ruppee from "../../assets/indian-rupee-sign.svg";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 import emptyJar from "../../assets/emptyJar.png";
 import filledJar from "../../assets/filledJar.png";
 import Title from "../layout/Title";
@@ -27,13 +27,13 @@ const CreateDelivery = () => {
     success,
   } = useSelector((state) => state.deliveries) || {};
   const [matchedCustomer, setMatchedCustomer] = useState("");
-  const alert = useAlert();
+  // const alert = useAlert();
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(getCustomersIdName());
     }
     if (deliveryError) {
-      alert.error(deliveryError);
+      console.log(deliveryError);
     }
   }, [deliveryError]);
 

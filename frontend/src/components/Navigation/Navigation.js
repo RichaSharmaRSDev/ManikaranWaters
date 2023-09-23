@@ -6,12 +6,12 @@ import { useDispatch, useSelector } from "react-redux";
 import logoutSvg from "../../assets/sign-out-alt.svg";
 import "./navigation.scss";
 import expandCollapseLogo from "../../assets/expandCollapse.svg";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 import { toggleNavigation } from "../../actions/navigationAction";
 
 const Navigation = () => {
   const dispatch = useDispatch();
-  const alert = useAlert();
+  // const alert = useAlert();
   const navigate = useNavigate();
   let { showNavigation } = useSelector((state) => state.navigation);
   const [paymentModal, setPaymentModal] = useState(false);
@@ -62,7 +62,7 @@ const Navigation = () => {
 
   useEffect(() => {
     if (error) {
-      alert.error(error);
+      console.log(error);
     }
     if (isAuthenticated === false) {
       Navigate("/");
