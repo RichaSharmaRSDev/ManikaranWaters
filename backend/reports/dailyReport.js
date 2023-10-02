@@ -6,7 +6,7 @@ const Expenses = require("../models/expenseSchema");
 
 exports.generateDailyReport = catchAsyncError(async (req, res, next) => {
   const { date } = req.params;
-  const inputDate = date ? new Date(date) : new Date();
+  const inputDate = date ? new Date(date) : new Date() + 5.5 * 60 * 60 * 1000;
   const reportDate = new Date(
     inputDate.toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
   );

@@ -23,7 +23,7 @@ exports.createExpense = catchAsyncError(async (req, res, next) => {
 exports.getExpensesForDate = catchAsyncError(async (req, res, next) => {
   const { date } = req.params;
   const reportDate = date
-    ? new Date(date) + 5.5 * 60 * 60 * 1000
+    ? new Date(date) // + 5.5 * 60 * 60 * 1000
     : Date.now() + 5.5 * 60 * 60 * 1000;
 
   // Set the start and end of the selected date

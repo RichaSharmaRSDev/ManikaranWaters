@@ -5,7 +5,7 @@ import {
   getCustomersByNextDeliveryDate,
 } from "../../actions/customerAction";
 import Loader from "../layout/Loader/Loader";
-import { Navigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Navigation from "../Navigation/Navigation";
 // import { useAlert } from "react-alert";
 import HabitsCustomerTable from "../Customers/HabitsCustomerTable";
@@ -16,8 +16,6 @@ import { Pagination } from "../layout/Pagination/Pagination";
 const AllPredictions = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-
-  const { isAuthenticated } = useSelector((state) => state.user);
   const { showNavigation } = useSelector((state) => state.navigation);
   const {
     customersPredictions,

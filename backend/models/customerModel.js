@@ -61,10 +61,9 @@ const customerSchema = mongoose.Schema(
       type: Date,
       default: function () {
         if (this.customerType === "subscription" && this.frequency) {
-          const lastDelivery =
-            this.lastDeliveryDate ||
-            this.createdAt ||
-            Date.now() + 5.5 * 60 * 60 * 1000;
+          const lastDelivery = this.lastDeliveryDate || null;
+          // this.createdAt ||
+          // Date.now() + 5.5 * 60 * 60 * 1000;
           const nextDeliveryDate = new Date(lastDelivery);
           nextDeliveryDate.setDate(nextDeliveryDate.getDate() + this.frequency);
           return nextDeliveryDate;
@@ -130,16 +129,15 @@ customerSchema.pre("save", async function (next) {
 
   if (this.customerType === "subscription") {
     if (!this.frequency) {
-      // Set default allotment, e.g., 1 day
+      // Set default allotment, e.g., 1 jar
       this.frequency = 1;
     }
 
-    const lastDelivery =
-      this.lastDeliveryDate ||
-      this.createdAt ||
-      Date.now() + 5.5 * 60 * 60 * 1000;
-    const nextDeliveryDate = new Date(lastDelivery);
-    nextDeliveryDate.setDate(nextDeliveryDate.getDate() + this.frequency);
+    const lastDelivery = this.lastDeliveryDate || null;
+    // this.createdAt ||
+    // Date.now() + 5.5 * 60 * 60 * 1000;
+    const nextDeliveryDate = lastDelivery ? new Date(lastDelivery) : null;
+    nextDeliveryDate?.setDate(nextDeliveryDate.getDate() + this.frequency);
     this.nextDelivery = nextDeliveryDate;
   } else {
     // Clear allotment and nextDelivery for on demand customers

@@ -38,6 +38,7 @@ const deliveryReducer = (state = initialState, action) => {
         deliveryCount: action.payload.deliveryCount,
         deliveryTotal: action.payload.finalDeliveryTotal,
         error: null,
+        success: true,
       };
     case "createDeliveryFail":
       return {
@@ -47,7 +48,6 @@ const deliveryReducer = (state = initialState, action) => {
         error: action.payload,
       };
     case "allDeliveryFail":
-      console.log(action.payload);
       return {
         ...state,
         loading: false,
