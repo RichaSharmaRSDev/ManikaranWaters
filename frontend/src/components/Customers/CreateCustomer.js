@@ -103,11 +103,17 @@ const CreateCustomer = () => {
                     required
                   >
                     <option value="">Select Customer Zone</option>
-                    <option value="A">A</option>
-                    <option value="B">B</option>
+                    <option value="AA">AA</option>
+                    <option value="AB">AB</option>
+                    <option value="AC">AC</option>
+                    <option value="BA">BA</option>
+                    <option value="BB">BB</option>
+                    <option value="BC">BC</option>
                     <option value="C">C</option>
                     <option value="D">D</option>
-                    <option value="E">E</option>
+                    <option value="EA">EA</option>
+                    <option value="EB">EB</option>
+                    <option value="EC">EC</option>
                   </select>
                 </div>
 
