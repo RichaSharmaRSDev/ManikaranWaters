@@ -133,3 +133,88 @@ exports.getPaymentsForDay = catchAsyncError(async (req, res) => {
     paymentTotal: finalPaymentTotal,
   });
 });
+exports.getPaymentsForRange = catchAsyncError(async (req, res) => {
+  const resultsPerPage = 20;
+  const apiFeature = new ApiFeatures(Payment.find(), req.query)
+    .filter()
+    .pagination(resultsPerPage);
+  if (req.query.paymentStartDate && req.query.paymentEndDate) {
+    const startDate = new Date(req.query.paymentStartDate);
+    const endDate = new Date(req.query.paymentEndDate);
+    endDate.setHours(23, 59, 59, 999);
+    endDate.setTime(endDate.getTime() + 5.5 * 60 * 60 * 1000);
+    apiFeature.query = apiFeature.query
+      .where("paymentDate")
+      .gte(startDate)
+      .lte(endDate);
+  }
+
+  const payments = await apiFeature.query;
+
+  // Map through each payment and retrieve customer details
+  const paymentsWithCustomerDetails = await Promise.all(
+    payments.map(async (payment) => {
+      try {
+        const customer = await Customer.findOne({
+          customerId: payment.customer,
+        });
+        console.log(customer);
+
+        if (!customer) {
+          throw new Error("Customer not found");
+        }
+
+        return {
+          ...payment.toObject(),
+          name: customer.name,
+        };
+      } catch (error) {
+        console.error("Error retrieving customer details:", error);
+        return payment.toObject();
+      }
+    })
+  );
+
+  //get totalpayment , payment in cash and payment online
+  const totalPaymentReceived = payments.reduce((accumulator, payment) => {
+    if (typeof payment.amount === "number") {
+      return accumulator + payment.amount;
+    }
+    return accumulator;
+  }, 0);
+  const calculateCashPayment = (payments) => {
+    return payments.reduce((accumulator, payment) => {
+      if (
+        payment.paymentMode === "cash" &&
+        typeof payment.amount === "number"
+      ) {
+        return accumulator + payment.amount;
+      }
+      return accumulator;
+    }, 0);
+  };
+  const calculateOnlinePayment = (payments) => {
+    return payments.reduce((accumulator, payment) => {
+      if (
+        payment.paymentMode === "online" &&
+        typeof payment.amount === "number"
+      ) {
+        return accumulator + payment.amount;
+      }
+      return accumulator;
+    }, 0);
+  };
+
+  const finalPaymentTotal = {
+    totalPaymentReceived: totalPaymentReceived,
+    totalCashPayment: calculateCashPayment(payments),
+    totalOnlinePayment: calculateOnlinePayment(payments),
+  };
+
+  res.status(200).json({
+    success: true,
+    payments: paymentsWithCustomerDetails,
+    paymentCount: paymentsWithCustomerDetails.length,
+    paymentTotal: finalPaymentTotal,
+  });
+});

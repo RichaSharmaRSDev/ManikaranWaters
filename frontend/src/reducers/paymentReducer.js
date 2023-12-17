@@ -14,6 +14,7 @@ const paymentReducer = (state = initialState, action) => {
         error: null,
       };
     case "allPaymentRequest":
+    case "rangePaymentRequest":
       return {
         payments: [],
         loading: true,
@@ -28,6 +29,7 @@ const paymentReducer = (state = initialState, action) => {
         success: true,
       };
     case "allPaymentSuccess":
+    case "rangePaymentSuccess":
       return {
         loading: false,
         payments: action.payload.payments,
@@ -43,6 +45,7 @@ const paymentReducer = (state = initialState, action) => {
         error: action.payload,
       };
     case "allPaymentFail":
+    case "rangePaymentFail":
       console.log(action.payload);
       return {
         ...state,

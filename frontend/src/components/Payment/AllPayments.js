@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { allPayments, clearErrors } from "../../actions/paymentAction";
+import {
+  allPayments,
+  clearErrors,
+  rangePayments,
+} from "../../actions/paymentAction";
 import Loader from "../layout/Loader/Loader";
 import { useLocation } from "react-router-dom";
 import Navigation from "../Navigation/Navigation";
@@ -22,6 +26,8 @@ const AllPayments = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const paymentDateText = queryParams.get("paymentDate");
+  const paymentRangeStartDate = queryParams.get("paymentStartDate");
+  const paymentRangeEndDate = queryParams.get("paymentEndDate");
 
   function formatDate(date) {
     const year = date.getFullYear();
@@ -31,6 +37,7 @@ const AllPayments = () => {
   }
 
   let paymentDate;
+  let paymentEndDate; // in case of range date
 
   if (paymentDateText === "today") {
     const today = new Date(Date.now());
@@ -38,6 +45,11 @@ const AllPayments = () => {
   } else if (paymentDateText === "yesterday") {
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
     paymentDate = formatDate(yesterday);
+  } else if (paymentRangeStartDate && paymentRangeEndDate) {
+    const customPaymentRangeStartDate = new Date(paymentRangeStartDate);
+    const customPaymentRangeEndDate = new Date(paymentRangeEndDate);
+    paymentDate = formatDate(customPaymentRangeStartDate);
+    paymentEndDate = formatDate(customPaymentRangeEndDate);
   } else {
     const customPaymentDate = new Date(paymentDateText);
     paymentDate = formatDate(customPaymentDate);
@@ -48,7 +60,11 @@ const AllPayments = () => {
     setCurrentPage(page);
   };
   useEffect(() => {
-    dispatch(allPayments(paymentDate, currentPage));
+    if (paymentDate && paymentEndDate) {
+      dispatch(rangePayments(paymentDate, paymentEndDate, currentPage));
+    } else {
+      dispatch(allPayments(paymentDate, currentPage));
+    }
   }, [paymentDate, currentPage]);
   useEffect(() => {
     if (success) {
@@ -72,7 +88,17 @@ const AllPayments = () => {
             {payments?.length ? (
               <>
                 <h2 className="common-heading">
-                  Payments List for {paymentDateText}
+                  Payments List for{" "}
+                  {paymentDateText
+                    ? paymentDateText?.charAt(0).toUpperCase() +
+                      paymentDateText?.slice(1)
+                    : `${
+                        paymentRangeStartDate?.charAt(0).toUpperCase() +
+                        paymentRangeStartDate?.slice(1)
+                      } and ${
+                        paymentRangeEndDate?.charAt(0).toUpperCase() +
+                        paymentRangeEndDate?.slice(1)
+                      } `}
                 </h2>
                 <PaymentTable payments={payments} paymentTotal={paymentTotal} />
                 {totalPages > 1 && (
@@ -85,7 +111,19 @@ const AllPayments = () => {
               </>
             ) : (
               <div className="noResults">
-                <span>No payments available for {paymentDateText}</span>
+                <span>
+                  No payments available for{" "}
+                  {paymentDateText
+                    ? paymentDateText?.charAt(0).toUpperCase() +
+                      paymentDateText?.slice(1)
+                    : `${
+                        paymentRangeStartDate?.charAt(0).toUpperCase() +
+                        paymentRangeStartDate?.slice(1)
+                      } and ${
+                        paymentRangeEndDate?.charAt(0).toUpperCase() +
+                        paymentRangeEndDate?.slice(1)
+                      } `}
+                </span>
               </div>
             )}
           </div>

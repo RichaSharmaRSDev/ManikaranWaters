@@ -24,6 +24,9 @@ const deliverySchema = mongoose.Schema({
   paymentMode: {
     type: String,
   },
+  deliveryComment: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model("Delivery", deliverySchema);

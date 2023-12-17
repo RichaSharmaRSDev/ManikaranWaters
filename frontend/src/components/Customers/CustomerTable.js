@@ -1,6 +1,22 @@
 import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  clearCustomerFullDetail,
+  getFullCustomerDetails,
+} from "../../actions/customerAction";
 
 const CustomerTable = ({ customers }) => {
+  const dispatch = useDispatch();
+  const { customerFullDetail } = useSelector((state) => state.customers) || {};
+
+  const getFullDetails = (id) => {
+    dispatch(getFullCustomerDetails(id));
+  };
+
+  const handleCloseModal = () => {
+    dispatch(clearCustomerFullDetail());
+  };
+
   const formatDate = (date) => {
     if (date == null) {
       return "";
@@ -65,6 +81,7 @@ const CustomerTable = ({ customers }) => {
                   ? "needAttention"
                   : ""
               }`}
+              onClick={() => getFullDetails(customer.customerId)}
             >
               <td className="customer-id">{customer.customerId}</td>
               <td className="customer-name">{customer.name}</td>
@@ -91,6 +108,52 @@ const CustomerTable = ({ customers }) => {
           ))}
         </tbody>
       </table>
+      {customerFullDetail && (
+        <div className="modal full-customer-modal">
+          <div className="modal-bg"></div>
+          <div className="modal-text">
+            <div>
+              <div>Name: {customerFullDetail.name}</div>
+              <div>Deliveries:</div>
+              <div>
+                {customerFullDetail.deliveries.map((element, index) => (
+                  <div className="full-customer-details-content" key={index}>
+                    <div>
+                      Date:{" "}
+                      {new Date(element.deliveryDate).toLocaleDateString()}
+                    </div>
+                    <div>Delivered: {element.deliveredQuantity}</div>
+                    <div>Returned: {element.returnedJars || 0}</div>
+                    {element.amountReceived > 0 ? (
+                      <div>
+                        Amount: {element.amountReceived} - {element.paymentMode}
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div>Payments:</div>
+              <div>
+                {customerFullDetail.payments.map((element, index) => (
+                  <div className="full-customer-details-content" key={index}>
+                    <div>
+                      Date: {new Date(element.paymentDate).toLocaleDateString()}
+                    </div>
+                    <div>
+                      Amount: {element.amount} - {element.paymentMode}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="closeModal" onClick={handleCloseModal}>
+              &#x2715;
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

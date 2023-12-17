@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { allDeliveries, clearErrors } from "../../actions/deliveryAction";
+import {
+  allDeliveries,
+  clearErrors,
+  rangeDeliveries,
+} from "../../actions/deliveryAction";
 import Loader from "../layout/Loader/Loader";
 import { useLocation } from "react-router-dom";
 import Navigation from "../Navigation/Navigation";
@@ -22,6 +26,8 @@ const AllDeliveries = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const deliveryDateText = queryParams.get("deliveryDate");
+  const deliveryRangeStartDate = queryParams.get("deliveryStartDate");
+  const deliveryRangeEndDate = queryParams.get("deliveryEndDate");
 
   function formatDate(date) {
     const year = date.getFullYear();
@@ -31,6 +37,7 @@ const AllDeliveries = () => {
   }
 
   let deliveryDate;
+  let deliveryEndDate; // in case of range date
 
   if (deliveryDateText === "today") {
     const today = new Date(Date.now());
@@ -38,6 +45,11 @@ const AllDeliveries = () => {
   } else if (deliveryDateText === "yesterday") {
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
     deliveryDate = formatDate(yesterday);
+  } else if (deliveryRangeStartDate && deliveryRangeEndDate) {
+    const customDeliveryRangeStartDate = new Date(deliveryRangeStartDate);
+    const customDeliveryRangeEndDate = new Date(deliveryRangeEndDate);
+    deliveryDate = formatDate(customDeliveryRangeStartDate);
+    deliveryEndDate = formatDate(customDeliveryRangeEndDate);
   } else {
     const customDeliveryDate = new Date(deliveryDateText);
     deliveryDate = formatDate(customDeliveryDate);
@@ -48,8 +60,12 @@ const AllDeliveries = () => {
     setCurrentPage(page);
   };
   useEffect(() => {
-    dispatch(allDeliveries(deliveryDate, currentPage));
-  }, [deliveryDate, currentPage]);
+    if (deliveryDate && deliveryEndDate) {
+      dispatch(rangeDeliveries(deliveryDate, deliveryEndDate, currentPage));
+    } else {
+      dispatch(allDeliveries(deliveryDate, currentPage));
+    }
+  }, [deliveryDate, deliveryEndDate, currentPage]);
   useEffect(() => {
     if (success) {
       console.log("Received Deliveries Successfully.");
@@ -73,8 +89,16 @@ const AllDeliveries = () => {
               <>
                 <h2 className="common-heading">
                   Deliveries for{" "}
-                  {deliveryDateText.charAt(0).toUpperCase() +
-                    deliveryDateText.slice(1)}
+                  {deliveryDateText
+                    ? deliveryDateText?.charAt(0).toUpperCase() +
+                      deliveryDateText?.slice(1)
+                    : `${
+                        deliveryRangeStartDate?.charAt(0).toUpperCase() +
+                        deliveryRangeStartDate?.slice(1)
+                      } and ${
+                        deliveryRangeEndDate?.charAt(0).toUpperCase() +
+                        deliveryRangeEndDate?.slice(1)
+                      } `}
                 </h2>
                 <DeliveryTable
                   deliveries={deliveries}
@@ -90,7 +114,19 @@ const AllDeliveries = () => {
               </>
             ) : (
               <div className="noResults">
-                <span>No deliveries available for {deliveryDateText}</span>
+                <span>
+                  No deliveries available for{" "}
+                  {deliveryDateText
+                    ? deliveryDateText?.charAt(0).toUpperCase() +
+                      deliveryDateText?.slice(1)
+                    : `${
+                        deliveryRangeStartDate?.charAt(0).toUpperCase() +
+                        deliveryRangeStartDate?.slice(1)
+                      } and ${
+                        deliveryRangeEndDate?.charAt(0).toUpperCase() +
+                        deliveryRangeEndDate?.slice(1)
+                      } `}
+                </span>
               </div>
             )}
           </div>

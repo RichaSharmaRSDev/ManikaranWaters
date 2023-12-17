@@ -47,6 +47,23 @@ export const getCustomersIdName = () => async (dispatch) => {
   }
 };
 
+export const getFullCustomerDetails = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: "FullCustomerDetailsRequest" });
+    const { data } = await axios.get(`/api/v1/customer/${id}`);
+    console.log({ data });
+    dispatch({
+      type: "FullCustomerDetailsSuccess",
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: "FullCustomerDetailsError",
+      payload: error.response.data.messsage,
+    });
+  }
+};
+
 export const getCustomersByNextDeliveryDate =
   (date, page) => async (dispatch) => {
     try {
@@ -83,6 +100,9 @@ export const createNewCustomer = (formData) => async (dispatch) => {
 
 export const clearNewCustomer = () => async (dispatch) => {
   dispatch({ type: "clearNewCustomer" });
+};
+export const clearCustomerFullDetail = () => async (dispatch) => {
+  dispatch({ type: "clearCustomerFullDetail" });
 };
 
 export const frequencyCustomers = (days, page) => async (dispatch) => {

@@ -93,6 +93,7 @@ const customerSchema = mongoose.Schema(
         returnedJars: Number,
         amountReceived: Number,
         paymentMode: String,
+        deliveryComment: String,
       },
     ],
     payments: [

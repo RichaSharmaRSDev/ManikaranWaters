@@ -32,3 +32,17 @@ table {
     }
   }
 }
+
+.modal.full-customer-modal {
+  .modal-text {
+    width: 80vw;
+    height: 80vh;
+    padding-top: 20px;
+    padding-left: 30px;
+    overflow-y: scroll;
+    .full-customer-details-content {
+      display: flex;
+      gap: 10px;
+    }
+  }
+}

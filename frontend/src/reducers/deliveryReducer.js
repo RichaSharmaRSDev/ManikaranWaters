@@ -16,6 +16,7 @@ const deliveryReducer = (state = initialState, action) => {
         error: null,
       };
     case "allDeliveryRequest":
+    case "rangeDeliveryRequest":
       return {
         deliveries: [],
         deliveryCount: null,
@@ -32,6 +33,7 @@ const deliveryReducer = (state = initialState, action) => {
         success: true,
       };
     case "allDeliverySuccess":
+    case "rangeDeliverySuccess":
       return {
         loading: false,
         deliveries: action.payload.deliveriesWithCustomerDetails,
@@ -48,6 +50,7 @@ const deliveryReducer = (state = initialState, action) => {
         error: action.payload,
       };
     case "allDeliveryFail":
+    case "rangeDeliveryFail":
       return {
         ...state,
         loading: false,

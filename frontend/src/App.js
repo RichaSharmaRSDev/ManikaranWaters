@@ -16,7 +16,6 @@ import AllCustomers from "./components/Customers/AllCustomers.js";
 import AuthenticatedRoute from "./Routes/AuthenticatedRoute.js";
 import Loader from "./components/layout/Loader/Loader.js";
 import FrequencyCustomers from "./components/Customers/FrequencyCustomers.js";
-import CustomersAllDetails from "./components/Customers/CustomersAllDetails.js";
 import CreatePayment from "./components/Payment/CreatePayment.js";
 
 import "./App.css";
@@ -67,14 +66,6 @@ function App() {
           element={
             <AuthenticatedRoute>
               <FrequencyCustomers />
-            </AuthenticatedRoute>
-          }
-        />
-        <Route
-          path="/allDetails"
-          element={
-            <AuthenticatedRoute>
-              <CustomersAllDetails />
             </AuthenticatedRoute>
           }
         />
@@ -149,6 +140,22 @@ function App() {
           element={
             <AuthenticatedRoute>
               <AllDeliveries />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/deliveries/range"
+          element={
+            <AuthenticatedRoute>
+              <AllDeliveries />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/payments/range"
+          element={
+            <AuthenticatedRoute>
+              <AllPayments />
             </AuthenticatedRoute>
           }
         />

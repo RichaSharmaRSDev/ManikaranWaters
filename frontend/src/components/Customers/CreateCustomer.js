@@ -230,7 +230,7 @@ const CreateCustomer = () => {
                 <div className="fields">
                   <label htmlFor="billedAmount">
                     <img src={Ruppee} alt="billedAmount" />
-                    Billed Amount:
+                    Outstanding Amount:
                   </label>
                   <input
                     type="number"

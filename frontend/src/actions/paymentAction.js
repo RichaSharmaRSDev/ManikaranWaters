@@ -40,6 +40,29 @@ export const allPayments = (paymentData, page) => async (dispatch) => {
     });
   }
 };
+
+//Get Range Payments
+export const rangePayments =
+  (paymentStartData, paymentEndDate, page) => async (dispatch) => {
+    dispatch({ type: "rangePaymentRequest" });
+
+    try {
+      const response = await axios.get(
+        `/api/v1/payments/range?paymentStartDate=${paymentStartData}&paymentEndDate=${paymentEndDate}&page=${page}`
+      );
+
+      const data = response.data;
+      dispatch({
+        type: "rangePaymentSuccess",
+        payload: data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "rangePaymentFail",
+        payload: error.response.data.message,
+      });
+    }
+  };
 export const clearNewPayment = () => async (dispatch) => {
   dispatch({ type: "clearNewPayment" });
 };

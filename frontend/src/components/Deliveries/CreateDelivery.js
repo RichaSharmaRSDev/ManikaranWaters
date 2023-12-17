@@ -47,6 +47,7 @@ const CreateDelivery = () => {
     returnedJars: 0,
     amountReceived: 0,
     paymentMode: "",
+    deliveryComment: "",
   };
   const [formData, setFormData] = useState(initialState);
 
@@ -239,6 +240,17 @@ const CreateDelivery = () => {
                   />
                 </div>
                 {renderPaymentModeDropdown()}
+                <div className="fields" style={{ display: "flex" }}>
+                  <label htmlFor="deliveryComment">Delivery Comment:</label>
+                  <textarea
+                    name="deliveryComment"
+                    placeholder="Delivery Comment"
+                    rows={2}
+                    cols={25}
+                    value={formData.deliveryComment}
+                    onChange={handleInputChange}
+                  ></textarea>
+                </div>
                 <button className="common-cta" type="submit">
                   Create Delivery
                 </button>

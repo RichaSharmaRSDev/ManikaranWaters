@@ -15,12 +15,22 @@ const Navigation = () => {
   const navigate = useNavigate();
   let { showNavigation } = useSelector((state) => state.navigation);
   const [paymentModal, setPaymentModal] = useState(false);
+  const [paymentRangeModal, setPaymentRangeModal] = useState(false);
   const [deliveryModal, setDeliveryModal] = useState(false);
+  const [deliveryRangeModal, setDeliveryRangeModal] = useState(false);
   const [expenseModal, setExpenseModal] = useState(false);
   const [predictionModal, setPredictionModal] = useState(false);
   const [customerFrequencyModal, setCustomerFrequencyModal] = useState("");
   const [customPaymentDate, setCustomPaymentDate] = useState("");
+  const [customPaymentDateRangeStart, setCustomPaymentDateRangeStart] =
+    useState("");
+  const [customPaymentDateRangeEnd, setCustomPaymentDateRangeEnd] =
+    useState("");
   const [customDeliveryDate, setCustomDeliveryDate] = useState("");
+  const [customDeliveryDateRangeStart, setCustomDeliveryDateRangeStart] =
+    useState("");
+  const [customDeliveryDateRangeEnd, setCustomDeliveryDateRangeEnd] =
+    useState("");
   const [customFrequencyNumber, setCustomFrequencyNumber] = useState("");
   const [customExpenseDate, setCustomExpenseDate] = useState("");
   const [customPredictionDate, setCustomPredictionDate] = useState("");
@@ -30,11 +40,29 @@ const Navigation = () => {
     navigate(`/payments?paymentDate=${customPaymentDate}`);
     setCustomPaymentDate("");
   };
+  const handlePaymentRangeModalSubmit = () => {
+    setPaymentRangeModal(false);
+    navigate(
+      `/payments/range?paymentStartDate=${customPaymentDateRangeStart}&paymentEndDate=${customPaymentDateRangeEnd}`
+    );
+    setCustomPaymentDateRangeStart("");
+    setCustomPaymentDateRangeEnd("");
+  };
+
   const handleDeliveryModalSubmit = () => {
     setDeliveryModal(false);
     navigate(`/deliveries?deliveryDate=${customDeliveryDate}`);
     setCustomDeliveryDate("");
   };
+  const handleDeliveryRangeModalSubmit = () => {
+    setDeliveryRangeModal(false);
+    navigate(
+      `/deliveries/range?deliveryStartDate=${customDeliveryDateRangeStart}&deliveryEndDate=${customDeliveryDateRangeEnd}`
+    );
+    setCustomDeliveryDateRangeStart("");
+    setCustomDeliveryDateRangeEnd("");
+  };
+
   const handleCustomerFrequencyModalSubmit = () => {
     setCustomerFrequencyModal(false);
     navigate(`/customers/frequency/${customFrequencyNumber}`);
@@ -102,7 +130,6 @@ const Navigation = () => {
               <div className="submenu">
                 <Link to="/customer/new">Create New Customer</Link>
                 <Link to="/customers">Customer Details</Link>
-                <Link to="/customers/allDetails">Customers All Details</Link>
               </div>
             </div>
 
@@ -142,12 +169,15 @@ const Navigation = () => {
                 <Link to="/deliveries?deliveryDate=yesterday">
                   Yesterday's Deliveries
                 </Link>
+                <div to="#" onClick={() => setDeliveryModal(true)}>
+                  Custom Day Deliveries
+                </div>
                 <div
-                  className="customDeliveryLink"
                   to="#"
-                  onClick={() => setDeliveryModal(true)}
+                  onClick={() => setDeliveryRangeModal(true)}
+                  style={{ marginTop: "10px" }}
                 >
-                  Custom Deliveries
+                  Date Range Deliveries
                 </div>
                 <hr></hr>
                 <Link to="/payments?paymentDate=today">Today's Payments</Link>
@@ -160,6 +190,13 @@ const Navigation = () => {
                   onClick={() => setPaymentModal(true)}
                 >
                   Custom Payments
+                </div>
+                <div
+                  to="#"
+                  onClick={() => setPaymentRangeModal(true)}
+                  style={{ marginTop: "10px" }}
+                >
+                  Date Range Payments
                 </div>
               </div>
             </div>
@@ -236,6 +273,49 @@ const Navigation = () => {
                 </div>
               </div>
             )}
+
+            {paymentRangeModal && (
+              <div className="modal">
+                <div className="modal-bg"></div>
+                <div className="modal-text">
+                  <label className="customInputLabel">
+                    Enter Payment Start Date
+                  </label>
+                  <input
+                    className="customPayment"
+                    type="date"
+                    value={customPaymentDateRangeStart}
+                    onChange={(e) =>
+                      setCustomPaymentDateRangeStart(e.target.value)
+                    }
+                  />
+                  <label className="customInputLabel">
+                    Enter Payment End Date
+                  </label>
+                  <input
+                    className="customPayment"
+                    type="date"
+                    value={customPaymentDateRangeEnd}
+                    onChange={(e) =>
+                      setCustomPaymentDateRangeEnd(e.target.value)
+                    }
+                  />
+                  <button
+                    className="submitDeliverydate common-cta-blue"
+                    onClick={handlePaymentRangeModalSubmit}
+                  >
+                    Submit
+                  </button>
+                  <div
+                    className="closeModal"
+                    onClick={() => setPaymentRangeModal(false)}
+                  >
+                    &#x2715;
+                  </div>
+                </div>
+              </div>
+            )}
+
             {deliveryModal && (
               <div className="modal">
                 <div className="modal-bg"></div>
@@ -258,6 +338,47 @@ const Navigation = () => {
                   <div
                     className="closeModal"
                     onClick={() => setDeliveryModal(false)}
+                  >
+                    &#x2715;
+                  </div>
+                </div>
+              </div>
+            )}
+            {deliveryRangeModal && (
+              <div className="modal">
+                <div className="modal-bg"></div>
+                <div className="modal-text">
+                  <label className="customInputLabel">
+                    Enter Delivery Start Date
+                  </label>
+                  <input
+                    className="customDelivery"
+                    type="date"
+                    value={customDeliveryDateRangeStart}
+                    onChange={(e) =>
+                      setCustomDeliveryDateRangeStart(e.target.value)
+                    }
+                  />
+                  <label className="customInputLabel">
+                    Enter Delivery End Date
+                  </label>
+                  <input
+                    className="customDelivery"
+                    type="date"
+                    value={customDeliveryDateRangeEnd}
+                    onChange={(e) =>
+                      setCustomDeliveryDateRangeEnd(e.target.value)
+                    }
+                  />
+                  <button
+                    className="submitDeliverydate common-cta-blue"
+                    onClick={handleDeliveryRangeModalSubmit}
+                  >
+                    Submit
+                  </button>
+                  <div
+                    className="closeModal"
+                    onClick={() => setDeliveryRangeModal(false)}
                   >
                     &#x2715;
                   </div>

@@ -14,6 +14,7 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
     amountReceived,
     paymentMode,
     deliveryAssociateName,
+    deliveryComment,
   } = req.body;
 
   const customer = await Customer.findOne({ customerId });
@@ -30,6 +31,7 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
     returnedJars,
     amountReceived,
     paymentMode,
+    deliveryComment,
   });
 
   // Add the delivery details to the deliveries array in the customer document
@@ -40,6 +42,7 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
     returnedJars,
     amountReceived,
     paymentMode,
+    deliveryComment,
   });
   customer.deliveries.sort((a, b) => a.deliveryDate - b.deliveryDate);
   // Update the lastDeliveryDate for the associated customer
@@ -126,6 +129,78 @@ exports.getDeliveriesForDay = catchAsyncError(async (req, res) => {
   }
 
   const deliveries = await apiFeature.query;
+  const deliveryCount = deliveries.length;
+  const deliveriesWithCustomerDetails = await Promise.all(
+    deliveries.map(async (delivery) => {
+      try {
+        const customer = await Customer.findOne({
+          customerId: delivery.customer,
+        });
+        if (!customer) {
+          throw new Error("Customer not found");
+        }
+
+        return {
+          ...delivery.toObject(),
+          customerId: customer.customerId,
+          customerName: customer.name,
+        };
+      } catch (error) {
+        console.error("Error retrieving customer details:", error);
+        return delivery.toObject();
+      }
+    })
+  );
+
+  //get delivered jars , returned Jars and their difference
+  const totalDeliveredJars = deliveries.reduce((accumulator, delivery) => {
+    if (typeof delivery.deliveredQuantity === "number") {
+      return accumulator + delivery.deliveredQuantity;
+    }
+    return accumulator;
+  }, 0);
+
+  const totalReturnedJars = deliveries.reduce((accumulator, delivery) => {
+    if (typeof delivery.returnedJars === "number") {
+      return accumulator + delivery.returnedJars;
+    }
+    return accumulator;
+  }, 0);
+
+  const diff = (totalDeliveredJars || 0) - (totalReturnedJars || 0);
+  const finalDeliveryTotal = {
+    totalDeliveredJars: totalDeliveredJars,
+    totalReturnedJars: totalReturnedJars,
+    diff: diff,
+  };
+
+  res.status(200).json({
+    success: true,
+    deliveriesWithCustomerDetails,
+    deliveryCount,
+    finalDeliveryTotal,
+  });
+});
+
+exports.getDeliveriesForRange = catchAsyncError(async (req, res) => {
+  const resultsPerPage = 20;
+  const apiFeature = new ApiFeatures(Delivery.find(), req.query)
+    .filter()
+    .pagination(resultsPerPage);
+
+  if (req.query.deliveryStartDate && req.query.deliveryEndDate) {
+    const startDate = new Date(req.query.deliveryStartDate);
+    const endDate = new Date(req.query.deliveryEndDate);
+    endDate.setHours(23, 59, 59, 999);
+    endDate.setTime(endDate.getTime() + 5.5 * 60 * 60 * 1000);
+
+    apiFeature.query = apiFeature.query
+      .where("deliveryDate")
+      .gte(startDate)
+      .lte(endDate);
+  }
+  const deliveries = await apiFeature.query;
+  console.log({ deliveries });
   const deliveryCount = deliveries.length;
   const deliveriesWithCustomerDetails = await Promise.all(
     deliveries.map(async (delivery) => {

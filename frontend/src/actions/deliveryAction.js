@@ -42,6 +42,30 @@ export const allDeliveries = (deliveryData, page) => async (dispatch) => {
     });
   }
 };
+//Get Range Deliveries
+export const rangeDeliveries =
+  (deliveryStartData, deliveryEndDate, page) => async (dispatch) => {
+    dispatch({ type: "rangeDeliveryRequest" });
+
+    try {
+      const response = await axios.get(
+        `/api/v1/deliveries/range?deliveryStartDate=${deliveryStartData}&deliveryEndDate=${deliveryEndDate}&page=${page}`
+      );
+
+      const data = response.data;
+
+      dispatch({
+        type: "rangeDeliverySuccess",
+        payload: data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "rangeDeliveryFail",
+        payload: error.response.data.message,
+      });
+    }
+  };
+
 export const clearNewDelivery = () => async (dispatch) => {
   dispatch({ type: "clearNewDelivery" });
 };
