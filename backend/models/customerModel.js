@@ -47,7 +47,6 @@ const customerSchema = mongoose.Schema(
     },
     billedAmount: {
       type: Number,
-      default: 0,
     },
     paidAmount: {
       type: Number,
@@ -143,6 +142,10 @@ customerSchema.pre("save", async function (next) {
     // Clear allotment and nextDelivery for on demand customers
     this.nextDelivery = undefined;
     this.frequency = undefined;
+  }
+
+  if (this.isNew) {
+    this.remainingAmount = this.billedAmount;
   }
 
   next();

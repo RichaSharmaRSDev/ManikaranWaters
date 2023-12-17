@@ -34,6 +34,7 @@ const CreateCustomer = () => {
     allotment: "",
     securityMoney: "",
     rate: "",
+    billedAmount: 0,
   };
   const [formData, setFormData] = useState(initialState);
 
@@ -226,6 +227,19 @@ const CreateCustomer = () => {
                     onChange={handleInputChange}
                   />
                 </div>
+                <div className="fields">
+                  <label htmlFor="billedAmount">
+                    <img src={Ruppee} alt="billedAmount" />
+                    Billed Amount:
+                  </label>
+                  <input
+                    type="number"
+                    name="billedAmount"
+                    placeholder="Billed Amount"
+                    value={formData.billedAmount}
+                    onChange={handleInputChange}
+                  />
+                </div>
                 <button className="common-cta" type="submit">
                   Create Customer
                 </button>
@@ -247,7 +261,7 @@ const CreateCustomer = () => {
                   <span>Zone:</span> <span>{newCustomer.zone}</span>
                 </div>
                 <div className="values">
-                  <span>Rate:</span> <span>{newCustomer.rate}</span>
+                  <span>Rate:</span> <span>₹{newCustomer.rate}</span>
                 </div>
                 <div className="values">
                   <span>Phone No:</span> <span>{newCustomer.phoneNo}</span>
@@ -257,7 +271,7 @@ const CreateCustomer = () => {
                 </div>
                 <div className="values">
                   <span>Security Money:</span>{" "}
-                  <span>{newCustomer.securityMoney}</span>
+                  <span>₹{newCustomer.securityMoney}</span>
                 </div>
                 <div className="values">
                   <span>Customer Type:</span>{" "}
@@ -270,6 +284,10 @@ const CreateCustomer = () => {
                 )}
                 <div className="values">
                   <span>Address:</span> <span>{newCustomer.address}</span>
+                </div>
+                <div className="values">
+                  <span>Billed Amount:</span>{" "}
+                  <span>₹{newCustomer.billedAmount}</span>
                 </div>
                 <div className="closeModal" onClick={handleCloseModal}>
                   &#x2715;
