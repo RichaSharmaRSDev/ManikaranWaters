@@ -8,6 +8,7 @@ import paymentReducer from "./reducers/paymentReducer";
 import expenseReducer from "./reducers/expenseReducer";
 import deliveryReducer from "./reducers/deliveryReducer";
 import jarCountReducer from "./reducers/jarCountReducer";
+import salesReducer from "./reducers/salesReducer";
 
 const reducer = combineReducers({
   customers: customerReducer,
@@ -17,6 +18,7 @@ const reducer = combineReducers({
   expenses: expenseReducer,
   deliveries: deliveryReducer,
   jars: jarCountReducer,
+  sales: salesReducer,
 });
 
 let initialState = {};

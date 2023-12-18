@@ -25,6 +25,7 @@ import AllPredictions from "./components/Predictions/AllPredictions.js";
 import AllExpenses from "./components/Expenses/AllExpenses.js";
 import CreateJarsCount from "./components/Jar/CreateJarsCount.js";
 import AllJarsCount from "./components/Jar/AllJarsCount.js";
+import DailyReport from "./components/DailyReport/DailyReport.js";
 
 function App() {
   const { loading } = useSelector((state) => state.user);
@@ -196,6 +197,22 @@ function App() {
           element={
             <AuthenticatedRoute>
               <AllJarsCount />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/report/daily/:date"
+          element={
+            <AuthenticatedRoute>
+              <DailyReport />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/report/monthly/:monthYear"
+          element={
+            <AuthenticatedRoute>
+              <DailyReport />
             </AuthenticatedRoute>
           }
         />

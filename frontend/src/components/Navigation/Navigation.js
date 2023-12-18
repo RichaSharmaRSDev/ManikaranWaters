@@ -20,6 +20,8 @@ const Navigation = () => {
   const [deliveryRangeModal, setDeliveryRangeModal] = useState(false);
   const [expenseModal, setExpenseModal] = useState(false);
   const [predictionModal, setPredictionModal] = useState(false);
+  const [salesDailyModal, setSalesDailyModal] = useState(false);
+  const [salesMonthlyModal, setSalesMonthlyModal] = useState(false);
   const [customerFrequencyModal, setCustomerFrequencyModal] = useState("");
   const [customPaymentDate, setCustomPaymentDate] = useState("");
   const [customPaymentDateRangeStart, setCustomPaymentDateRangeStart] =
@@ -34,12 +36,15 @@ const Navigation = () => {
   const [customFrequencyNumber, setCustomFrequencyNumber] = useState("");
   const [customExpenseDate, setCustomExpenseDate] = useState("");
   const [customPredictionDate, setCustomPredictionDate] = useState("");
+  const [salesDailyDate, setSalesDailyDate] = useState("");
+  const [salesMonthlyDate, setSalesMonthlyDate] = useState("");
 
   const handlePaymentModalSubmit = () => {
     setPaymentModal(false);
     navigate(`/payments?paymentDate=${customPaymentDate}`);
     setCustomPaymentDate("");
   };
+
   const handlePaymentRangeModalSubmit = () => {
     setPaymentRangeModal(false);
     navigate(
@@ -54,6 +59,7 @@ const Navigation = () => {
     navigate(`/deliveries?deliveryDate=${customDeliveryDate}`);
     setCustomDeliveryDate("");
   };
+
   const handleDeliveryRangeModalSubmit = () => {
     setDeliveryRangeModal(false);
     navigate(
@@ -68,15 +74,28 @@ const Navigation = () => {
     navigate(`/customers/frequency/${customFrequencyNumber}`);
     setCustomerFrequencyModal("");
   };
+
   const handleExpenseModalSubmit = () => {
     setExpenseModal(false);
     navigate(`/expenses/${customExpenseDate}`);
     setCustomExpenseDate("");
   };
+
   const handlePredictionModalSubmit = () => {
     setPredictionModal(false);
     navigate(`/customerspredictions?nextDelivery=${customPredictionDate}`);
     setCustomPredictionDate("");
+  };
+
+  const handleSalesDailyModalSubmit = () => {
+    setSalesDailyModal(false);
+    navigate(`/report/daily/${salesDailyDate}`);
+    setSalesDailyDate("");
+  };
+  const handleSalesMonthlyModalSubmit = () => {
+    setSalesDailyModal(false);
+    navigate(`/report/monthly/${salesMonthlyDate}`);
+    setSalesDailyDate("");
   };
 
   const toggleNavigationInside = () => {
@@ -244,6 +263,27 @@ const Navigation = () => {
               <div className="submenu">
                 <Link to="/jarInventory/today">Today's Jar Count</Link>
                 <Link to="/jarInventory">Jar Inventory</Link>
+              </div>
+            </div>
+
+            {/* Sales Report */}
+            <div className="menu">
+              <button className="menu-button">Sales Report</button>
+              <div className="submenu">
+                <div
+                  to="#"
+                  onClick={() => setSalesDailyModal(true)}
+                  style={{ marginTop: "10px" }}
+                >
+                  Daily Report
+                </div>
+                <div
+                  to="#"
+                  onClick={() => setSalesMonthlyModal(true)}
+                  style={{ marginTop: "10px" }}
+                >
+                  Monthly Report
+                </div>
               </div>
             </div>
 
@@ -460,6 +500,60 @@ const Navigation = () => {
                   <div
                     className="closeModal"
                     onClick={() => setPredictionModal(false)}
+                  >
+                    &#x2715;
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {salesDailyModal && (
+              <div className="modal">
+                <div className="modal-bg"></div>
+                <div className="modal-text">
+                  <label className="customInputLabel">Enter Sales Date</label>
+                  <input
+                    type="date"
+                    value={salesDailyDate}
+                    onChange={(e) => setSalesDailyDate(e.target.value)}
+                  />
+                  <button
+                    className="submitPredictiondate common-cta-blue"
+                    onClick={handleSalesDailyModalSubmit}
+                  >
+                    Submit
+                  </button>
+                  <div
+                    className="closeModal"
+                    onClick={() => setSalesDailyModal(false)}
+                  >
+                    &#x2715;
+                  </div>
+                </div>
+              </div>
+            )}
+            {salesMonthlyModal && (
+              <div className="modal">
+                <div className="modal-bg"></div>
+                <div className="modal-text">
+                  <label className="customInputLabel">
+                    Enter Sales Month-Year
+                  </label>
+                  <input
+                    type="month"
+                    value={salesMonthlyDate || "YYYY-MM"}
+                    placeholder="Enter Year and Month"
+                    onChange={(e) => setSalesMonthlyDate(e.target.value)}
+                  />
+                  <button
+                    className="submitPredictiondate common-cta-blue"
+                    onClick={handleSalesMonthlyModalSubmit}
+                  >
+                    Submit
+                  </button>
+                  <div
+                    className="closeModal"
+                    onClick={() => setSalesMonthlyModal(false)}
                   >
                     &#x2715;
                   </div>
