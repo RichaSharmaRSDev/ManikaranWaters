@@ -59,14 +59,7 @@ exports.getInventoryRecordMonth = catchAsyncError(async (req, res, next) => {
   const startDate = new Date(`${year}-${month}-01T00:00:00Z`);
 
   // Calculate the end date for the month
-  let endDate;
-  if (month == 12) {
-    endDate = new Date(`${year}-12-31T23:59:59Z`);
-  } else {
-    const nextMonth = parseInt(month, 10) + 1;
-    endDate = new Date(`${year}-${nextMonth}-01T00:00:00Z`);
-  }
-
+  const endDate = new Date(year, month, 0).getDate();
   // Query for records within the specified month
   const inventoryRecords = await JarInventory.find({
     date: {
