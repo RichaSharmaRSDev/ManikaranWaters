@@ -4,6 +4,7 @@ import {
   clearCustomerFullDetail,
   getFullCustomerDetails,
 } from "../../actions/customerAction";
+import CustomerFullDetails from "./CustomerFullDetails";
 
 const CustomerTable = ({ customers }) => {
   const dispatch = useDispatch();
@@ -109,50 +110,10 @@ const CustomerTable = ({ customers }) => {
         </tbody>
       </table>
       {customerFullDetail && (
-        <div className="modal full-customer-modal">
-          <div className="modal-bg"></div>
-          <div className="modal-text">
-            <div>
-              <div>Name: {customerFullDetail.name}</div>
-              <div>Deliveries:</div>
-              <div>
-                {customerFullDetail.deliveries.map((element, index) => (
-                  <div className="full-customer-details-content" key={index}>
-                    <div>
-                      Date:{" "}
-                      {new Date(element.deliveryDate).toLocaleDateString()}
-                    </div>
-                    <div>Delivered: {element.deliveredQuantity}</div>
-                    <div>Returned: {element.returnedJars || 0}</div>
-                    {element.amountReceived > 0 ? (
-                      <div>
-                        Amount: {element.amountReceived} - {element.paymentMode}
-                      </div>
-                    ) : (
-                      <div></div>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <div>Payments:</div>
-              <div>
-                {customerFullDetail.payments.map((element, index) => (
-                  <div className="full-customer-details-content" key={index}>
-                    <div>
-                      Date: {new Date(element.paymentDate).toLocaleDateString()}
-                    </div>
-                    <div>
-                      Amount: {element.amount} - {element.paymentMode}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="closeModal" onClick={handleCloseModal}>
-              &#x2715;
-            </div>
-          </div>
-        </div>
+        <CustomerFullDetails
+          customerFullDetail={customerFullDetail}
+          handleCloseModal={handleCloseModal}
+        />
       )}
     </div>
   );

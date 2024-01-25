@@ -1,0 +1,61 @@
+.modal.delivery-panel-modal {
+  .modal-bg {
+    height: 100vh;
+  }
+  .modal-text {
+    width: 90vw;
+    height: 60vh;
+    padding-top: 10vw;
+
+    .closeModal {
+      top: 2vw;
+      right: 3vw;
+      transform: scale(2.5);
+    }
+
+    .values {
+      margin-bottom: 2vw;
+      &.address span,
+      &.phoneNo span {
+        font-size: 4vw;
+      }
+    }
+
+    .values span {
+      font-size: 5vw;
+    }
+    .values span:first-of-type {
+      width: unset;
+      margin-right: 2vw;
+    }
+  }
+}
+.modal .inputLabel {
+  font-size: 5vw;
+  & + input {
+    margin: 1vw 2vw;
+    width: 15vw;
+    height: 3vh;
+    font-size: 5vw;
+  }
+}
+.delivery-modal-buttons {
+  margin: 0 auto;
+  text-align: center;
+  & > div {
+    padding: 2vw;
+    width: 30vw;
+    display: inline-block;
+    margin: 10vw 5vw 0;
+    font-size: 6vw;
+  }
+}
+
+.success-bg {
+  background-color: #198752;
+  color: #fff;
+}
+.cancel-bg {
+  background-color: grey;
+  color: #fff;
+}

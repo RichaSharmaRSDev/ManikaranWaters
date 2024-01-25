@@ -26,7 +26,7 @@ const DailyReport = () => {
     if (isMonthlyReport) {
       dispatch(monthlyReport(dateText));
     }
-  }, [dateText, location.pathname]);
+  }, [dateText, location.pathname, dispatch]);
   return (
     <>
       {loading ? (
@@ -40,15 +40,17 @@ const DailyReport = () => {
               <>
                 <h2 className="common-heading">Sales Details for {dateText}</h2>
                 <div className="sales-report">
-                  <p>Report Date : {dateText}</p>
                   <p>Total Cans Delivered : {report.totalCansDelivered}</p>
                   <p>Total Cans Received : {report.totalReceivedCans}</p>
-                  <p>Cash Received: {report.totalCashReceived}</p>
+                  <p>Cash Received: ₹{report.totalCashReceived}</p>
+                  <p>Online Payment Received : ₹{report.totalOnlineReceived}</p>
                   <p>
-                    Total Online Payment Received : {report.totalOnlineReceived}
+                    Total Payment Received :₹
+                    {report.totalCashReceived + report.totalOnlineReceived}
                   </p>
                   <p>Expenses : {report.totalExpenses}</p>
                   <p>Total Revenue : {report.totalSales}</p>
+                  <p>New Connections : {report.newConnections}</p>
                 </div>
               </>
             ) : (

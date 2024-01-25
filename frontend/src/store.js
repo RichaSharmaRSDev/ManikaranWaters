@@ -9,6 +9,7 @@ import expenseReducer from "./reducers/expenseReducer";
 import deliveryReducer from "./reducers/deliveryReducer";
 import jarCountReducer from "./reducers/jarCountReducer";
 import salesReducer from "./reducers/salesReducer";
+import tripsReducer from "./reducers/tripsReducers";
 
 const reducer = combineReducers({
   customers: customerReducer,
@@ -19,6 +20,7 @@ const reducer = combineReducers({
   deliveries: deliveryReducer,
   jars: jarCountReducer,
   sales: salesReducer,
+  trips: tripsReducer,
 });
 
 let initialState = {};

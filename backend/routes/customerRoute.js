@@ -8,6 +8,7 @@ const {
   getAllCustomersBasicDetails,
   getAllCustomersNameId,
   getCustomersByNextDeliveryDate,
+  getCustomerDetailsForTrips,
 } = require("../controllers/customerController");
 const { isAuthenticatedUser, authorizedroles } = require("../middleware/auth");
 
@@ -24,6 +25,9 @@ router
   .route("/customerspredictions/")
   .get(isAuthenticatedUser, getCustomersByNextDeliveryDate);
 router.route("/customer/new").post(isAuthenticatedUser, createCustomer);
+router
+  .route("/customerForTrips/:customerId")
+  .get(isAuthenticatedUser, getCustomerDetailsForTrips);
 router
   .route("/customer/:customerId")
   .put(isAuthenticatedUser, updateCustomer)

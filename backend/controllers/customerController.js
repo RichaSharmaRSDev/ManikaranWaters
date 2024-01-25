@@ -62,7 +62,7 @@ exports.getAllCustomersNameId = catchAsyncError(async (req, res) => {
   });
 });
 
-//get all customers by NextDelivery date
+// get all customers by NextDelivery date
 exports.getCustomersByNextDeliveryDate = catchAsyncError(async (req, res) => {
   const { date } = req.query;
 
@@ -76,18 +76,20 @@ exports.getCustomersByNextDeliveryDate = catchAsyncError(async (req, res) => {
   const endDate = new Date(date);
   endDate.setHours(23, 59, 59, 999);
 
+  // Query customers with nextDelivery date within the specified range
   const apiFeature = new ApiFeatures(
     Customer.find({
-      nextDelivery: { $gte: startDate, $lte: endDate },
-    }).select("-deliveries -payments -createdAt"),
+      $or: [
+        { nextDelivery: { $gte: startDate, $lte: endDate } },
+        { nextDelivery: { $lt: startDate } }, // Include customers with back-dated nextDeliveryDate
+      ],
+    })
+      .select("-deliveries -payments -createdAt")
+      .sort({ nextDelivery: -1, frequency: 1, zone: 1 }),
     req.query
   ).pagination(20);
 
   const customers = await apiFeature.query;
-
-  // const customers = await Customer.find({
-  //   nextDelivery: { $gte: startDate, $lte: endDate },
-  // }).select("-deliveries -payments -createdAt");
 
   const customerCount = customers.length;
 
@@ -97,44 +99,6 @@ exports.getCustomersByNextDeliveryDate = catchAsyncError(async (req, res) => {
     customerCount,
   });
 });
-
-// exports.getCustomersByNextDeliveryDate = catchAsyncError(async (req, res) => {
-//   const { date } = req.query;
-//   console.log("test1", date);
-
-//   if (!date) {
-//     return res
-//       .status(400)
-//       .json({ success: false, message: "Date parameter is required" });
-//   }
-
-//   const startDate = new Date(date);
-//   const endDate = new Date(date);
-//   endDate.setHours(23, 59, 59, 999);
-
-//   // Create an instance of ApiFeatures for customers
-//   const resultsPerPage = 20;
-//   console.log("test2", startDate, endDate, req.query);
-
-//   const apiFeature = new ApiFeatures(
-//     Customer.find({
-//       nextDelivery: { $gte: startDate, $lte: endDate },
-//     }).select("-deliveries -payments -createdAt"),
-//     req.query
-//   )
-//     .search()
-//     .filter()
-//     .pagination(resultsPerPage);
-
-//   // Retrieve the filtered and paginated customers
-//   const customers = await apiFeature.query;
-
-//   res.status(200).json({
-//     success: true,
-//     customers,
-//     customerCount: customers.length,
-//   });
-// });
 
 // Get Customer's Details
 exports.getCustomerDetails = catchAsyncError(async (req, res, next) => {
@@ -152,7 +116,30 @@ exports.getCustomerDetails = catchAsyncError(async (req, res, next) => {
   });
 });
 
-//Update customer
+// Get Customer's Details For Trips
+exports.getCustomerDetailsForTrips = catchAsyncError(async (req, res, next) => {
+  const customer = await Customer.findOne({
+    customerId: req.params.customerId,
+  }).select("customerId name phoneNo address allotment -_id");
+
+  if (!customer) {
+    return next(new ErrorHandler("Customer not found", 404));
+  }
+
+  const { customerId, name, phoneNo, address } = customer;
+
+  res.status(200).json({
+    success: true,
+    customer: {
+      customerId,
+      name,
+      phoneNo,
+      address,
+    },
+  });
+});
+
+// Update customer
 exports.updateCustomer = catchAsyncError(async (req, res, next) => {
   let customer = await Customer.findOne({
     customerId: req.params.customerId,
@@ -179,6 +166,7 @@ exports.updateCustomer = catchAsyncError(async (req, res, next) => {
   });
 });
 
+// Delete Customer
 exports.deleteCustomer = catchAsyncError(async (req, res, next) => {
   const customer = await Customer.findOne({
     customerId: req.params.customerId,

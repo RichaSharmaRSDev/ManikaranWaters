@@ -130,13 +130,13 @@
   }
   .LoginSignUpBox {
     width: 100vw;
-    height: 95vh;
+    height: 60vh;
   }
   .login_signUp_toggle {
     height: 5vmax;
   }
   .login_signUp_toggle > p {
-    font: 300 1.5vmax "Work Sans";
+    font: 300 2vmax "Work Sans";
   }
 
   .loginForm,
@@ -146,7 +146,7 @@
 
   .loginForm > div > input,
   .signUpForm > div > input {
-    padding: 2.5vmax 5vmax;
+    padding: 2vmax 2vmax;
     font: 300 1.7vmax cursive;
   }
 
@@ -162,5 +162,8 @@
   .loginBtn,
   .signUpBtn {
     padding: 1.8vmax;
+  }
+  .LoginSignUpContainer {
+    height: unset;
   }
 }

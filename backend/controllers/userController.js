@@ -173,6 +173,20 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
   });
 });
 
+// Get delivery Guys Names
+exports.getAllDeliveryGuyName = catchAsyncError(async (req, res) => {
+  const deliveryGuys = await User.find({ role: "delivery" }).select(
+    "name -_id"
+  );
+  if (!deliveryGuys) {
+    return next(new ErrorHandler("No Delivery Guys Available", 401));
+  }
+  res.status(200).json({
+    success: true,
+    deliveryGuys,
+  });
+});
+
 // update User Role -- Admin
 exports.updateUserRole = catchAsyncError(async (req, res, next) => {
   const newUserData = {

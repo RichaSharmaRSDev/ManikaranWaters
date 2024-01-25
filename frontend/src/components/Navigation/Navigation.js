@@ -144,148 +144,173 @@ const Navigation = () => {
               />
             </button>
 
-            <div className="menu">
-              <button className="menu-button">Customer</button>
-              <div className="submenu">
-                <Link to="/customer/new">Create New Customer</Link>
-                <Link to="/customers">Customer Details</Link>
-              </div>
-            </div>
+            {(user.role === "admin" || user.role === "user") && (
+              <>
+                <div className="menu">
+                  <button className="menu-button">Customer</button>
+                  <div className="submenu">
+                    <Link to="/customer/new">Create New Customer</Link>
+                    <Link to="/customers">Customer Details</Link>
+                  </div>
+                </div>
 
-            {/* Customer Habits */}
-            <div className="menu">
-              <button className="menu-button">Customer Habits</button>
-              <div className="submenu">
-                <Link to="/customers/frequency/1">Daily Customers</Link>
-                <Link to="/customers/frequency/2">Alternate Customers</Link>
-                <Link to="/customers/frequency/3">Ternary Customers</Link>
-                <div
-                  className="customCustomerFrequencyLink"
-                  to="#"
-                  onClick={() => setCustomerFrequencyModal(true)}
-                >
-                  Custom Interval Customers
+                {/* Customer Habits */}
+                <div className="menu">
+                  <button className="menu-button">Customer Habits</button>
+                  <div className="submenu">
+                    <Link to="/customers/frequency/1">Daily Customers</Link>
+                    <Link to="/customers/frequency/2">Alternate Customers</Link>
+                    <Link to="/customers/frequency/3">Ternary Customers</Link>
+                    <div
+                      className="customCustomerFrequencyLink"
+                      to="#"
+                      onClick={() => setCustomerFrequencyModal(true)}
+                    >
+                      Custom Interval Customers
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Enteries */}
-            <div className="menu">
-              <button className="menu-button">Entries</button>
-              <div className="submenu">
-                <Link to="/delivery/new">New Delivery</Link>
-                <Link to="/payment/new">New Payment</Link>
-              </div>
-            </div>
+                {/* Enteries */}
+                <div className="menu">
+                  <button className="menu-button">Entries</button>
+                  <div className="submenu">
+                    <Link to="/delivery/new">New Delivery</Link>
+                    <Link to="/payment/new">New Payment</Link>
+                  </div>
+                </div>
 
-            {/* Reports */}
-            <div className="menu">
-              <button className="menu-button">Reports</button>
-              <div className="submenu">
-                <Link to="/deliveries?deliveryDate=today">
-                  Today's Deliveries
-                </Link>
-                <Link to="/deliveries?deliveryDate=yesterday">
-                  Yesterday's Deliveries
-                </Link>
-                <div to="#" onClick={() => setDeliveryModal(true)}>
-                  Custom Day Deliveries
+                {/* Reports */}
+                <div className="menu">
+                  <button className="menu-button">Reports</button>
+                  <div className="submenu">
+                    <Link to="/deliveries?deliveryDate=today">
+                      Today's Deliveries
+                    </Link>
+                    <Link to="/deliveries?deliveryDate=yesterday">
+                      Yesterday's Deliveries
+                    </Link>
+                    <div to="#" onClick={() => setDeliveryModal(true)}>
+                      Custom Day Deliveries
+                    </div>
+                    <div
+                      to="#"
+                      onClick={() => setDeliveryRangeModal(true)}
+                      style={{ marginTop: "10px" }}
+                    >
+                      Date Range Deliveries
+                    </div>
+                    <hr></hr>
+                    <Link to="/payments?paymentDate=today">
+                      Today's Payments
+                    </Link>
+                    <Link to="/payments?paymentDate=yesterday">
+                      Yesterday's Payments
+                    </Link>
+                    <div
+                      className="customPaymentLink"
+                      to="#"
+                      onClick={() => setPaymentModal(true)}
+                    >
+                      Custom Payments
+                    </div>
+                    <div
+                      to="#"
+                      onClick={() => setPaymentRangeModal(true)}
+                      style={{ marginTop: "10px" }}
+                    >
+                      Date Range Payments
+                    </div>
+                  </div>
                 </div>
-                <div
-                  to="#"
-                  onClick={() => setDeliveryRangeModal(true)}
-                  style={{ marginTop: "10px" }}
-                >
-                  Date Range Deliveries
-                </div>
-                <hr></hr>
-                <Link to="/payments?paymentDate=today">Today's Payments</Link>
-                <Link to="/payments?paymentDate=yesterday">
-                  Yesterday's Payments
-                </Link>
-                <div
-                  className="customPaymentLink"
-                  to="#"
-                  onClick={() => setPaymentModal(true)}
-                >
-                  Custom Payments
-                </div>
-                <div
-                  to="#"
-                  onClick={() => setPaymentRangeModal(true)}
-                  style={{ marginTop: "10px" }}
-                >
-                  Date Range Payments
-                </div>
-              </div>
-            </div>
 
-            {/* Expense */}
-            <div className="menu">
-              <button className="menu-button">Expense</button>
-              <div className="submenu">
-                <Link to="/expense/new">Create Expense</Link>
-                <Link to="/expenses/today">Today's Expense</Link>
-                <Link to="/expenses/yesterday">Yesterday's Expense</Link>
-                <div
-                  className="customExpenseLink"
-                  to="#"
-                  onClick={() => setExpenseModal(true)}
-                >
-                  Custom Date Expenses
+                {/* Expense */}
+                <div className="menu">
+                  <button className="menu-button">Expense</button>
+                  <div className="submenu">
+                    <Link to="/expense/new">Create Expense</Link>
+                    <Link to="/expenses/today">Today's Expense</Link>
+                    <Link to="/expenses/yesterday">Yesterday's Expense</Link>
+                    <div
+                      className="customExpenseLink"
+                      to="#"
+                      onClick={() => setExpenseModal(true)}
+                    >
+                      Custom Date Expenses
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Prediction */}
-            <div className="menu">
-              <button className="menu-button">Prediction</button>
-              <div className="submenu">
-                <Link to="/customerspredictions?nextDelivery=tomorrow">
-                  Expected Tomorrow's Deliveries
-                </Link>
-                <Link to="/customerspredictions?nextDelivery=today">
-                  Expected Today's Deliveries
-                </Link>
-                <div
-                  className="customPredictionLink"
-                  to="#"
-                  onClick={() => setPredictionModal(true)}
-                >
-                  Custom Date Prediction
+                {/* Prediction */}
+                <div className="menu">
+                  <button className="menu-button">Prediction</button>
+                  <div className="submenu">
+                    <Link to="/customerspredictions?nextDelivery=tomorrow">
+                      Expected Tomorrow's Deliveries
+                    </Link>
+                    <Link to="/customerspredictions?nextDelivery=today">
+                      Expected Today's Deliveries
+                    </Link>
+                    <div
+                      className="customPredictionLink"
+                      to="#"
+                      onClick={() => setPredictionModal(true)}
+                    >
+                      Custom Date Prediction
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Jar Count */}
+                {/* Jar Count */}
+                <div className="menu">
+                  <button className="menu-button">Jar Count</button>
+                  <div className="submenu">
+                    <Link to="/jarInventory/today">Today's Jar Count</Link>
+                    <Link to="/jarInventory">Jar Inventory</Link>
+                  </div>
+                </div>
+              </>
+            )}
+
             <div className="menu">
-              <button className="menu-button">Jar Count</button>
+              <button className="menu-button">Delivery Trips</button>
               <div className="submenu">
-                <Link to="/jarInventory/today">Today's Jar Count</Link>
-                <Link to="/jarInventory">Jar Inventory</Link>
+                <Link to="/trips">Trips</Link>
+                <Link to="/makeDeliveryList">Make Trips</Link>
               </div>
             </div>
 
             {/* Sales Report */}
-            <div className="menu">
-              <button className="menu-button">Sales Report</button>
-              <div className="submenu">
-                <div
-                  to="#"
-                  onClick={() => setSalesDailyModal(true)}
-                  style={{ marginTop: "10px" }}
-                >
-                  Daily Report
-                </div>
-                <div
-                  to="#"
-                  onClick={() => setSalesMonthlyModal(true)}
-                  style={{ marginTop: "10px" }}
-                >
-                  Monthly Report
+            {user.role === "admin" && (
+              <div className="menu">
+                <button className="menu-button">Sales Report</button>
+                <div className="submenu">
+                  <div
+                    to="#"
+                    onClick={() => setSalesDailyModal(true)}
+                    style={{ marginTop: "10px" }}
+                  >
+                    Daily Report
+                  </div>
+                  <div
+                    to="#"
+                    onClick={() => setSalesMonthlyModal(true)}
+                    style={{ marginTop: "10px" }}
+                  >
+                    Monthly Report
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Delivery App */}
+            {(user.role === "delivery" || user.role === "admin") && (
+              <div className="menu">
+                <button className="menu-button">
+                  <Link to="/deliveryPanel">Delivery Panel</Link>
+                </button>
+              </div>
+            )}
 
             {paymentModal && (
               <div className="modal">

@@ -26,6 +26,9 @@ import AllExpenses from "./components/Expenses/AllExpenses.js";
 import CreateJarsCount from "./components/Jar/CreateJarsCount.js";
 import AllJarsCount from "./components/Jar/AllJarsCount.js";
 import DailyReport from "./components/DailyReport/DailyReport.js";
+import DeliveryPanel from "./components/DeliveryPanel/DeliveryPanel.js";
+import DeliveryList from "./components/DeliveryTrips/DeliveryList.js";
+import Trips from "./components/DeliveryTrips/Trips.js";
 
 function App() {
   const { loading } = useSelector((state) => state.user);
@@ -213,6 +216,30 @@ function App() {
           element={
             <AuthenticatedRoute>
               <DailyReport />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/deliveryPanel"
+          element={
+            <AuthenticatedRoute>
+              <DeliveryPanel />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/makeDeliveryList"
+          element={
+            <AuthenticatedRoute>
+              <DeliveryList />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/trips"
+          element={
+            <AuthenticatedRoute>
+              <Trips />
             </AuthenticatedRoute>
           }
         />

@@ -29,3 +29,15 @@ header.smallHeader h1 {
   font-size: 1.3vw;
   width: unset;
 }
+
+@media (max-width: 700px) {
+  header img {
+    max-height: 7vh;
+  }
+  h1 {
+    font-size: 5vw;
+  }
+  header.smallHeader h1 {
+    font-size: 4vw;
+  }
+}
