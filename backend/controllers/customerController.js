@@ -31,7 +31,9 @@ exports.getAllCustomersBasicDetails = catchAsyncError(async (req, res) => {
   const resultsPerPage = 20;
   const customerCount = await Customer.countDocuments();
   const apiFeature = new ApiFeatures(
-    Customer.find().select("-deliveries -payments -createdAt -zone"),
+    Customer.find()
+      .select("-deliveries -payments -createdAt -zone")
+      .sort({ customerId: 1 }),
     req.query
   )
     .search()

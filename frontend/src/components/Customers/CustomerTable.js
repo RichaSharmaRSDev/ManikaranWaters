@@ -35,6 +35,7 @@ const CustomerTable = ({ customers }) => {
             <th className="customer-security">
               Customer <br /> Type
             </th>
+            <th className="customer-phone">Freq</th>
             <th className="customer-phone">Phone No</th>
             <th className="customer-allotment">Rate</th>
             <th className="customer-remaining-amount">
@@ -87,6 +88,7 @@ const CustomerTable = ({ customers }) => {
               <td className="customer-id">{customer.customerId}</td>
               <td className="customer-name">{customer.name}</td>
               <td className="customer-name">{customer.customerType}</td>
+              <td className="customer-name">{customer.frequency}</td>
               <td className="customer-phone">{customer.phoneNo}</td>
               <td className="customer-rate">&#8377;{customer.rate}</td>
               <td className="customer-remaining-amount">
