@@ -12,9 +12,7 @@ const DeliveryPanel = () => {
   const { tripsByDateAndDeliveryGuy, tripsByDateAndDeliveryGuyLoading } =
     useSelector((state) => state.trips || {});
   const { showNavigation } = useSelector((state) => state.navigation);
-  const { success } = useSelector(
-    (state) => state.deliveries.newDelivery || ""
-  );
+  const { _id } = useSelector((state) => state.deliveries.newDelivery || "");
   const [tripCustomers, setTripCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState([]);
   const [deliveryPopUp, setDeliveryPopUp] = useState(false);
@@ -22,7 +20,6 @@ const DeliveryPanel = () => {
   const [cashReceived, setCashReceived] = useState("");
   const [returnedCans, setReturnedCans] = useState("");
   const [tripNumber, setTripNumber] = useState("");
-  const [successDelivery, setSuccessDelivery] = useState(success);
 
   const dispatch = useDispatch();
 
@@ -41,66 +38,69 @@ const DeliveryPanel = () => {
 
   const submitDeliveryRequest = async (customerId) => {
     const deliveryData = {
-      amountReceived: cashReceived,
       customerId: customerId,
       deliveredQuantity: deliveredCans,
       deliveryAssociateName: deliveryGuyName,
       deliveryDate: date,
-      paymentMode: "cash",
       returnedJars: returnedCans,
     };
-    try {
-      dispatch(createDelivery(deliveryData));
-    } catch (error) {
-      console.log(error);
+    if (cashReceived > 0) {
+      deliveryData.amountReceived = cashReceived;
+      deliveryData.paymentMode = "cash";
     }
-    if (setSuccessDelivery) {
-      setTripCustomers((prevCustomers) =>
-        prevCustomers.map((customer) =>
-          customer.customerId === customerId
-            ? {
-                ...customer,
-                isDelivered: true,
-                deliveredCans,
-                returnedCans,
-                cashReceived,
-              }
-            : customer
-        )
-      );
-      try {
-        const tripData = {
-          tripDate: date,
-          tripNumber,
-          deliveryGuy: deliveryGuyName,
-          customers: tripCustomers,
-        };
-        console.log("test112", tripData);
+    dispatch(createDelivery(deliveryData))
+      .then(async () => {
+        try {
+          const updatedCustomers = tripCustomers.map((customer) => {
+            return customer.customerId === customerId
+              ? {
+                  ...customer,
+                  isDelivered: true,
+                  deliveredCans,
+                  returnedCans,
+                  ...(cashReceived > 0 && { cashReceived }),
+                }
+              : customer;
+          });
 
-        const response = await fetch(
-          `/api/v1/trips/overwrite-trip/${date}/${tripData.tripNumber}}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(tripData),
+          setTripCustomers(updatedCustomers);
+
+          const tripData = {
+            tripDate: date,
+            tripNumber,
+            deliveryGuy: deliveryGuyName,
+            customers: updatedCustomers,
+          };
+          const response = await fetch(
+            `/api/v1/trips/overwrite-trip/${date}/${tripNumber}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(tripData),
+            }
+          );
+
+          if (response.ok) {
+            console.log("Trip updated successfully");
+            dispatch(getTripsByDateAndDeliveryGuy(date, deliveryGuyName));
+          } else {
+            console.error("Failed to update trip");
           }
-        );
-
-        if (response.ok) {
-          console.log("Trip updated successfully");
-        } else {
-          console.error("Failed to update trip");
+        } catch (error) {
+          console.error("Error during submission:", error);
         }
-      } catch (error) {
-        console.error("Error during submission:", error);
-      }
-    }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     closeDeliveryPopUp();
-    setSuccessDelivery(false);
   };
+
   const deliveryGuyName = user.name;
+
   useEffect(() => {
     dispatch(getTripsByDateAndDeliveryGuy(date, deliveryGuyName));
   }, []);
@@ -111,7 +111,6 @@ const DeliveryPanel = () => {
     );
     setTripCustomers(selectedTrip ? selectedTrip.customers : []);
     setTripNumber(tripNumber);
-    console.log("test110", tripNumber);
   };
 
   return (
@@ -125,11 +124,12 @@ const DeliveryPanel = () => {
           <div className={showNavigation ? "beNeutral" : "shiftLeft"}>
             {tripsByDateAndDeliveryGuyLoading ? (
               <Loader />
-            ) : tripsByDateAndDeliveryGuy.length ? (
+            ) : tripsByDateAndDeliveryGuy?.length ? (
               <>
                 <div className="customersPanel">
                   {tripsByDateAndDeliveryGuy.map((trip, index) => (
                     <button
+                      className="blue-cta"
                       key={index}
                       onClick={() => handleTripClick(trip.tripNumber)}
                     >
@@ -138,8 +138,8 @@ const DeliveryPanel = () => {
                   ))}
                 </div>
 
-                {tripCustomers.length &&
-                  tripCustomers.map((customer, index) => (
+                {tripCustomers?.length &&
+                  tripCustomers?.map((customer, index) => (
                     <>
                       <div
                         key={index}
@@ -153,10 +153,10 @@ const DeliveryPanel = () => {
                         <div>{customer.phoneNo}</div>
                         <div>{customer.address}</div>
                         <div>{customer.allotment}</div>
-                        {customer.customMessage && (
+                        {customer?.customMessage && (
                           <div>{customer.customMessage}</div>
                         )}
-                        {customer.isDelivered && (
+                        {customer?.isDelivered && (
                           <div className="success">&#10003;</div>
                         )}
                       </div>
@@ -198,7 +198,9 @@ const DeliveryPanel = () => {
                                 </div>
                                 <div className="values">
                                   <span>Cash Received:</span>
-                                  <span>cashReceived</span>
+                                  <span>
+                                    {selectedCustomer?.cashReceived || "0"}
+                                  </span>
                                 </div>
                               </>
                             ) : (

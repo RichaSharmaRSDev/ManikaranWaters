@@ -137,9 +137,19 @@ const DeliveryList = () => {
               />
             </div>
             <div className="customersList">
+              <div className="eachCustomerHeading">
+                <div className="eachCustomer_id">Id</div>
+                <div className="eachCustomer_name">Name</div>
+                <div className="eachCustomer_zone">Zone</div>
+                <div className="eachCustomer_zone">Freq</div>
+                <div className="eachCustomer_date">Next Delivery Date</div>
+                <div className="eachCustomer_date">Last Delivery Date</div>
+                <div className="eachCustomer_zone">Allotment</div>
+              </div>
               {customersPredictions?.map((customer) => (
                 <div className="eachCustomer" key={customer.customerId}>
                   <input
+                    className="eachCustomer_zone"
                     type="checkbox"
                     value={customer.customerId}
                     checked={selectedCustomers.some(
@@ -155,13 +165,21 @@ const DeliveryList = () => {
                       )
                     }
                   />
-                  <div>{customer.customerId}</div>
-                  <div>{customer.name}</div>
-                  <div>{customer.zone}</div>
-                  <div>{customer.frequency}</div>
-                  <div>{customer.nextDelivery}</div>
-                  <div>{customer.lastDeliveryDate}</div>
-                  <div>{customer.allotment}</div>
+                  <div className="eachCustomer_id">{customer.customerId}</div>
+                  <div className="eachCustomer_name">{customer.name}</div>
+                  <div className="eachCustomer_zone">{customer.zone}</div>
+                  <div className="eachCustomer_zone">{customer.frequency}</div>
+                  <div className="eachCustomer_date">
+                    {new Date(customer.nextDelivery).toLocaleDateString(
+                      "en-US"
+                    )}
+                  </div>
+                  <div className="eachCustomer_date">
+                    {new Date(customer.lastDeliveryDate).toLocaleDateString(
+                      "en-US"
+                    )}
+                  </div>
+                  <div className="eachCustomer_zone">{customer.allotment}</div>
                 </div>
               ))}
             </div>
@@ -208,7 +226,12 @@ const DeliveryList = () => {
                 ))}
               </select>
 
-              <button onClick={handleAddToTrip}>Add to Trip</button>
+              <button
+                className="common-cta common-cta-small"
+                onClick={handleAddToTrip}
+              >
+                Add to Trip
+              </button>
             </div>
           </div>
         </>

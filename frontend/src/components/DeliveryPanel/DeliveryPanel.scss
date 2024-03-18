@@ -15,9 +15,15 @@
 
     .values {
       margin-bottom: 2vw;
+      align-items: center;
       &.address span,
       &.phoneNo span {
         font-size: 4vw;
+      }
+      &:nth-of-type(5),
+      &:nth-of-type(6),
+      &:nth-of-type(7) {
+        height: 14vw;
       }
     }
 
@@ -33,9 +39,9 @@
 .modal .inputLabel {
   font-size: 5vw;
   & + input {
-    margin: 1vw 2vw;
+    margin: 2vw 4vw;
     width: 15vw;
-    height: 3vh;
+    height: 7vw;
     font-size: 5vw;
   }
 }
@@ -51,11 +57,36 @@
   }
 }
 
+.customersTripList {
+  display: flex;
+  gap: 1vw;
+  background-color: #deeef9;
+  border-radius: 5px;
+  margin: 2vw;
+  padding: 1vw;
+  div:first-of-type {
+    flex-basis: 30vw;
+  }
+  div:nth-of-type(2) {
+    flex-basis: 25vw;
+  }
+  div:nth-of-type(3) {
+    display: none;
+  }
+  div:nth-of-type(4) {
+    flex-basis: 5vw;
+  }
+}
+
+.success-bg,
+.cancel-bg {
+  border-radius: 5px;
+  color: #fff;
+}
+
 .success-bg {
   background-color: #198752;
-  color: #fff;
 }
 .cancel-bg {
   background-color: grey;
-  color: #fff;
 }

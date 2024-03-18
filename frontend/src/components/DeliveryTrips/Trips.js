@@ -168,14 +168,22 @@ const Trips = () => {
           ) : tripsByDate.length ? (
             <>
               <div>
-                <div>{tripsByDate[currentTripIndex]?.tripNumber}</div>
-                <div>
+                <div className="tripNumberHeading">
+                  {tripsByDate[currentTripIndex]?.tripNumber}
+                </div>
+                <div className="newCustomerAddition">
                   <input
                     type="text"
                     value={newCustomerInput}
+                    placeholder="Add Customer ID"
                     onChange={(e) => setNewCustomerInput(e.target.value)}
                   />
-                  <button onClick={addCustomer}>Add Customer</button>
+                  <button
+                    className="common-cta common-cta-small"
+                    onClick={addCustomer}
+                  >
+                    Add Customer
+                  </button>
                 </div>
 
                 {Array.isArray(customers) &&
@@ -213,6 +221,7 @@ const Trips = () => {
                             }
                           />
                           <button
+                            className="green-cta"
                             onClick={() =>
                               handleCustomMessageChange(
                                 customer.customerId,
@@ -224,21 +233,31 @@ const Trips = () => {
                           </button>
                         </>
                       )}
-                      <button onClick={() => removeCustomer(index)}>
-                        Remove
+                      <button
+                        className="red-cta"
+                        onClick={() => removeCustomer(index)}
+                      >
+                        X
                       </button>
                     </div>
                   ))}
-                <button onClick={handleSubmission}>Submit</button>
-              </div>
-              <div>
                 <button
+                  className="common-cta common-cta-small"
+                  onClick={handleSubmission}
+                >
+                  Submit
+                </button>
+              </div>
+              <div className="tripsDiv">
+                <button
+                  className="blue-cta"
                   onClick={goToPreviousTrip}
                   disabled={currentTripIndex === 0}
                 >
                   Previous Trip
                 </button>
                 <button
+                  className="blue-cta"
                   onClick={goToNextTrip}
                   disabled={currentTripIndex === tripsByDate.length - 1}
                 >

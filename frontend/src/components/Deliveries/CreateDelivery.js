@@ -13,9 +13,11 @@ import Ruppee from "../../assets/indian-rupee-sign.svg";
 import emptyJar from "../../assets/emptyJar.png";
 import filledJar from "../../assets/filledJar.png";
 import Title from "../layout/Title";
+import { getAllDeliveryGuyName } from "../../actions/tripsAction";
 
 const CreateDelivery = () => {
   const { showNavigation } = useSelector((state) => state.navigation);
+  const { deliveryGuyNames } = useSelector((state) => state.trips || {});
   const dispatch = useDispatch();
   const { loading, isAuthenticated } = useSelector((state) => state.user);
   const { customers, error: customerError } = useSelector(
@@ -36,6 +38,10 @@ const CreateDelivery = () => {
       console.log(deliveryError);
     }
   }, [deliveryError]);
+
+  useEffect(() => {
+    dispatch(getAllDeliveryGuyName());
+  }, []);
 
   const initialState = {
     customerId: "",
@@ -60,7 +66,7 @@ const CreateDelivery = () => {
       const uppercaseValue = value.toUpperCase();
       setFormData((prevData) => ({ ...prevData, [name]: uppercaseValue }));
 
-      const matchedCustomer = customers.find(
+      const matchedCustomer = customers?.find(
         (customer) => customer.customerId === value
       );
       if (matchedCustomer) {
@@ -144,14 +150,17 @@ const CreateDelivery = () => {
                     <img src={Name} alt="id" />
                     Associate Name:{" "}
                   </label>
-                  <input
-                    type="string"
+                  <select
                     name="deliveryAssociateName"
-                    placeholder="Associate Name"
                     value={formData.deliveryAssociateName}
                     onChange={handleInputChange}
                     required
-                  />
+                  >
+                    <option value="">Select Associate Name</option>
+                    {deliveryGuyNames?.map((i) => (
+                      <option value={i.name}>{i.name}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="fields">
                   <label htmlFor="customerId">

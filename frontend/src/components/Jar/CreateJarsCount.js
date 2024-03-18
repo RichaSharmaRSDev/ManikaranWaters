@@ -15,6 +15,7 @@ import moon from "../../assets/moon-stars.svg";
 import taken from "../../assets/truck-container.svg";
 import brought from "../../assets/truck-container-empty.svg";
 import Navigation from "../Navigation/Navigation";
+import { getAllDeliveryGuyName } from "../../actions/tripsAction";
 // import { useAlert } from "react-alert";
 import Title from "../layout/Title";
 
@@ -22,6 +23,7 @@ const CreateJarsCount = () => {
   const dispatch = useDispatch();
   // const alert = useAlert();
   const { showNavigation } = useSelector((state) => state.navigation);
+  const { deliveryGuyNames } = useSelector((state) => state.trips || {});
   const { isAuthenticated } = useSelector((state) => state.user);
   const { loading, error, jarForDay, success } = useSelector(
     (state) => state.jars
@@ -249,7 +251,7 @@ const CreateJarsCount = () => {
                               <img src={Name} alt="zone" />
                               Associate Name:
                             </label>
-                            <input
+                            <select
                               name={`trips[${index}].associateName`}
                               value={trip.associateName}
                               onChange={(e) =>
@@ -260,7 +262,12 @@ const CreateJarsCount = () => {
                                 )
                               }
                               required
-                            />
+                            >
+                              <option value="">Select Associate Name</option>
+                              {deliveryGuyNames?.map((i) => (
+                                <option value={i.name}>{i.name}</option>
+                              ))}
+                            </select>
                           </div>
                           <div style={{ display: "flex" }}>
                             <div className="fields">
@@ -372,7 +379,7 @@ const CreateJarsCount = () => {
                 </div>
                 <div className="trip-ctas">
                   <div
-                    className="createTrip"
+                    className="createTrip green-cta"
                     onClick={handleCreateTrip}
                     role="button"
                   >
@@ -380,7 +387,7 @@ const CreateJarsCount = () => {
                   </div>
                   {tripCount > 0 && (
                     <div
-                      className="closeTrip"
+                      className="closeTrip red-cta"
                       onClick={handleCloseTrip}
                       role="button"
                     >

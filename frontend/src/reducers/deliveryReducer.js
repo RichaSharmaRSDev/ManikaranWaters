@@ -28,7 +28,7 @@ const deliveryReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        newDelivery: action.payload,
+        newDelivery: { ...action.payload, newDeliverySuccess: true },
         error: null,
         success: true,
       };

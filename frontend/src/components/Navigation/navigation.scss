@@ -163,6 +163,10 @@
     cursor: pointer;
   }
 }
+.common-cta-small {
+  font-size: 1vw;
+  width: 10vw;
+}
 .common-cta-blue {
   background-color: #89c8fd;
   min-width: 17vw;
@@ -343,6 +347,13 @@
 }
 .error {
   color: #dc3545;
+}
+
+.green-cta {
+  background-color: #198752;
+}
+.red-cta {
+  background-color: #dc3545;
 }
 
 @media (max-width: 600px) {

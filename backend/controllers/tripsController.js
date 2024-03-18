@@ -82,7 +82,6 @@ exports.getTripsByDateAndDeliveryGuy = catchAsyncError(
     startDate.setHours(0, 0, 0, 0);
     const endDate = new Date(date);
     endDate.setHours(23, 59, 59, 999);
-    console.log("test1", date, deliveryGuyName);
     const tripsByDateAndDeliveryGuy = await Trip.find({
       tripDate: { $gte: startDate, $lt: endDate },
       deliveryGuy: deliveryGuyName,
