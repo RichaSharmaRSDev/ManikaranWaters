@@ -185,70 +185,73 @@ const Trips = () => {
                     Add Customer
                   </button>
                 </div>
-
-                {Array.isArray(customers) &&
-                  customers?.map((customer, index) => (
-                    <div
-                      key={index}
-                      className="customersTabs"
-                      draggable
-                      onDragStart={() => (dragCustomer.current = index)}
-                      onDragEnter={() => (draggedOverCustomer.current = index)}
-                      onDragEnd={handleSort}
-                      onDragOver={(e) => e.preventDefault()}
-                    >
-                      <div>{customer.customerId}</div>
-                      <div>{customer.name}</div>
-                      <div>{customer.phoneNo}</div>
-                      <div>{customer.address}</div>
-                      {!isEdit && customer.customMessage ? (
-                        <div>
-                          {customer.customMessage}
-                          <button onClick={() => setIsEdit(true)}>
-                            &#9998;
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <input
-                            type="text"
-                            value={customMessages[customer.customerId] || ""}
-                            onChange={(e) =>
-                              setCustomMessages({
-                                ...customMessages,
-                                [customer.customerId]: e.target.value,
-                              })
-                            }
-                          />
-                          <button
-                            className="green-cta"
-                            onClick={() =>
-                              handleCustomMessageChange(
-                                customer.customerId,
-                                customMessages[customer.customerId]
-                              )
-                            }
-                          >
-                            &#10003;
-                          </button>
-                        </>
-                      )}
-                      <button
-                        className="red-cta"
-                        onClick={() => removeCustomer(index)}
+                <div className="customersTabContent">
+                  {Array.isArray(customers) &&
+                    customers?.map((customer, index) => (
+                      <div
+                        key={index}
+                        className="customersTabs"
+                        draggable
+                        onDragStart={() => (dragCustomer.current = index)}
+                        onDragEnter={() =>
+                          (draggedOverCustomer.current = index)
+                        }
+                        onDragEnd={handleSort}
+                        onDragOver={(e) => e.preventDefault()}
                       >
-                        X
-                      </button>
-                    </div>
-                  ))}
+                        <div>{customer.customerId}</div>
+                        <div>{customer.name}</div>
+                        <div>{customer.phoneNo}</div>
+                        <div>{customer.address}</div>
+                        {!isEdit && customer.customMessage ? (
+                          <div>
+                            {customer.customMessage}
+                            <button onClick={() => setIsEdit(true)}>
+                              &#9998;
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <input
+                              type="text"
+                              value={customMessages[customer.customerId] || ""}
+                              onChange={(e) =>
+                                setCustomMessages({
+                                  ...customMessages,
+                                  [customer.customerId]: e.target.value,
+                                })
+                              }
+                            />
+                            <button
+                              className="green-cta"
+                              onClick={() =>
+                                handleCustomMessageChange(
+                                  customer.customerId,
+                                  customMessages[customer.customerId]
+                                )
+                              }
+                            >
+                              &#10003;
+                            </button>
+                          </>
+                        )}
+                        <button
+                          className="red-cta"
+                          onClick={() => removeCustomer(index)}
+                        >
+                          X
+                        </button>
+                      </div>
+                    ))}
+                </div>
+              </div>
+              <div className="tripsDiv">
                 <button
                   className="common-cta common-cta-small"
                   onClick={handleSubmission}
                 >
                   Submit
                 </button>
-              </div>
-              <div className="tripsDiv">
                 <button
                   className="blue-cta"
                   onClick={goToPreviousTrip}

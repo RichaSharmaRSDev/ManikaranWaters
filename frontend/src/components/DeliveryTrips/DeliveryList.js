@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Loader from "../layout/Loader/Loader";
@@ -7,6 +7,7 @@ import Title from "../layout/Title";
 import { getCustomersByNextDeliveryDate } from "../../actions/customerAction";
 import "./Trip.scss";
 import { getAllTrips, getAllDeliveryGuyName } from "../../actions/tripsAction";
+import { Pagination } from "../layout/Pagination/Pagination";
 
 const DeliveryList = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,6 +16,11 @@ const DeliveryList = () => {
   const [deliveryGuy, setDeliveryGuy] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [nextDeliveryDay, setNextDeliveryDay] = useState(new Date(Date.now()));
+  const previousDeliveryDayRef = useRef(null);
+
+  useEffect(() => {
+    previousDeliveryDayRef.current = nextDeliveryDay;
+  }, []);
   const { isAuthenticated, user } = useSelector((state) => state.user);
   const { showNavigation } = useSelector((state) => state.navigation);
   const { allTrips, deliveryGuyNames } = useSelector(
@@ -23,6 +29,8 @@ const DeliveryList = () => {
   const { customersPredictions, loading, customersPredictionsCount } =
     useSelector((state) => state.customers || {});
   const dispatch = useDispatch();
+  const totalPages = Math.ceil(customersPredictionsCount / 20);
+  console.log({ totalPages });
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -103,7 +111,13 @@ const DeliveryList = () => {
   };
 
   useEffect(() => {
-    dispatch(getCustomersByNextDeliveryDate(nextDeliveryDay, currentPage));
+    if (nextDeliveryDay !== previousDeliveryDayRef.current) {
+      dispatch(getCustomersByNextDeliveryDate(nextDeliveryDay, 1));
+      previousDeliveryDayRef.current = nextDeliveryDay;
+      setCurrentPage(1);
+    } else {
+      dispatch(getCustomersByNextDeliveryDate(nextDeliveryDay, currentPage));
+    }
   }, [nextDeliveryDay, currentPage]);
 
   useEffect(() => {
@@ -142,47 +156,55 @@ const DeliveryList = () => {
                 <div className="eachCustomer_name">Name</div>
                 <div className="eachCustomer_zone">Zone</div>
                 <div className="eachCustomer_zone">Freq</div>
-                <div className="eachCustomer_date">Next Delivery Date</div>
-                <div className="eachCustomer_date">Last Delivery Date</div>
+                <div className="eachCustomer_date">Next Delivery</div>
+                <div className="eachCustomer_date">Last Delivery</div>
                 <div className="eachCustomer_zone">Allotment</div>
               </div>
-              {customersPredictions?.map((customer) => (
-                <div className="eachCustomer" key={customer.customerId}>
-                  <input
-                    className="eachCustomer_zone"
-                    type="checkbox"
-                    value={customer.customerId}
-                    checked={selectedCustomers.some(
-                      (selected) => selected.customerId === customer.customerId
-                    )}
-                    onChange={() =>
-                      handleCheckboxChange(
-                        customer.customerId,
-                        customer.name,
-                        customer.phoneNo,
-                        customer.address,
-                        customer.allotment
-                      )
-                    }
-                  />
-                  <div className="eachCustomer_id">{customer.customerId}</div>
-                  <div className="eachCustomer_name">{customer.name}</div>
-                  <div className="eachCustomer_zone">{customer.zone}</div>
-                  <div className="eachCustomer_zone">{customer.frequency}</div>
-                  <div className="eachCustomer_date">
-                    {new Date(customer.nextDelivery).toLocaleDateString(
-                      "en-US"
-                    )}
+              <div className="eachCustomerContent">
+                {customersPredictions?.map((customer) => (
+                  <div className="eachCustomer" key={customer.customerId}>
+                    <input
+                      className="eachCustomer_zone"
+                      type="checkbox"
+                      value={customer.customerId}
+                      checked={selectedCustomers.some(
+                        (selected) =>
+                          selected.customerId === customer.customerId
+                      )}
+                      onChange={() =>
+                        handleCheckboxChange(
+                          customer.customerId,
+                          customer.name,
+                          customer.phoneNo,
+                          customer.address,
+                          customer.allotment
+                        )
+                      }
+                    />
+                    <div className="eachCustomer_id">{customer.customerId}</div>
+                    <div className="eachCustomer_name">{customer.name}</div>
+                    <div className="eachCustomer_zone">{customer.zone}</div>
+                    <div className="eachCustomer_zone">
+                      {customer.frequency}
+                    </div>
+                    <div className="eachCustomer_date">
+                      {new Date(customer.nextDelivery).toLocaleDateString(
+                        "en-US"
+                      )}
+                    </div>
+                    <div className="eachCustomer_date">
+                      {new Date(customer.lastDeliveryDate).toLocaleDateString(
+                        "en-US"
+                      )}
+                    </div>
+                    <div className="eachCustomer_zone">
+                      {customer.allotment}
+                    </div>
                   </div>
-                  <div className="eachCustomer_date">
-                    {new Date(customer.lastDeliveryDate).toLocaleDateString(
-                      "en-US"
-                    )}
-                  </div>
-                  <div className="eachCustomer_zone">{customer.allotment}</div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+
             <div className="tripActions">
               <input
                 type="date"
@@ -232,6 +254,14 @@ const DeliveryList = () => {
               >
                 Add to Trip
               </button>
+
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              )}
             </div>
           </div>
         </>

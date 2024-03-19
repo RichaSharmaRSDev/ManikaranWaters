@@ -164,8 +164,8 @@
   }
 }
 .common-cta-small {
-  font-size: 1vw;
-  width: 10vw;
+  font-size: max(12px, 0.8vw);
+  width: auto;
 }
 .common-cta-blue {
   background-color: #89c8fd;
@@ -371,4 +371,8 @@
       }
     }
   }
+}
+
+input[type="checkbox"] {
+  accent-color: #0163a2;
 }

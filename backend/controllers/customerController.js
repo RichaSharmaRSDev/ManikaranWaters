@@ -33,7 +33,7 @@ exports.getAllCustomersBasicDetails = catchAsyncError(async (req, res) => {
   const apiFeature = new ApiFeatures(
     Customer.find()
       .select("-deliveries -payments -createdAt -zone")
-      .sort({ customerId: 1 }),
+      .sort({ name: 1 }),
     req.query
   )
     .search()
@@ -79,21 +79,24 @@ exports.getCustomersByNextDeliveryDate = catchAsyncError(async (req, res) => {
   endDate.setHours(23, 59, 59, 999);
 
   // Query customers with nextDelivery date within the specified range
-  const apiFeature = new ApiFeatures(
-    Customer.find({
-      $or: [
-        { nextDelivery: { $gte: startDate, $lte: endDate } },
-        { nextDelivery: { $lt: startDate } }, // Include customers with back-dated nextDeliveryDate
-      ],
-    })
-      .select("-deliveries -payments -createdAt")
-      .sort({ nextDelivery: -1, frequency: 1, zone: 1 }),
-    req.query
-  ).pagination(20);
+  const customersQuery = Customer.find({
+    $or: [
+      { nextDelivery: { $gte: startDate, $lte: endDate } },
+      { nextDelivery: { $lt: startDate } }, // Include customers with back-dated nextDeliveryDate
+    ],
+  })
+    .select("-deliveries -payments -createdAt")
+    .sort({ nextDelivery: -1, frequency: 1, zone: 1 });
+
+  const apiFeature = new ApiFeatures(customersQuery, req.query).pagination(20);
 
   const customers = await apiFeature.query;
-
-  const customerCount = customers.length;
+  const customerCount = await Customer.countDocuments({
+    $or: [
+      { nextDelivery: { $gte: startDate, $lte: endDate } },
+      { nextDelivery: { $lt: startDate } }, // Include customers with back-dated nextDeliveryDate
+    ],
+  });
 
   res.status(200).json({
     success: true,
