@@ -8,6 +8,7 @@ import { getCustomersByNextDeliveryDate } from "../../actions/customerAction";
 import "./Trip.scss";
 import { getAllTrips, getAllDeliveryGuyName } from "../../actions/tripsAction";
 import { Pagination } from "../layout/Pagination/Pagination";
+import Alert from "../layout/Alert/Alert";
 
 const DeliveryList = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,6 +16,7 @@ const DeliveryList = () => {
   const [chosenTrip, setChosenTrip] = useState("");
   const [deliveryGuy, setDeliveryGuy] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [alert, setAlert] = useState(null);
   const [nextDeliveryDay, setNextDeliveryDay] = useState(new Date(Date.now()));
   const previousDeliveryDayRef = useRef(null);
 
@@ -79,24 +81,44 @@ const DeliveryList = () => {
       )
     ) {
       try {
-        await axios.put(`/api/v1/trip/${selectedDate}/${chosenTrip}`, {
-          customers: selectedCustomers,
-          tripNumber: chosenTrip,
-          tripDate: selectedDate.toISOString().split("T")[0],
-          deliveryGuy,
-        });
+        await axios
+          .put(`/api/v1/trip/${selectedDate}/${chosenTrip}`, {
+            customers: selectedCustomers,
+            tripNumber: chosenTrip,
+            tripDate: selectedDate.toISOString().split("T")[0],
+            deliveryGuy,
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              setAlert({
+                type: "success",
+                message: `${chosenTrip} by ${deliveryGuy} updated successfully!`,
+              });
+            }
+          });
       } catch (error) {
+        setAlert({ type: "error", message: error });
         console.log(error);
       }
     } else {
       try {
-        await axios.post(`/api/v1/trip/new`, {
-          customers: selectedCustomers,
-          tripNumber: chosenTrip,
-          tripDate: selectedDate.toISOString().split("T")[0],
-          deliveryGuy,
-        });
+        await axios
+          .post(`/api/v1/trip/new`, {
+            customers: selectedCustomers,
+            tripNumber: chosenTrip,
+            tripDate: selectedDate.toISOString().split("T")[0],
+            deliveryGuy,
+          })
+          .then((res) => {
+            if (res.status === 201) {
+              setAlert({
+                type: "success",
+                message: `${chosenTrip} by ${deliveryGuy} added successfully!`,
+              });
+            }
+          });
       } catch (error) {
+        setAlert({ type: "error", message: error });
         console.log(error);
       }
     }
@@ -110,6 +132,9 @@ const DeliveryList = () => {
     }, 1200);
   };
 
+  const handleCloseAlert = () => {
+    setAlert(null);
+  };
   useEffect(() => {
     if (nextDeliveryDay !== previousDeliveryDayRef.current) {
       dispatch(getCustomersByNextDeliveryDate(nextDeliveryDay, 1));
@@ -263,6 +288,13 @@ const DeliveryList = () => {
                 />
               )}
             </div>
+            {alert && (
+              <Alert
+                type={alert.type}
+                message={alert.message}
+                onClose={handleCloseAlert}
+              />
+            )}
           </div>
         </>
       )}

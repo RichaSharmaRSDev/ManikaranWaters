@@ -131,13 +131,14 @@ exports.getCustomerDetailsForTrips = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Customer not found", 404));
   }
 
-  const { customerId, name, phoneNo, address } = customer;
+  const { customerId, name, allotment, phoneNo, address } = customer;
 
   res.status(200).json({
     success: true,
     customer: {
       customerId,
       name,
+      allotment,
       phoneNo,
       address,
     },

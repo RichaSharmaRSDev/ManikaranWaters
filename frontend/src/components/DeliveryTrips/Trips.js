@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import Loader from "../layout/Loader/Loader";
 import Navigation from "../Navigation/Navigation";
 import Title from "../layout/Title";
+import Alert from "../layout/Alert/Alert";
 import "./Trip.scss";
 import {
   getTripsByDate,
@@ -25,6 +26,7 @@ const Trips = () => {
   const [newCustomerInput, setNewCustomerInput] = useState("");
   const [customMessages, setCustomMessages] = useState({});
   const [isEdit, setIsEdit] = useState(false);
+  const [alert, setAlert] = useState(null);
   const dispatch = useDispatch();
 
   const handleDateChange = (event) => {
@@ -36,12 +38,11 @@ const Trips = () => {
   const draggedOverCustomer = useRef(null);
 
   function handleSort() {
-    const customersClone = [...customers];
-    const temp = customersClone[dragCustomer.current];
-    customersClone[dragCustomer.current] =
-      customersClone[draggedOverCustomer.current];
-    customersClone[draggedOverCustomer.current] = temp;
-    setCustomers(customersClone);
+    const newCustomers = [...customers];
+    const draggedCustomer = newCustomers[dragCustomer.current];
+    newCustomers.splice(dragCustomer.current, 1);
+    newCustomers.splice(draggedOverCustomer.current, 0, draggedCustomer);
+    setCustomers(newCustomers);
   }
 
   const goToNextTrip = () => {
@@ -109,11 +110,19 @@ const Trips = () => {
       );
 
       if (response.ok) {
+        setAlert({
+          type: "success",
+          message: `${selectedDate} of ${tripsByDate[currentTripIndex]?.tripNumber} by ${tripsByDate[currentTripIndex]?.deliveryGuy} updated successfully!`,
+        });
         console.log("Trip updated successfully");
       } else {
         console.error("Failed to update trip");
       }
     } catch (error) {
+      setAlert({
+        type: "error",
+        message: `${error}`,
+      });
       console.error("Error during submission:", error);
     }
     setIsEdit(false);
@@ -130,6 +139,10 @@ const Trips = () => {
       setIsEdit(false);
       return updatedCustomers;
     });
+  };
+
+  const handleCloseAlert = () => {
+    setAlert(null);
   };
 
   useEffect(() => {
@@ -192,15 +205,22 @@ const Trips = () => {
                         key={index}
                         className="customersTabs"
                         draggable
+                        data-index={index}
                         onDragStart={() => (dragCustomer.current = index)}
-                        onDragEnter={() =>
-                          (draggedOverCustomer.current = index)
-                        }
                         onDragEnd={handleSort}
-                        onDragOver={(e) => e.preventDefault()}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                        }}
+                        onDragEnter={(e) => {
+                          const targetIndex = parseInt(
+                            e.target.getAttribute("data-index")
+                          );
+                          draggedOverCustomer.current = targetIndex;
+                        }}
                       >
                         <div>{customer.customerId}</div>
                         <div>{customer.name}</div>
+                        <div>{customer.allotment}</div>
                         <div>{customer.phoneNo}</div>
                         <div>{customer.address}</div>
                         {!isEdit && customer.customMessage ? (
@@ -267,6 +287,13 @@ const Trips = () => {
                   Next Trip
                 </button>
               </div>
+              {alert && (
+                <Alert
+                  type={alert.type}
+                  message={alert.message}
+                  onClose={handleCloseAlert}
+                />
+              )}
             </>
           ) : (
             <div>No Trips found</div>

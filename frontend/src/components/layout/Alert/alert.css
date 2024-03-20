@@ -1,0 +1,13 @@
+.alert {
+  position: fixed;
+  bottom: 5vh;
+  width: 80vw;
+  background-color: white;
+  opacity: 1;
+  padding: 1vw;
+  border: 1px solid black;
+  border-radius: 5px;
+  display: flex;
+  gap: 5vw;
+  justify-content: center;
+}

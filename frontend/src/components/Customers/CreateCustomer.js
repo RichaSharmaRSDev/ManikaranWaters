@@ -40,7 +40,13 @@ const CreateCustomer = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+    const formattedValue = value
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
+    setFormData((prevData) => ({ ...prevData, [name]: formattedValue }));
   };
 
   const handleCreateCustomerSubmit = (e) => {

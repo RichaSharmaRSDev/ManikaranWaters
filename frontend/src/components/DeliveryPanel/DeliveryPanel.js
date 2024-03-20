@@ -24,7 +24,10 @@ const DeliveryPanel = () => {
   const dispatch = useDispatch();
 
   const formatDate = (date) => {
-    return date.toISOString().split("T")[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
   const closeDeliveryPopUp = () => {
@@ -137,145 +140,148 @@ const DeliveryPanel = () => {
                     </button>
                   ))}
                 </div>
-
-                {tripCustomers?.length &&
-                  tripCustomers?.map((customer, index) => (
-                    <>
-                      <div
-                        key={index}
-                        className="customersTripList"
-                        onClick={() => {
-                          setDeliveryPopUp(true);
-                          setSelectedCustomer(customer);
-                        }}
-                      >
-                        <div>{customer.name}</div>
-                        <div>{customer.phoneNo}</div>
-                        <div>{customer.address}</div>
-                        <div>{customer.allotment}</div>
-                        {customer?.customMessage && (
-                          <div>{customer.customMessage}</div>
-                        )}
-                        {customer?.isDelivered && (
-                          <div className="success">&#10003;</div>
-                        )}
-                      </div>
-                      {deliveryPopUp && (
-                        <div className="modal delivery-panel-modal">
-                          <div className="modal-bg"></div>
-                          <div className="modal-text">
-                            <div className="values">
-                              <span>Name:</span>{" "}
-                              <span>{selectedCustomer.name}</span>
-                            </div>
-                            <div className="values address">
-                              <span>Address:</span>{" "}
-                              <span>{selectedCustomer.address}</span>
-                            </div>
-                            <div className="values phoneNo">
-                              <span>Phone No:</span>{" "}
-                              <span>{selectedCustomer.phoneNo}</span>
-                            </div>
-                            <div className="values">
-                              <span>Allotment:</span>{" "}
-                              <span>{selectedCustomer.allotment}</span>
-                            </div>
-                            {selectedCustomer.customMessage && (
+                <div className="customersDeliveryPanelContent">
+                  {tripCustomers?.length &&
+                    tripCustomers?.map((customer, index) => (
+                      <>
+                        <div
+                          key={index}
+                          className="customersTripList"
+                          onClick={() => {
+                            setDeliveryPopUp(true);
+                            setSelectedCustomer(customer);
+                          }}
+                        >
+                          <div>{customer.name}</div>
+                          <div>{customer.allotment}</div>
+                          <div>{customer.phoneNo}</div>
+                          <div>{customer.address}</div>
+                          {customer?.customMessage && (
+                            <div>{customer.customMessage}</div>
+                          )}
+                          {customer?.isDelivered && (
+                            <div className="success">&#10003;</div>
+                          )}
+                        </div>
+                        {deliveryPopUp && (
+                          <div className="modal delivery-panel-modal">
+                            <div className="modal-bg"></div>
+                            <div className="modal-text">
                               <div className="values">
-                                <span>Custom Message:</span>{" "}
-                                <span>{selectedCustomer.customMessage}</span>
+                                <span>Name:</span>{" "}
+                                <span>{selectedCustomer.name}</span>
                               </div>
-                            )}
-                            {selectedCustomer.isDelivered ? (
-                              <>
+                              <div className="values address">
+                                <span>Address:</span>{" "}
+                                <span>{selectedCustomer.address}</span>
+                              </div>
+                              <div className="values phoneNo">
+                                <span>Phone No:</span>{" "}
+                                <span>{selectedCustomer.phoneNo}</span>
+                              </div>
+                              <div className="values">
+                                <span>Allotment:</span>{" "}
+                                <span>{selectedCustomer.allotment}</span>
+                              </div>
+                              {selectedCustomer.customMessage && (
                                 <div className="values">
-                                  <span>Delivered Jars:</span>
-                                  <span>{selectedCustomer.deliveredCans}</span>
-                                </div>
-                                <div className="values">
-                                  <span>Returned Jars:</span>
-                                  <span>{selectedCustomer.returnedCans}</span>
-                                </div>
-                                <div className="values">
-                                  <span>Cash Received:</span>
-                                  <span>
-                                    {selectedCustomer?.cashReceived || "0"}
-                                  </span>
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div className="values">
-                                  <label className="inputLabel">
-                                    Delivered Jars:
-                                  </label>
-                                  <input
-                                    type="number"
-                                    value={deliveredCans || ""}
-                                    onChange={(e) =>
-                                      setDeliveredCans(e.target.value)
-                                    }
-                                  />
-                                </div>
-                                <div className="values">
-                                  <label className="inputLabel">
-                                    Returned Jars:
-                                  </label>
-                                  <input
-                                    type="number"
-                                    value={returnedCans || ""}
-                                    onChange={(e) =>
-                                      setReturnedCans(e.target.value)
-                                    }
-                                  />
-                                </div>
-                                <div className="values">
-                                  <label className="inputLabel">
-                                    Cash Received:
-                                  </label>
-                                  <input
-                                    type="number"
-                                    value={cashReceived || ""}
-                                    onChange={(e) =>
-                                      setCashReceived(e.target.value)
-                                    }
-                                  />
-                                </div>
-                              </>
-                            )}
-                            <div className="delivery-modal-buttons">
-                              {!selectedCustomer.isDelivered && (
-                                <div
-                                  className="success-bg"
-                                  onClick={() =>
-                                    submitDeliveryRequest(
-                                      selectedCustomer.customerId
-                                    )
-                                  }
-                                >
-                                  SUCCESS
+                                  <span>Custom Message:</span>{" "}
+                                  <span>{selectedCustomer.customMessage}</span>
                                 </div>
                               )}
+                              {selectedCustomer.isDelivered ? (
+                                <>
+                                  <div className="values">
+                                    <span>Delivered Jars:</span>
+                                    <span>
+                                      {selectedCustomer.deliveredCans}
+                                    </span>
+                                  </div>
+                                  <div className="values">
+                                    <span>Returned Jars:</span>
+                                    <span>{selectedCustomer.returnedCans}</span>
+                                  </div>
+                                  <div className="values">
+                                    <span>Cash Received:</span>
+                                    <span>
+                                      {selectedCustomer?.cashReceived || "0"}
+                                    </span>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="values">
+                                    <label className="inputLabel">
+                                      Delivered Jars:
+                                    </label>
+                                    <input
+                                      type="number"
+                                      value={deliveredCans || ""}
+                                      onChange={(e) =>
+                                        setDeliveredCans(e.target.value)
+                                      }
+                                    />
+                                  </div>
+                                  <div className="values">
+                                    <label className="inputLabel">
+                                      Returned Jars:
+                                    </label>
+                                    <input
+                                      type="number"
+                                      value={returnedCans || ""}
+                                      onChange={(e) =>
+                                        setReturnedCans(e.target.value)
+                                      }
+                                    />
+                                  </div>
+                                  <div className="values">
+                                    <label className="inputLabel">
+                                      Cash Received:
+                                    </label>
+                                    <input
+                                      type="number"
+                                      value={cashReceived || ""}
+                                      onChange={(e) =>
+                                        setCashReceived(e.target.value)
+                                      }
+                                    />
+                                  </div>
+                                </>
+                              )}
+                              <div className="delivery-modal-buttons">
+                                {!selectedCustomer.isDelivered && (
+                                  <div
+                                    className="success-bg"
+                                    onClick={() =>
+                                      submitDeliveryRequest(
+                                        selectedCustomer.customerId
+                                      )
+                                    }
+                                  >
+                                    SUCCESS
+                                  </div>
+                                )}
+                                <div
+                                  className="cancel-bg"
+                                  onClick={closeDeliveryPopUp}
+                                >
+                                  {selectedCustomer.isDelivered
+                                    ? "Close"
+                                    : "Cancel"}
+                                </div>
+                              </div>
                               <div
-                                className="cancel-bg"
+                                className="closeModal"
                                 onClick={closeDeliveryPopUp}
                               >
-                                {selectedCustomer.isDelivered
-                                  ? "Close"
-                                  : "Cancel"}
+                                &#x2715;
                               </div>
                             </div>
-                            <div
-                              className="closeModal"
-                              onClick={closeDeliveryPopUp}
-                            >
-                              &#x2715;
-                            </div>
                           </div>
-                        </div>
-                      )}
-                    </>
-                  ))}
+                        )}
+                      </>
+                    ))}
+                </div>
               </>
             ) : (
               <div>No Trips Found</div>
