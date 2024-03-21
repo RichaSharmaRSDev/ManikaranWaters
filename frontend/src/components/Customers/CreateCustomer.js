@@ -41,12 +41,15 @@ const CreateCustomer = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    const formattedValue = value
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-
-    setFormData((prevData) => ({ ...prevData, [name]: formattedValue }));
+    if (name === "customerName") {
+      const formattedValue = value
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+      setFormData((prevData) => ({ ...prevData, [name]: formattedValue }));
+    } else {
+      setFormData((prevData) => ({ ...prevData, [name]: value }));
+    }
   };
 
   const handleCreateCustomerSubmit = (e) => {
