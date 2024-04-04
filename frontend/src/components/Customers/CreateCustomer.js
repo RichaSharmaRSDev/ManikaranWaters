@@ -41,7 +41,7 @@ const CreateCustomer = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "customerName") {
+    if (name === "name") {
       const formattedValue = value
         .split(" ")
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
