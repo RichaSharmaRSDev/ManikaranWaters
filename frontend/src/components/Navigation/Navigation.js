@@ -151,6 +151,7 @@ const Navigation = () => {
                   <div className="submenu">
                     <Link to="/customer/new">Create New Customer</Link>
                     <Link to="/customers">Customer Details</Link>
+                    <Link to="/quickaccess">Quick Access</Link>
                   </div>
                 </div>
 

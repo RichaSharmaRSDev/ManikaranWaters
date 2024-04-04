@@ -53,7 +53,7 @@ exports.getAllCustomersBasicDetails = catchAsyncError(async (req, res) => {
 //get all customers name and Id
 exports.getAllCustomersNameId = catchAsyncError(async (req, res) => {
   const apiFeature = new ApiFeatures(
-    Customer.find().select("customerId name -_id"),
+    Customer.find().select("customerId name -_id").sort({ name: 1 }),
     req.query
   );
   const customers = await apiFeature.query;

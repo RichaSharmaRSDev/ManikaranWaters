@@ -46,3 +46,14 @@ table {
     }
   }
 }
+
+.quickaccess-parent.customer-list {
+  height: 80vh;
+  overflow-y: scroll;
+  td {
+    font-size: 1.5vw;
+  }
+  th.customer-id {
+    width: 6vw;
+  }
+}

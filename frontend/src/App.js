@@ -29,6 +29,7 @@ import DailyReport from "./components/DailyReport/DailyReport.js";
 import DeliveryPanel from "./components/DeliveryPanel/DeliveryPanel.js";
 import DeliveryList from "./components/DeliveryTrips/DeliveryList.js";
 import Trips from "./components/DeliveryTrips/Trips.js";
+import QuickAccess from "./components/Customers/QuickAccess.js";
 
 function App() {
   const { loading } = useSelector((state) => state.user);
@@ -99,6 +100,14 @@ function App() {
           }
         />
         <Route path="/customers/*" element={<CustomersNestedRoutes />} />
+        <Route
+          path="/quickaccess"
+          element={
+            <AuthenticatedRoute>
+              <QuickAccess />
+            </AuthenticatedRoute>
+          }
+        />
         <Route
           path="/customers/frequency/:input"
           element={
