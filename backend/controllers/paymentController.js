@@ -66,6 +66,9 @@ exports.getPaymentsForDay = catchAsyncError(async (req, res) => {
 
   const payments = await apiFeature.query;
 
+  const countQuery = apiFeature.query.model.find(apiFeature.query._conditions);
+  const paymentCount = await countQuery.countDocuments();
+
   // Map through each payment and retrieve customer details
   const paymentsWithCustomerDetails = await Promise.all(
     payments.map(async (payment) => {
@@ -129,15 +132,15 @@ exports.getPaymentsForDay = catchAsyncError(async (req, res) => {
   res.status(200).json({
     success: true,
     payments: paymentsWithCustomerDetails,
-    paymentCount: paymentsWithCustomerDetails.length,
+    paymentCount,
     paymentTotal: finalPaymentTotal,
   });
 });
+
 exports.getPaymentsForRange = catchAsyncError(async (req, res) => {
   const resultsPerPage = 20;
-  const apiFeature = new ApiFeatures(Payment.find(), req.query)
-    .filter()
-    .pagination(resultsPerPage);
+  const apiFeature = new ApiFeatures(Payment.find(), req.query).filter();
+
   if (req.query.paymentStartDate && req.query.paymentEndDate) {
     const startDate = new Date(req.query.paymentStartDate);
     const endDate = new Date(req.query.paymentEndDate);
@@ -148,6 +151,14 @@ exports.getPaymentsForRange = catchAsyncError(async (req, res) => {
       .gte(startDate)
       .lte(endDate);
   }
+
+  // Count the total number of payments matching the filter criteria
+  const paymentCount = await Payment.countDocuments(
+    apiFeature.query._conditions
+  );
+
+  // Apply pagination
+  apiFeature.pagination(resultsPerPage);
 
   const payments = await apiFeature.query;
 
@@ -175,13 +186,14 @@ exports.getPaymentsForRange = catchAsyncError(async (req, res) => {
     })
   );
 
-  //get totalpayment , payment in cash and payment online
+  // Get total payment, payment in cash and payment online
   const totalPaymentReceived = payments.reduce((accumulator, payment) => {
     if (typeof payment.amount === "number") {
       return accumulator + payment.amount;
     }
     return accumulator;
   }, 0);
+
   const calculateCashPayment = (payments) => {
     return payments.reduce((accumulator, payment) => {
       if (
@@ -193,6 +205,7 @@ exports.getPaymentsForRange = catchAsyncError(async (req, res) => {
       return accumulator;
     }, 0);
   };
+
   const calculateOnlinePayment = (payments) => {
     return payments.reduce((accumulator, payment) => {
       if (
@@ -214,7 +227,6 @@ exports.getPaymentsForRange = catchAsyncError(async (req, res) => {
   res.status(200).json({
     success: true,
     payments: paymentsWithCustomerDetails,
-    paymentCount: paymentsWithCustomerDetails.length,
     paymentTotal: finalPaymentTotal,
   });
 });

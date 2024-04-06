@@ -128,8 +128,11 @@ exports.getDeliveriesForDay = catchAsyncError(async (req, res) => {
       .lt(endDate);
   }
 
+  const countQuery = apiFeature.query.model.find(apiFeature.query._conditions);
+  const count = await countQuery.countDocuments();
+
   const deliveries = await apiFeature.query;
-  const deliveryCount = deliveries.length;
+
   const deliveriesWithCustomerDetails = await Promise.all(
     deliveries.map(async (delivery) => {
       try {
@@ -152,7 +155,6 @@ exports.getDeliveriesForDay = catchAsyncError(async (req, res) => {
     })
   );
 
-  //get delivered jars , returned Jars and their difference
   const totalDeliveredJars = deliveries.reduce((accumulator, delivery) => {
     if (typeof delivery.deliveredQuantity === "number") {
       return accumulator + delivery.deliveredQuantity;
@@ -177,7 +179,7 @@ exports.getDeliveriesForDay = catchAsyncError(async (req, res) => {
   res.status(200).json({
     success: true,
     deliveriesWithCustomerDetails,
-    deliveryCount,
+    deliveryCount: count,
     finalDeliveryTotal,
   });
 });
@@ -199,9 +201,14 @@ exports.getDeliveriesForRange = catchAsyncError(async (req, res) => {
       .gte(startDate)
       .lte(endDate);
   }
+
+  // Count the documents matching the query
+  const deliveryCount = await Delivery.countDocuments(
+    apiFeature.query._conditions
+  );
+
   const deliveries = await apiFeature.query;
-  console.log({ deliveries });
-  const deliveryCount = deliveries.length;
+
   const deliveriesWithCustomerDetails = await Promise.all(
     deliveries.map(async (delivery) => {
       try {
