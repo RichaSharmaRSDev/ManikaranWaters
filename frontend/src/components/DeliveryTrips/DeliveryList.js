@@ -258,6 +258,8 @@ const DeliveryList = () => {
                 <option value="trip3">Trip 3</option>
                 <option value="trip4">Trip 4</option>
                 <option value="trip5">Trip 5</option>
+                <option value="trip6">Trip 6</option>
+                <option value="trip7">Trip 7</option>
               </select>
 
               <select
