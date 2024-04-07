@@ -253,7 +253,7 @@ const CreateJarsCount = () => {
                             </label>
                             <select
                               name={`trips[${index}].associateName`}
-                              value={trip.associateName}
+                              value={trip?.associateName}
                               onChange={(e) =>
                                 handleTripInputChange(
                                   index,

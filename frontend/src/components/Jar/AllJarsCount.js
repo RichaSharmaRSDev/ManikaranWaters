@@ -140,10 +140,10 @@ const AllJarsCount = () => {
                                         {perDay?.trips[index]
                                           ?.filledJarsTaken != null && (
                                           <>
-                                            {
-                                              perDay?.trips[index]
-                                                ?.associateName
-                                            }
+                                            {perDay?.trips[index]?.associateName
+                                              .split(" ")
+                                              .map((word) => word.charAt(0))
+                                              .join("")}
                                             {" | "}
                                             <img src={taken} alt="rate" />:{" "}
                                             {perDay?.trips[index]
