@@ -124,6 +124,7 @@ const CreateCustomer = () => {
                     <option value="EA">EA</option>
                     <option value="EB">EB</option>
                     <option value="EC">EC</option>
+                    <option value="F">F</option>
                   </select>
                 </div>
 
