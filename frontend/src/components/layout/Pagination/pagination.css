@@ -32,3 +32,11 @@
   transform: scale(2.5, 1.5);
   margin-top: -0.1vw;
 }
+
+@media (max-width: 600px) {
+  .pagination li button {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+  }
+}

@@ -37,10 +37,21 @@ exports.getAllCustomersBasicDetails = catchAsyncError(async (req, res) => {
     req.query
   )
     .search()
+    .filter();
+  const customersQuery = await apiFeature.query;
+  const customerFeatureCount = customersQuery.length;
+
+  const apiFeatureWithPagination = new ApiFeatures(
+    Customer.find()
+      .select("-deliveries -payments -createdAt -zone")
+      .sort({ name: 1 }),
+    req.query
+  )
+    .search()
     .filter()
     .pagination(resultsPerPage);
-  const customers = await apiFeature.query;
-  const customerFeatureCount = customers.length;
+
+  const customers = await apiFeatureWithPagination.query;
 
   res.status(200).json({
     success: true,

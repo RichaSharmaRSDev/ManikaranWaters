@@ -57,3 +57,18 @@ table {
     width: 6vw;
   }
 }
+
+@media (max-width: 600px) {
+  table {
+    white-space: nowrap;
+  }
+  th {
+    font-size: 14px !important;
+  }
+  td {
+    font-size: 14px !important;
+  }
+  .quickaccess-parent.customer-list th.customer-id {
+    width: 50px;
+  }
+}
