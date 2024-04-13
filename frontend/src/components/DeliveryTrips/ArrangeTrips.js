@@ -186,6 +186,7 @@ const ArrangeTrips = () => {
                           <div>{customer.customerId}</div>
                           <div>{customer.name}</div>
                           <div>{customer.allotment}</div>
+                          <div>{customer.customMessage}</div>
                         </div>
                       ))}
                   </div>

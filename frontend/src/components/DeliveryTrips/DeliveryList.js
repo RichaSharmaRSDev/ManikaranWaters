@@ -6,7 +6,11 @@ import Navigation from "../Navigation/Navigation";
 import Title from "../layout/Title";
 import { getCustomersByNextDeliveryDateMore } from "../../actions/customerAction";
 import "./Trip.scss";
-import { getAllTrips, getAllDeliveryGuyName } from "../../actions/tripsAction";
+import {
+  getAllTrips,
+  getAllDeliveryGuyName,
+  getTripsByDate,
+} from "../../actions/tripsAction";
 import { Pagination } from "../layout/Pagination/Pagination";
 import Alert from "../layout/Alert/Alert";
 
@@ -15,19 +19,23 @@ const DeliveryList = () => {
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [chosenTrip, setChosenTrip] = useState("");
   const [deliveryGuy, setDeliveryGuy] = useState("");
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date(Date.now()));
   const [alert, setAlert] = useState(null);
   const [nextDeliveryDay, setNextDeliveryDay] = useState(new Date(Date.now()));
+  // const [exisitingCustomers, setExsistingCustomers] = useState(null);
   const previousDeliveryDayRef = useRef(null);
+  const { allTrips, deliveryGuyNames, tripsByDate } = useSelector(
+    (state) => state.trips || {}
+  );
+  const customerIds = tripsByDate.flatMap((t) =>
+    t.customers.map((c) => c.customerId)
+  );
 
   useEffect(() => {
     previousDeliveryDayRef.current = nextDeliveryDay;
   }, []);
   const { isAuthenticated, user } = useSelector((state) => state.user);
   const { showNavigation } = useSelector((state) => state.navigation);
-  const { allTrips, deliveryGuyNames } = useSelector(
-    (state) => state.trips || {}
-  );
   const { customersPredictions, loading, customersPredictionsCount } =
     useSelector((state) => state.customers || {});
   const dispatch = useDispatch();
@@ -136,6 +144,7 @@ const DeliveryList = () => {
   const handleCloseAlert = () => {
     setAlert(null);
   };
+
   useEffect(() => {
     if (nextDeliveryDay !== previousDeliveryDayRef.current) {
       dispatch(getCustomersByNextDeliveryDateMore(nextDeliveryDay, 1));
@@ -152,6 +161,10 @@ const DeliveryList = () => {
     dispatch(getAllTrips());
     dispatch(getAllDeliveryGuyName());
   }, []);
+
+  useEffect(() => {
+    dispatch(getTripsByDate(selectedDate));
+  }, [selectedDate]);
 
   return (
     <>
@@ -249,47 +262,57 @@ const DeliveryList = () => {
                 <div className="eachCustomer_zone">Allotment</div>
               </div>
               <div className="eachCustomerContent">
-                {customersPredictions?.map((customer) => (
-                  <div className="eachCustomer" key={customer.customerId}>
-                    <input
-                      className="eachCustomer_zone"
-                      type="checkbox"
-                      value={customer.customerId}
-                      checked={selectedCustomers.some(
-                        (selected) =>
-                          selected.customerId === customer.customerId
-                      )}
-                      onChange={() =>
-                        handleCheckboxChange(
-                          customer.customerId,
-                          customer.name,
-                          customer.phoneNo,
-                          customer.address,
-                          customer.allotment
-                        )
-                      }
-                    />
-                    <div className="eachCustomer_id">{customer.customerId}</div>
-                    <div className="eachCustomer_name">{customer.name}</div>
-                    <div className="eachCustomer_zone">{customer.zone}</div>
-                    <div className="eachCustomer_zone">
-                      {customer.frequency}
+                {customersPredictions?.map((customer) => {
+                  if (
+                    customerIds.length &&
+                    customerIds.includes(customer.customerId)
+                  ) {
+                    return null;
+                  }
+                  return (
+                    <div className="eachCustomer" key={customer.customerId}>
+                      <input
+                        className="eachCustomer_zone"
+                        type="checkbox"
+                        value={customer.customerId}
+                        checked={selectedCustomers.some(
+                          (selected) =>
+                            selected.customerId === customer.customerId
+                        )}
+                        onChange={() =>
+                          handleCheckboxChange(
+                            customer.customerId,
+                            customer.name,
+                            customer.phoneNo,
+                            customer.address,
+                            customer.allotment
+                          )
+                        }
+                      />
+                      <div className="eachCustomer_id">
+                        {customer.customerId}
+                      </div>
+                      <div className="eachCustomer_name">{customer.name}</div>
+                      <div className="eachCustomer_zone">{customer.zone}</div>
+                      <div className="eachCustomer_zone">
+                        {customer.frequency}
+                      </div>
+                      <div className="eachCustomer_date">
+                        {new Date(customer.nextDelivery).toLocaleDateString(
+                          "en-US"
+                        )}
+                      </div>
+                      <div className="eachCustomer_date">
+                        {new Date(customer.lastDeliveryDate).toLocaleDateString(
+                          "en-US"
+                        )}
+                      </div>
+                      <div className="eachCustomer_zone">
+                        {customer.allotment}
+                      </div>
                     </div>
-                    <div className="eachCustomer_date">
-                      {new Date(customer.nextDelivery).toLocaleDateString(
-                        "en-US"
-                      )}
-                    </div>
-                    <div className="eachCustomer_date">
-                      {new Date(customer.lastDeliveryDate).toLocaleDateString(
-                        "en-US"
-                      )}
-                    </div>
-                    <div className="eachCustomer_zone">
-                      {customer.allotment}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
