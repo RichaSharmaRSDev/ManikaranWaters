@@ -119,6 +119,7 @@ const Navigation = () => {
   function logoutUser() {
     dispatch(logout());
   }
+
   return (
     <>
       {loading ? (
@@ -273,11 +274,13 @@ const Navigation = () => {
               </>
             )}
 
+            {/* Delivery Trips */}
             <div className="menu">
               <button className="menu-button">Delivery Trips</button>
               <div className="submenu">
-                <Link to="/trips">Trips</Link>
                 <Link to="/makeDeliveryList">Make Trips</Link>
+                <Link to="/trips">Modify Trips</Link>
+                <Link to="/arrangetrips">Arrange Trips</Link>
               </div>
             </div>
 

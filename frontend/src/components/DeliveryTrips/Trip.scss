@@ -45,9 +45,10 @@
 
 .tripActions {
   margin: 10px auto;
-  display: flex;
+  display: inline-flex;
   gap: 20px;
   align-items: center;
+  width: 60%;
   button {
     margin: 0;
   }
@@ -82,6 +83,18 @@
   }
   input {
     transform: scale(1.2);
+  }
+}
+
+.nextDeliveryDate-select {
+  display: inline-block;
+  font-size: 1vw;
+  margin-right: 2vw;
+  span {
+    margin-right: 15px;
+  }
+  input {
+    transform: none;
   }
 }
 
@@ -153,6 +166,11 @@
   }
 }
 
+.customerTabsArrange {
+  display: flex;
+  gap: 10%;
+}
+
 .customersPanel {
   margin-top: 1vh;
   display: flex;
@@ -193,4 +211,12 @@
 
 .blue-cta:disabled {
   background-color: gray;
+}
+
+.leftTab,
+.rightTab {
+  border: 1px dashed black;
+  width: 40%;
+  max-height: 80vh;
+  overflow-y: scroll;
 }

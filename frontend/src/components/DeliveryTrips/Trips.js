@@ -182,7 +182,8 @@ const Trips = () => {
             <>
               <div>
                 <div className="tripNumberHeading">
-                  {tripsByDate[currentTripIndex]?.tripNumber}
+                  {tripsByDate[currentTripIndex]?.tripNumber} —{" "}
+                  {tripsByDate[currentTripIndex]?.deliveryGuy}
                 </div>
                 <div className="newCustomerAddition">
                   <input

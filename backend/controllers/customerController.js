@@ -116,6 +116,51 @@ exports.getCustomersByNextDeliveryDate = catchAsyncError(async (req, res) => {
   });
 });
 
+// get all customers by NextDelivery date
+exports.getCustomersByNextDeliveryDateMore = catchAsyncError(
+  async (req, res) => {
+    const { date } = req.query;
+
+    if (!date) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Date parameter is required" });
+    }
+
+    const startDate = new Date(date);
+    const endDate = new Date(date);
+    endDate.setHours(23, 59, 59, 999);
+
+    // Query customers with nextDelivery date within the specified range
+    const customersQuery = Customer.find({
+      $or: [
+        { nextDelivery: { $gte: startDate, $lte: endDate } },
+        { nextDelivery: { $lt: startDate } }, // Include customers with back-dated nextDeliveryDate
+      ],
+    })
+      .select("-deliveries -payments -createdAt")
+      .sort({ nextDelivery: -1, frequency: 1, zone: 1 });
+
+    const apiFeature = new ApiFeatures(customersQuery, req.query).pagination(
+      50
+    );
+
+    const customers = await apiFeature.query;
+    const customerCount = await Customer.countDocuments({
+      $or: [
+        { nextDelivery: { $gte: startDate, $lte: endDate } },
+        { nextDelivery: { $lt: startDate } }, // Include customers with back-dated nextDeliveryDate
+      ],
+    });
+
+    res.status(200).json({
+      success: true,
+      customers,
+      customerCount,
+    });
+  }
+);
+
 // Get Customer's Details
 exports.getCustomerDetails = catchAsyncError(async (req, res, next) => {
   const customer = await Customer.findOne({

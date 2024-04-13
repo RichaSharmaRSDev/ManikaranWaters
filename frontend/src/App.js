@@ -30,6 +30,7 @@ import DeliveryPanel from "./components/DeliveryPanel/DeliveryPanel.js";
 import DeliveryList from "./components/DeliveryTrips/DeliveryList.js";
 import Trips from "./components/DeliveryTrips/Trips.js";
 import QuickAccess from "./components/Customers/QuickAccess.js";
+import ArrangeTrips from "./components/DeliveryTrips/ArrangeTrips.js";
 
 function App() {
   const { loading } = useSelector((state) => state.user);
@@ -241,6 +242,14 @@ function App() {
           element={
             <AuthenticatedRoute>
               <DeliveryList />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/arrangetrips"
+          element={
+            <AuthenticatedRoute>
+              <ArrangeTrips />
             </AuthenticatedRoute>
           }
         />

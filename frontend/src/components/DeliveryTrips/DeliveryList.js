@@ -4,7 +4,7 @@ import axios from "axios";
 import Loader from "../layout/Loader/Loader";
 import Navigation from "../Navigation/Navigation";
 import Title from "../layout/Title";
-import { getCustomersByNextDeliveryDate } from "../../actions/customerAction";
+import { getCustomersByNextDeliveryDateMore } from "../../actions/customerAction";
 import "./Trip.scss";
 import { getAllTrips, getAllDeliveryGuyName } from "../../actions/tripsAction";
 import { Pagination } from "../layout/Pagination/Pagination";
@@ -31,11 +31,12 @@ const DeliveryList = () => {
   const { customersPredictions, loading, customersPredictionsCount } =
     useSelector((state) => state.customers || {});
   const dispatch = useDispatch();
-  const totalPages = Math.ceil(customersPredictionsCount / 20);
-  console.log({ totalPages });
+  const totalPages = Math.ceil(customersPredictionsCount / 50);
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+
   const handleCheckboxChange = (
     customerId,
     name,
@@ -137,11 +138,13 @@ const DeliveryList = () => {
   };
   useEffect(() => {
     if (nextDeliveryDay !== previousDeliveryDayRef.current) {
-      dispatch(getCustomersByNextDeliveryDate(nextDeliveryDay, 1));
+      dispatch(getCustomersByNextDeliveryDateMore(nextDeliveryDay, 1));
       previousDeliveryDayRef.current = nextDeliveryDay;
       setCurrentPage(1);
     } else {
-      dispatch(getCustomersByNextDeliveryDate(nextDeliveryDay, currentPage));
+      dispatch(
+        getCustomersByNextDeliveryDateMore(nextDeliveryDay, currentPage)
+      );
     }
   }, [nextDeliveryDay, currentPage]);
 
@@ -160,7 +163,7 @@ const DeliveryList = () => {
         <>
           <div className={showNavigation ? "beNeutral" : "shiftLeft"}>
             <div className="nextDeliveryDate-select">
-              <span>Select Next Delivery Date for Customers</span>
+              <span>Next Delivery Date</span>
               <input
                 type="date"
                 value={
@@ -174,6 +177,66 @@ const DeliveryList = () => {
                 }
                 onChange={(e) => setNextDeliveryDay(new Date(e.target.value))}
               />
+            </div>
+            <div className="tripActions">
+              <input
+                type="date"
+                value={
+                  new Date(
+                    selectedDate.getTime() +
+                      selectedDate.getTimezoneOffset() * 60000 +
+                      5.5 * 60 * 60 * 1000 // Adjusting for IST (5.5 hours ahead of GMT)
+                  )
+                    .toISOString()
+                    .split("T")[0]
+                }
+                onChange={(e) => setSelectedDate(new Date(e.target.value))}
+              />
+
+              <select
+                required
+                onChange={(e) => setChosenTrip(e.target.value)}
+                value={chosenTrip}
+              >
+                <option value="" hidden>
+                  Select Trip
+                </option>
+                <option value="trip1">Trip 1</option>
+                <option value="trip2">Trip 2</option>
+                <option value="trip3">Trip 3</option>
+                <option value="trip4">Trip 4</option>
+                <option value="trip5">Trip 5</option>
+                <option value="trip6">Trip 6</option>
+                <option value="trip7">Trip 7</option>
+              </select>
+
+              <select
+                required
+                onChange={(e) => setDeliveryGuy(e.target.value)}
+                value={deliveryGuy}
+              >
+                <option value="" hidden>
+                  Delivery Guy
+                </option>
+                {deliveryGuyNames.map((deliveryMan) => (
+                  <option value={deliveryMan.name}>{deliveryMan.name}</option>
+                ))}
+              </select>
+
+              <button
+                className="common-cta common-cta-small"
+                onClick={handleAddToTrip}
+              >
+                Submit
+              </button>
+
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              )}
             </div>
             <div className="customersList">
               <div className="eachCustomerHeading">
@@ -230,66 +293,6 @@ const DeliveryList = () => {
               </div>
             </div>
 
-            <div className="tripActions">
-              <input
-                type="date"
-                value={
-                  new Date(
-                    selectedDate.getTime() +
-                      selectedDate.getTimezoneOffset() * 60000 +
-                      5.5 * 60 * 60 * 1000 // Adjusting for IST (5.5 hours ahead of GMT)
-                  )
-                    .toISOString()
-                    .split("T")[0]
-                }
-                onChange={(e) => setSelectedDate(new Date(e.target.value))}
-              />
-
-              <select
-                required
-                onChange={(e) => setChosenTrip(e.target.value)}
-                value={chosenTrip}
-              >
-                <option value="" hidden>
-                  Select Trip
-                </option>
-                <option value="trip1">Trip 1</option>
-                <option value="trip2">Trip 2</option>
-                <option value="trip3">Trip 3</option>
-                <option value="trip4">Trip 4</option>
-                <option value="trip5">Trip 5</option>
-                <option value="trip6">Trip 6</option>
-                <option value="trip7">Trip 7</option>
-              </select>
-
-              <select
-                required
-                onChange={(e) => setDeliveryGuy(e.target.value)}
-                value={deliveryGuy}
-              >
-                <option value="" hidden>
-                  Delivery Guy
-                </option>
-                {deliveryGuyNames.map((deliveryMan) => (
-                  <option value={deliveryMan.name}>{deliveryMan.name}</option>
-                ))}
-              </select>
-
-              <button
-                className="common-cta common-cta-small"
-                onClick={handleAddToTrip}
-              >
-                Add to Trip
-              </button>
-
-              {totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
-              )}
-            </div>
             {alert && (
               <Alert
                 type={alert.type}

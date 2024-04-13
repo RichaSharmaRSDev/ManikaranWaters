@@ -82,6 +82,26 @@ export const getCustomersByNextDeliveryDate =
       });
     }
   };
+
+export const getCustomersByNextDeliveryDateMore =
+  (date, page) => async (dispatch) => {
+    try {
+      dispatch({ type: "AllCustomersPredictionsRequest" });
+      const { data } = await axios.get(
+        `/api/v1/customerspredictionsmore?date=${date}&page=${page}`
+      );
+      dispatch({
+        type: "AllCustomersPredictionsSuccess",
+        payload: data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "AllCustomersPredictionsFail",
+        payload: error.response.data.messsage,
+      });
+    }
+  };
+
 export const createNewCustomer = (formData) => async (dispatch) => {
   try {
     dispatch({ type: "CreateNewCustomerRequest" });
