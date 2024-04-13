@@ -47,57 +47,59 @@ const DeliveryPanel = () => {
       deliveryDate: date,
       returnedJars: returnedCans,
     };
-    if (cashReceived > 0) {
-      deliveryData.amountReceived = cashReceived;
-      deliveryData.paymentMode = "cash";
-    }
-    dispatch(createDelivery(deliveryData))
-      .then(async () => {
-        try {
-          const updatedCustomers = tripCustomers.map((customer) => {
-            return customer.customerId === customerId
-              ? {
-                  ...customer,
-                  isDelivered: true,
-                  deliveredCans,
-                  returnedCans,
-                  ...(cashReceived > 0 && { cashReceived }),
-                }
-              : customer;
-          });
+    if (deliveredCans > 0) {
+      if (cashReceived > 0) {
+        deliveryData.amountReceived = cashReceived;
+        deliveryData.paymentMode = "cash";
+      }
+      dispatch(createDelivery(deliveryData))
+        .then(async () => {
+          try {
+            const updatedCustomers = tripCustomers.map((customer) => {
+              return customer.customerId === customerId
+                ? {
+                    ...customer,
+                    isDelivered: true,
+                    deliveredCans,
+                    returnedCans,
+                    ...(cashReceived > 0 && { cashReceived }),
+                  }
+                : customer;
+            });
 
-          setTripCustomers(updatedCustomers);
+            setTripCustomers(updatedCustomers);
 
-          const tripData = {
-            tripDate: date,
-            tripNumber,
-            deliveryGuy: deliveryGuyName,
-            customers: updatedCustomers,
-          };
-          const response = await fetch(
-            `/api/v1/trips/overwrite-trip/${date}/${tripNumber}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(tripData),
+            const tripData = {
+              tripDate: date,
+              tripNumber,
+              deliveryGuy: deliveryGuyName,
+              customers: updatedCustomers,
+            };
+            const response = await fetch(
+              `/api/v1/trips/overwrite-trip/${date}/${tripNumber}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(tripData),
+              }
+            );
+
+            if (response.ok) {
+              console.log("Trip updated successfully");
+              dispatch(getTripsByDateAndDeliveryGuy(date, deliveryGuyName));
+            } else {
+              console.error("Failed to update trip");
             }
-          );
-
-          if (response.ok) {
-            console.log("Trip updated successfully");
-            dispatch(getTripsByDateAndDeliveryGuy(date, deliveryGuyName));
-          } else {
-            console.error("Failed to update trip");
+          } catch (error) {
+            console.error("Error during submission:", error);
           }
-        } catch (error) {
-          console.error("Error during submission:", error);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
 
     closeDeliveryPopUp();
   };
