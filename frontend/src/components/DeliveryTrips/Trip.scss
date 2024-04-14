@@ -72,7 +72,8 @@
 }
 
 .nextDeliveryDate-select,
-.deliveryDate-select {
+.deliveryDate-select,
+.deliveryDate-select-arrange {
   font-size: 1.2vw;
   color: #0163a2;
   font-family: "Tillana";
@@ -96,6 +97,11 @@
   input {
     transform: none;
   }
+}
+
+.deliveryDate-select.arrangeTrips {
+  display: inline-block;
+  width: 25vw;
 }
 
 .tripNumber {
@@ -217,6 +223,7 @@
 .rightTab {
   border: 1px dashed black;
   width: 40%;
-  max-height: 70vh;
+  height: 70vh;
   overflow-y: scroll;
+  margin-bottom: 10px;
 }

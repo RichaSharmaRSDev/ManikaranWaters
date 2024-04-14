@@ -5,6 +5,7 @@ import Title from "../layout/Title";
 import { getTripsByDate } from "../../actions/tripsAction";
 import { useDispatch, useSelector } from "react-redux";
 import Alert from "../layout/Alert/Alert";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const ArrangeTrips = () => {
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ const ArrangeTrips = () => {
 
   useEffect(() => {
     dispatch(getTripsByDate(selectedDate));
+    setRightTabCustomers([]);
   }, [selectedDate, currentTripIndex]);
 
   useEffect(() => {
@@ -128,16 +130,39 @@ const ArrangeTrips = () => {
     }
   };
 
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+
+  const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const startIndex = result.source.index;
+    const endIndex = result.destination.index;
+
+    if (startIndex === endIndex) {
+      return;
+    }
+    const reorderedCustomers = reorder(rightTabCustomers, startIndex, endIndex);
+    setRightTabCustomers(reorderedCustomers);
+  };
+
   return (
     <>
-      <Title title={"Delivery List"} />
+      <Title title={"Arrange Trips"} />
       <Navigation />
       {tripsByDateLoading ? (
         <Loader />
       ) : (
         <>
           <div className={showNavigation ? "beNeutral" : "shiftLeft"}>
-            <div className="deliveryDate-select">
+            <div className="deliveryDate-select arrangeTrips">
               <span>Select Trip Date</span>
               <input
                 type="date"
@@ -145,7 +170,7 @@ const ArrangeTrips = () => {
                 onChange={handleDateChange}
               />
             </div>
-            <div className="tripsDiv">
+            <div className="tripActions">
               <button
                 className="blue-cta"
                 onClick={goToPreviousTrip}
@@ -190,25 +215,58 @@ const ArrangeTrips = () => {
                         </div>
                       ))}
                   </div>
-                  <div
-                    className="rightTab"
-                    onDragOver={(e) => handleDragOver(e)}
-                    onDrop={(e) => handleDrop(e, "rightTab")}
-                  >
-                    {Array.isArray(rightTabCustomers) &&
-                      rightTabCustomers?.map((customer, index) => (
+                  <DragDropContext onDragEnd={onDragEnd}>
+                    <Droppable droppableId="list">
+                      {(provided) => (
                         <div
-                          key={index}
-                          className="customersTabs"
-                          draggable="true"
-                          onDragStart={(e) => handleDragStart(e, customer)}
+                          className="rightTab"
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          onDragOver={(e) => handleDragOver(e)}
+                          onDrop={(e) => handleDrop(e, "rightTab")}
                         >
-                          <div>{customer.customerId}</div>
-                          <div>{customer.name}</div>
-                          <div>{customer.allotment}</div>
+                          {Array.isArray(rightTabCustomers) &&
+                          rightTabCustomers.length > 0
+                            ? rightTabCustomers.map((customer, index) => {
+                                return (
+                                  <Draggable
+                                    key={customer.customerId}
+                                    draggableId={customer.customerId}
+                                    index={index}
+                                  >
+                                    {(provided, snapshot) => (
+                                      <div
+                                        className="customersTabs"
+                                        draggable="true"
+                                        onDragStart={(e) =>
+                                          handleDragStart(e, customer)
+                                        }
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        style={{
+                                          backgroundColor: snapshot.isDragging
+                                            ? "#fec41b"
+                                            : "#deeef9",
+                                          ...provided.draggableProps.style,
+                                        }}
+                                      >
+                                        <div>{customer.customerId}</div>
+                                        <div>{customer.name}</div>
+                                        <div>{customer.allotment}</div>
+                                        <div>{customer.customMessage}</div>
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                );
+                              })
+                            : null}
+
+                          {provided.placeholder}
                         </div>
-                      ))}
-                  </div>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
                 </div>
                 <button
                   className="common-cta common-cta-small"
