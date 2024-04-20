@@ -27,7 +27,7 @@ const DeliveryList = () => {
   const { allTrips, deliveryGuyNames, tripsByDate } = useSelector(
     (state) => state.trips || {}
   );
-  const customerIds = tripsByDate.flatMap((t) =>
+  const customerIds = tripsByDate?.flatMap((t) =>
     t.customers.map((c) => c.customerId)
   );
 
@@ -264,7 +264,7 @@ const DeliveryList = () => {
               <div className="eachCustomerContent">
                 {customersPredictions?.map((customer) => {
                   if (
-                    customerIds.length &&
+                    customerIds?.length &&
                     customerIds.includes(customer.customerId)
                   ) {
                     return null;
