@@ -5,6 +5,7 @@ const {
   updateCustomer,
   deleteCustomer,
   getCustomerDetails,
+  getCustomerDeliveryHistory,
   getAllCustomersBasicDetails,
   getAllCustomersNameId,
   getCustomersByNextDeliveryDate,
@@ -37,5 +38,9 @@ router
   .put(isAuthenticatedUser, updateCustomer)
   .delete(isAuthenticatedUser, authorizedroles("admin"), deleteCustomer)
   .get(isAuthenticatedUser, getCustomerDetails);
+
+router
+  .route("/getdeliveriesdetails/:customerId")
+  .get(isAuthenticatedUser, getCustomerDeliveryHistory);
 
 module.exports = router;

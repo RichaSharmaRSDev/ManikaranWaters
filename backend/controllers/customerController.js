@@ -1,4 +1,6 @@
 const Customer = require("../models/customerModel");
+const Delivery = require("../models/deliverySchema");
+const Payment = require("../models/paymentSchema");
 const ErrorHandler = require("../utils/errorHandler");
 const catchAsyncError = require("../middleware/catchAsyncError");
 const ApiFeatures = require("../utils/apiFeatures");
@@ -174,6 +176,27 @@ exports.getCustomerDetails = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     customer,
+  });
+});
+
+// Get Customer's Delivery and Payments
+exports.getCustomerDeliveryHistory = catchAsyncError(async (req, res, next) => {
+  const customerId = req.params.customerId;
+  const customerHistoryDeliveries = await Delivery.find({
+    customer: customerId,
+  });
+  const customerHistoryPaymnets = await Payment.find({
+    customer: customerId,
+  });
+
+  if (!customerId) {
+    return next(new ErrorHandler("CustomerId not found", 404));
+  }
+
+  res.status(200).json({
+    status: true,
+    customerHistoryDeliveries,
+    customerHistoryPaymnets,
   });
 });
 

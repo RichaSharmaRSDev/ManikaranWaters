@@ -34,11 +34,13 @@ table {
 }
 
 .modal.full-customer-modal {
+  z-index: 1;
+  font-family: "Work Sans";
   .modal-text {
     width: 80vw;
-    height: 80vh;
-    padding-top: 20px;
-    padding-left: 30px;
+    height: 87vh;
+    padding-top: 25px;
+    padding-left: 10px;
     overflow-y: scroll;
     .full-customer-details-content {
       display: flex;
@@ -70,5 +72,41 @@ table {
   }
   .quickaccess-parent.customer-list th.customer-id {
     width: 50px;
+  }
+}
+
+.customerDeliveriesHistory {
+  background-color: #deeef9;
+  border-radius: 20px;
+  padding: 10px 10px 0;
+  margin-bottom: 10px;
+  & > span {
+    margin-bottom: 7px;
+    display: inline-block;
+    font-weight: bold;
+    & + button {
+      background: transparent;
+      border: none;
+      float: right;
+      img {
+        width: 20px;
+      }
+    }
+  }
+}
+
+.customerDeliveriesHistory-date {
+  & > div:nth-of-type(1) {
+    text-decoration: underline;
+    margin-bottom: 5px;
+  }
+  & > div:nth-of-type(2) {
+    display: flex;
+    padding-bottom: 10px;
+  }
+  .details-history {
+    display: flex;
+    gap: 10px;
+    margin-right: 10px;
   }
 }

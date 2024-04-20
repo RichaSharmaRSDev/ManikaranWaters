@@ -1,21 +1,22 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  clearCustomerFullDetail,
-  getFullCustomerDetails,
+  getCustomerDeliveriesHistory,
+  clearCustomerDeliveriesHistory,
 } from "../../actions/customerAction";
 import CustomerFullDetails from "./CustomerFullDetails";
 
 const CustomerTable = ({ customers }) => {
   const dispatch = useDispatch();
-  const { customerFullDetail } = useSelector((state) => state.customers) || {};
+  const { customerDeliveriesHistory } =
+    useSelector((state) => state.customers) || {};
 
-  const getFullDetails = (id) => {
-    dispatch(getFullCustomerDetails(id));
+  const getDeliveriesHistory = (id) => {
+    dispatch(getCustomerDeliveriesHistory(id));
   };
 
   const handleCloseModal = () => {
-    dispatch(clearCustomerFullDetail());
+    dispatch(clearCustomerDeliveriesHistory());
   };
 
   const formatDate = (date) => {
@@ -83,7 +84,7 @@ const CustomerTable = ({ customers }) => {
                   ? "needAttention"
                   : ""
               }`}
-              onClick={() => getFullDetails(customer.customerId)}
+              onClick={() => getDeliveriesHistory(customer.customerId)}
             >
               <td className="customer-id">{customer.customerId}</td>
               <td className="customer-name">{customer.name}</td>
@@ -111,9 +112,9 @@ const CustomerTable = ({ customers }) => {
           ))}
         </tbody>
       </table>
-      {customerFullDetail && (
+      {customerDeliveriesHistory && (
         <CustomerFullDetails
-          customerFullDetail={customerFullDetail}
+          customerDeliveriesHistory={customerDeliveriesHistory}
           handleCloseModal={handleCloseModal}
         />
       )}
