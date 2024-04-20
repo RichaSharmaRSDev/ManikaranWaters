@@ -407,3 +407,15 @@ input[type="checkbox"] {
     }
   }
 }
+
+.sales-report button {
+  display: block;
+  margin: 0 auto;
+}
+
+.daily-report-modal {
+  .modal-text {
+    width: 90vw;
+    height: 87vh;
+  }
+}

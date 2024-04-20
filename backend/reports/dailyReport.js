@@ -97,7 +97,6 @@ exports.generateDailyReport = catchAsyncError(async (req, res, next) => {
 
 exports.generateMonthlyReport = catchAsyncError(async (req, res, next) => {
   const { monthYear } = req.params;
-  console.log(monthYear);
   const [year, month] = monthYear.split("-");
 
   const reportStartDate = new Date(
@@ -110,7 +109,6 @@ exports.generateMonthlyReport = catchAsyncError(async (req, res, next) => {
   );
   const reportEndDate = new Date(lastDayOfMonth);
 
-  console.log(reportStartDate, reportEndDate);
   // Fetch relevant data from the database
   const customers = await Customer.find();
   const deliveries = await Delivery.find({
@@ -141,17 +139,15 @@ exports.generateMonthlyReport = catchAsyncError(async (req, res, next) => {
     },
   });
 
-  // Perform aggregations using JavaScript
+  // Perform aggregations for whole month
   const totalCansDelivered = deliveries.reduce(
     (total, delivery) => total + (delivery.deliveredQuantity || 0),
     0
   );
-
   const totalReceivedCans = deliveries.reduce(
     (total, delivery) => total + (delivery.returnedJars || 0),
     0
   );
-
   const totalSales = deliveries.reduce((total, delivery) => {
     const customer = customers.find(
       (c) => c.customerId.toString() === delivery?.customer?.toString()
@@ -161,7 +157,6 @@ exports.generateMonthlyReport = catchAsyncError(async (req, res, next) => {
     }
     return total;
   }, 0);
-
   const totalCashReceived = payments
     .filter((payment) => payment.paymentMode.toLowerCase() === "cash")
     .reduce((total, payment) => total + payment.amount, 0);
@@ -170,11 +165,65 @@ exports.generateMonthlyReport = catchAsyncError(async (req, res, next) => {
     .filter((payment) => payment.paymentMode.toLowerCase() === "online")
     .reduce((total, payment) => total + payment.amount, 0);
 
-  //daily expenses
   const totalExpenses = expenses.reduce(
     (total, expense) => total + expense.amount,
     0
   );
+
+  // prepare individual day's data
+  const dailyIndividualReport = {};
+  deliveries.forEach((delivery) => {
+    const dateKey = delivery.deliveryDate.toISOString().split("T")[0];
+    if (!dailyIndividualReport[dateKey]) {
+      dailyIndividualReport[dateKey] = {
+        delivered: 0,
+        returned: 0,
+        cash: 0,
+        online: 0,
+        totalAmount: 0,
+        expenses: 0,
+        revenue: 0,
+        newConnections: 0,
+      };
+    }
+    if (delivery.deliveredQuantity > 0) {
+      dailyIndividualReport[dateKey].delivered += delivery.deliveredQuantity;
+
+      const customer = customers.find(
+        (c) => c.customerId.toString() === delivery?.customer?.toString()
+      );
+      if (customer) {
+        dailyIndividualReport[dateKey].revenue +=
+          delivery.deliveredQuantity * (customer.rate || 0);
+      }
+    }
+    if (delivery.returnedJars > 0) {
+      dailyIndividualReport[dateKey].returned += delivery.returnedJars;
+    }
+  });
+  payments.forEach((payment) => {
+    const dateKey = payment.paymentDate.toISOString().split("T")[0];
+    if (!dailyIndividualReport[dateKey]) {
+      dailyIndividualReport[dateKey] = {
+        delivered: 0,
+        received: 0,
+        cash: 0,
+        online: 0,
+        totalAmount: 0,
+        expenses: 0,
+        revenue: 0,
+        newConnections: 0,
+      };
+    }
+    if (payment.amount > 0) {
+      if (payment.paymentMode === "cash") {
+        dailyIndividualReport[dateKey].cash += payment.amount;
+      } else {
+        dailyIndividualReport[dateKey].online += payment.amount;
+      }
+      dailyIndividualReport[dateKey].totalAmount += payment.amount;
+    }
+  });
 
   // Prepare the final report object
   const monthlyReport = {
@@ -187,6 +236,7 @@ exports.generateMonthlyReport = catchAsyncError(async (req, res, next) => {
     totalOnlineReceived,
     newConnections,
     totalExpenses,
+    dailyIndividualReport,
   };
 
   res.status(200).json({ success: true, report: monthlyReport });

@@ -112,7 +112,7 @@ const CustomerFullDetails = ({
             <span>{monthYear}</span>
             <button onClick={() => copyTextToClipboard(monthYear)}>
               {copiedText === monthYear ? (
-                <span className="success">"Copied!"</span>
+                <span className="success">Copied!</span>
               ) : (
                 <img src={copy} alt="copy" />
               )}
