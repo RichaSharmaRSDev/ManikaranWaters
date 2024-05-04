@@ -44,7 +44,7 @@ export const customerReducer = (state = { customers: [] }, action) => {
     case "AllCustomersIdNameSuccess":
       return {
         loading: false,
-        customers: action.payload.customers,
+        customersIdName: action.payload.customers,
         successIdName: action.payload.success,
       };
     case "FullCustomerDetailsSuccess":

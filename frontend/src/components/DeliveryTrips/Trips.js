@@ -9,9 +9,11 @@ import {
   getTripsByDate,
   getAllDeliveryGuyName,
 } from "../../actions/tripsAction";
+import { getCustomersIdName } from "../../actions/customerAction";
 
 const Trips = () => {
   const { isAuthenticated, user, loading } = useSelector((state) => state.user);
+  const { customersIdName } = useSelector((state) => state.customers);
   const { showNavigation } = useSelector((state) => state.navigation);
   const { tripsByDate, tripsByDateLoading, deliveryGuyNames } = useSelector(
     (state) => state.trips || {}
@@ -58,28 +60,30 @@ const Trips = () => {
   };
 
   const addCustomer = async () => {
-    try {
-      const response = await fetch(
-        `/api/v1/customerForTrips/${newCustomerInput}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    if (newCustomerInput) {
+      try {
+        const response = await fetch(
+          `/api/v1/customerForTrips/${newCustomerInput}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log("Customer received successfully", responseData);
-        setCustomers([responseData.customer, ...customers]);
-      } else {
-        console.error("customer not found");
+        if (response.ok) {
+          const responseData = await response.json();
+          console.log("Customer received successfully", responseData);
+          setCustomers([responseData.customer, ...customers]);
+        } else {
+          console.error("customer not found");
+        }
+      } catch (error) {
+        console.error("Error during addition:", error);
       }
-    } catch (error) {
-      console.error("Error during addition:", error);
+      setNewCustomerInput("");
     }
-    setNewCustomerInput("");
   };
 
   const removeCustomer = (indexToRemove) => {
@@ -151,6 +155,7 @@ const Trips = () => {
 
   useEffect(() => {
     dispatch(getAllDeliveryGuyName());
+    dispatch(getCustomersIdName());
   }, []);
 
   useEffect(() => {
@@ -186,12 +191,18 @@ const Trips = () => {
                   {tripsByDate[currentTripIndex]?.deliveryGuy}
                 </div>
                 <div className="newCustomerAddition">
-                  <input
-                    type="text"
+                  <select
                     value={newCustomerInput}
                     placeholder="Add Customer ID"
                     onChange={(e) => setNewCustomerInput(e.target.value)}
-                  />
+                  >
+                    <option value="">Select Customer</option>
+                    {customersIdName?.map((customer) => (
+                      <option value={customer.customerId}>
+                        {customer.name} | {customer.customerId}
+                      </option>
+                    ))}
+                  </select>
                   <button
                     className="common-cta common-cta-small"
                     onClick={addCustomer}

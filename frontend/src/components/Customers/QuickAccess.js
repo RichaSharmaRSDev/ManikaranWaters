@@ -11,7 +11,7 @@ const QuickAccess = () => {
   const dispatch = useDispatch();
   const {
     loading,
-    customers,
+    customersIdName,
     error: customerError,
   } = useSelector((state) => state.customers);
   const { isAuthenticated } = useSelector((state) => state.user);
@@ -32,7 +32,7 @@ const QuickAccess = () => {
           <Navigation />
           <div className={showNavigation ? "beNeutral" : "shiftLeft"}>
             <h2 className="common-heading common-heading-form">Quick Access</h2>
-            {customers ? (
+            {customersIdName ? (
               <div className="quickaccess-parent customer-list">
                 <table>
                   <thead className="customer-list-header">
@@ -42,7 +42,7 @@ const QuickAccess = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {customers?.map((i) => (
+                    {customersIdName?.map((i) => (
                       <>
                         <tr>
                           <td>{i?.customerId}</td>

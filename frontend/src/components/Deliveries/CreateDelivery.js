@@ -20,7 +20,7 @@ const CreateDelivery = () => {
   const { deliveryGuyNames } = useSelector((state) => state.trips || {});
   const dispatch = useDispatch();
   const { loading, isAuthenticated } = useSelector((state) => state.user);
-  const { customers, error: customerError } = useSelector(
+  const { customersIdName, error: customerError } = useSelector(
     (state) => state.customers
   );
   const {
@@ -28,7 +28,7 @@ const CreateDelivery = () => {
     error: deliveryError,
     success,
   } = useSelector((state) => state.deliveries) || {};
-  const [matchedCustomer, setMatchedCustomer] = useState("");
+  const [addedCustomer, setAddedCustomer] = useState("");
   // const alert = useAlert();
   useEffect(() => {
     if (isAuthenticated) {
@@ -63,16 +63,11 @@ const CreateDelivery = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
 
     if (name === "customerId") {
-      const uppercaseValue = value.toUpperCase();
-      setFormData((prevData) => ({ ...prevData, [name]: uppercaseValue }));
-
-      const matchedCustomer = customers?.find(
-        (customer) => customer.customerId === value
-      );
-      if (matchedCustomer) {
-        setMatchedCustomer(matchedCustomer.name);
+      const addedCustomer = value;
+      if (addedCustomer) {
+        setAddedCustomer(addedCustomer);
       } else {
-        setMatchedCustomer("");
+        setAddedCustomer("");
       }
     }
   };
@@ -101,7 +96,7 @@ const CreateDelivery = () => {
   const handleCloseModal = () => {
     dispatch(clearNewDelivery());
     setFormData(initialState);
-    setMatchedCustomer("");
+    setAddedCustomer("");
   };
 
   const renderPaymentModeDropdown = () => {
@@ -167,19 +162,19 @@ const CreateDelivery = () => {
                     <img src={IdLogo} alt="id" />
                     Customer Id:{" "}
                   </label>
-                  <input
-                    type="string"
+                  <select
                     name="customerId"
-                    placeholder="Customer Id"
                     value={formData.customerId}
                     onChange={handleInputChange}
                     required
-                  />
-                  {matchedCustomer && (
-                    <p className="extraNote">
-                      <span>Verified Name:</span> {matchedCustomer}
-                    </p>
-                  )}
+                  >
+                    <option value="">Select Customer</option>
+                    {customersIdName?.map((customer) => (
+                      <option value={customer.customerId}>
+                        {customer.name}|{customer.customerId}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="fields">
                   <label htmlFor="date">
@@ -276,7 +271,12 @@ const CreateDelivery = () => {
                   <span>{newDelivery.deliveryAssociateName}</span>
                 </div>
                 <div className="values">
-                  <span>Customer Name:</span> <span>{matchedCustomer}</span>
+                  <span>Customer Name:</span>{" "}
+                  <span>
+                    {customersIdName
+                      .filter((i) => addedCustomer == i.customerId)
+                      .map((customer) => customer.name)}
+                  </span>
                 </div>
                 <div className="values">
                   <span>Customer Id:</span> <span>{newDelivery.customer}</span>

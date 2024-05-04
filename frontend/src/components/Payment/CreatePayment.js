@@ -15,7 +15,7 @@ const CreatePayment = () => {
   const { showNavigation } = useSelector((state) => state.navigation);
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.user);
-  const { customers } = useSelector((state) => state.customers);
+  const { customersIdName } = useSelector((state) => state.customers);
   const { loading, error, success, newPayment } = useSelector(
     (state) => state.payments
   );
@@ -50,7 +50,7 @@ const CreatePayment = () => {
       const uppercaseValue = value.toUpperCase();
       setFormData((prevData) => ({ ...prevData, [name]: uppercaseValue }));
 
-      const matchedCustomer = customers.find(
+      const matchedCustomer = customersIdName.find(
         (customer) => customer.customerId === value
       );
       if (matchedCustomer) {
