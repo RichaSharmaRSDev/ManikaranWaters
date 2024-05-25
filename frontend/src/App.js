@@ -230,6 +230,14 @@ function App() {
           }
         />
         <Route
+          path="/report/detailedMonthly/:monthYear"
+          element={
+            <AuthenticatedRoute>
+              <DailyReport />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
           path="/deliveryPanel"
           element={
             <AuthenticatedRoute>

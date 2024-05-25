@@ -7,6 +7,7 @@ const salesReducer = (state = initialState, action) => {
   switch (action.type) {
     case "dailyReportRequest":
     case "monthlyReportRequest":
+    case "detailedMonthlyReportRequest":
       return {
         ...state,
         loading: true,
@@ -14,6 +15,7 @@ const salesReducer = (state = initialState, action) => {
       };
     case "dailyReportSuccess":
     case "monthlyReportSuccess":
+    case "detailedMonthlyReportSuccess":
       return {
         ...state,
         loading: false,
@@ -23,6 +25,7 @@ const salesReducer = (state = initialState, action) => {
       };
     case "dailyReportFail":
     case "monthlyReportSuccessFail":
+    case "detailedMonthlyReportSuccessFail":
       return {
         ...state,
         loading: false,

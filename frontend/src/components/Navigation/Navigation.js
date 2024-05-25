@@ -22,6 +22,8 @@ const Navigation = () => {
   const [predictionModal, setPredictionModal] = useState(false);
   const [salesDailyModal, setSalesDailyModal] = useState(false);
   const [salesMonthlyModal, setSalesMonthlyModal] = useState(false);
+  const [salesDetailedMonthlyModal, setSalesDetailedMonthlyModal] =
+    useState(false);
   const [customerFrequencyModal, setCustomerFrequencyModal] = useState("");
   const [customPaymentDate, setCustomPaymentDate] = useState("");
   const [customPaymentDateRangeStart, setCustomPaymentDateRangeStart] =
@@ -38,6 +40,7 @@ const Navigation = () => {
   const [customPredictionDate, setCustomPredictionDate] = useState("");
   const [salesDailyDate, setSalesDailyDate] = useState("");
   const [salesMonthlyDate, setSalesMonthlyDate] = useState("");
+  const [salesDetailedMonthlyDate, setSalesDetailedMonthlyDate] = useState("");
 
   const handlePaymentModalSubmit = () => {
     setPaymentModal(false);
@@ -95,6 +98,11 @@ const Navigation = () => {
   const handleSalesMonthlyModalSubmit = () => {
     setSalesDailyModal(false);
     navigate(`/report/monthly/${salesMonthlyDate}`);
+    setSalesDailyDate("");
+  };
+  const handleSalesDetailedMonthlyModalSubmit = () => {
+    setSalesDailyModal(false);
+    navigate(`/report/detailedMonthly/${salesDetailedMonthlyDate}`);
     setSalesDailyDate("");
   };
 
@@ -302,6 +310,13 @@ const Navigation = () => {
                     style={{ marginTop: "10px" }}
                   >
                     Monthly Report
+                  </div>
+                  <div
+                    to="#"
+                    onClick={() => setSalesDetailedMonthlyModal(true)}
+                    style={{ marginTop: "10px" }}
+                  >
+                    Detailed Monthly Report
                   </div>
                 </div>
               </div>
@@ -583,6 +598,36 @@ const Navigation = () => {
                   <div
                     className="closeModal"
                     onClick={() => setSalesMonthlyModal(false)}
+                  >
+                    &#x2715;
+                  </div>
+                </div>
+              </div>
+            )}
+            {salesDetailedMonthlyModal && (
+              <div className="modal">
+                <div className="modal-bg"></div>
+                <div className="modal-text">
+                  <label className="customInputLabel">
+                    Enter Sales Month-Year
+                  </label>
+                  <input
+                    type="month"
+                    value={salesDetailedMonthlyDate || "YYYY-MM"}
+                    placeholder="Enter Year and Month"
+                    onChange={(e) =>
+                      setSalesDetailedMonthlyDate(e.target.value)
+                    }
+                  />
+                  <button
+                    className="submitPredictiondate common-cta-blue"
+                    onClick={handleSalesDetailedMonthlyModalSubmit}
+                  >
+                    Submit
+                  </button>
+                  <div
+                    className="closeModal"
+                    onClick={() => setSalesDetailedMonthlyModal(false)}
                   >
                     &#x2715;
                   </div>

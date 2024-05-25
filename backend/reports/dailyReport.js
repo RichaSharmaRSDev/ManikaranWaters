@@ -241,3 +241,46 @@ exports.generateMonthlyReport = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({ success: true, report: monthlyReport });
 });
+
+exports.generateDetailedMonthlyReport = catchAsyncError(
+  async (req, res, next) => {
+    const { monthYear } = req.params;
+    const [year, month] = monthYear.split("-");
+
+    console.log({ month });
+
+    const reportStartDate = new Date(
+      Date.UTC(parseInt(year), parseInt(month) - 1, 1, 0, 0, 0, 0)
+    );
+
+    // Calculate the last day of the month
+    const lastDayOfMonth = new Date(
+      Date.UTC(parseInt(year), parseInt(month), 0, 23, 59, 59, 999)
+    );
+    const reportEndDate = new Date(lastDayOfMonth);
+
+    // Fetch relevant data from the database
+    const deliveries = await Delivery.find({
+      deliveryDate: {
+        $gte: reportStartDate,
+        $lte: reportEndDate,
+      },
+    });
+
+    const customerIds = [
+      ...new Set(deliveries.map((delivery) => delivery.customer)),
+    ];
+
+    const customersList = await Customer.find({
+      customerId: { $in: customerIds },
+    })
+      .select("customerId name remainingAmount -_id")
+      .sort("-remainingAmount");
+
+    const detailedMonthlyReport = {
+      customersList,
+    };
+    console.log({ detailedMonthlyReport });
+    res.status(200).json({ success: true, report: detailedMonthlyReport });
+  }
+);

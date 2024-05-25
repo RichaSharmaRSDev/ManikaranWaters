@@ -418,4 +418,9 @@ input[type="checkbox"] {
     width: 90vw;
     height: 87vh;
   }
+  .report-table {
+    padding-top: 2vw;
+    max-height: 82vh;
+    overflow-y: auto;
+  }
 }
