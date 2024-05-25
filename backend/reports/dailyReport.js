@@ -247,8 +247,6 @@ exports.generateDetailedMonthlyReport = catchAsyncError(
     const { monthYear } = req.params;
     const [year, month] = monthYear.split("-");
 
-    console.log({ month });
-
     const reportStartDate = new Date(
       Date.UTC(parseInt(year), parseInt(month) - 1, 1, 0, 0, 0, 0)
     );
@@ -280,7 +278,6 @@ exports.generateDetailedMonthlyReport = catchAsyncError(
     const detailedMonthlyReport = {
       customersList,
     };
-    console.log({ detailedMonthlyReport });
     res.status(200).json({ success: true, report: detailedMonthlyReport });
   }
 );
