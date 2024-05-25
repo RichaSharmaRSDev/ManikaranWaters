@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import copy from "./../../assets/copy.png";
 const CustomerFullDetails = ({
   customerDeliveriesHistory = {},
+  dateText = "",
   handleCloseModal,
 }) => {
   // Function to format date in 'MM/YYYY' format
@@ -19,12 +20,17 @@ const CustomerFullDetails = ({
     return `${day.toString().padStart(2, "0")}/${month.toString().padStart(2, "0")}/${year}`;
   }
 
-  const groupedData = {};
+  const dateTextForMonth = dateText?.split("-").reverse().join("/");
 
-  customerDeliveriesHistory.customerHistoryDeliveries.forEach((delivery) => {
+  const groupedData = {};
+  customerDeliveriesHistory?.customerHistoryDeliveries?.forEach((delivery) => {
     const date = new Date(delivery.deliveryDate);
     const monthYear = formatMonth(date);
     const formattedDate = formatDate(date);
+
+    if (dateTextForMonth?.length) {
+      if (monthYear !== dateTextForMonth) return;
+    }
 
     if (!groupedData[monthYear]) {
       groupedData[monthYear] = {};
@@ -41,16 +47,19 @@ const CustomerFullDetails = ({
     if (delivery.deliveredQuantity > 0) {
       data["deliveredJars"] = delivery.deliveredQuantity;
     }
-
     data["deliveryAssociateName"] = delivery.deliveryAssociateName;
 
     groupedData[monthYear][formattedDate].push(data);
   });
 
-  customerDeliveriesHistory.customerHistoryPaymnets.forEach((payment) => {
+  customerDeliveriesHistory?.customerHistoryPaymnets.forEach((payment) => {
     const date = new Date(payment.paymentDate);
     const monthYear = formatMonth(date);
     const formattedDate = formatDate(date);
+
+    if (dateTextForMonth?.length) {
+      if (monthYear !== dateTextForMonth) return;
+    }
 
     if (!groupedData[monthYear]) {
       groupedData[monthYear] = {};
@@ -102,7 +111,6 @@ const CustomerFullDetails = ({
       })
       .catch((error) => console.error("Failed to copy:", error));
   };
-
   return (
     <div className="modal full-customer-modal">
       <div className="modal-bg"></div>

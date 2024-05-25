@@ -9,6 +9,11 @@ import {
   detailedMonthlyReport,
   monthlyReport,
 } from "../../actions/salesAction";
+import {
+  getCustomerDeliveriesHistory,
+  clearCustomerDeliveriesHistory,
+} from "../../actions/customerAction";
+import CustomerFullDetails from "../Customers/CustomerFullDetails";
 
 const DailyReport = () => {
   const dispatch = useDispatch();
@@ -16,6 +21,8 @@ const DailyReport = () => {
     useSelector((state) => state.sales) || {};
   const { isAuthenticated } = useSelector((state) => state.user);
   const { showNavigation } = useSelector((state) => state.navigation);
+  const { customerDeliveriesHistory } =
+    useSelector((state) => state.customers) || {};
 
   const location = useLocation();
   const segments = location.pathname.split("/");
@@ -42,6 +49,13 @@ const DailyReport = () => {
       setMonthlyDetails(true);
     }
   }, [dateText, location.pathname, dispatch]);
+
+  const getDeliveriesHistory = (id) => {
+    dispatch(getCustomerDeliveriesHistory(id));
+  };
+  const handleCloseDeliveries = () => {
+    dispatch(clearCustomerDeliveriesHistory());
+  };
 
   const openModal = () => {
     setModal(true);
@@ -181,7 +195,10 @@ const DailyReport = () => {
                         </thead>
                         <tbody>
                           {report?.customersList?.map((i) => (
-                            <tr key={i.customerId}>
+                            <tr
+                              key={i.customerId}
+                              onClick={() => getDeliveriesHistory(i.customerId)}
+                            >
                               <td>{i.customerId}</td>
                               <td>{i.name}</td>
                               <td>{i.remainingAmount}</td>
@@ -189,6 +206,14 @@ const DailyReport = () => {
                           ))}
                         </tbody>
                       </table>
+                      {customerDeliveriesHistory?.customerHistoryDeliveries
+                        ?.length && (
+                        <CustomerFullDetails
+                          customerDeliveriesHistory={customerDeliveriesHistory}
+                          handleCloseModal={handleCloseDeliveries}
+                          dateText={dateText}
+                        />
+                      )}
                     </div>
                   </div>
                 )}
