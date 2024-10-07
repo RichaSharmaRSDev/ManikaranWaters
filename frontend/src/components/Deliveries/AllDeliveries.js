@@ -59,6 +59,15 @@ const AllDeliveries = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+
+  const onRefresh = () => {
+    if (deliveryDate && deliveryEndDate) {
+      dispatch(rangeDeliveries(deliveryDate, deliveryEndDate, currentPage));
+    } else {
+      dispatch(allDeliveries(deliveryDate, currentPage));
+    }
+  };
+
   useEffect(() => {
     if (deliveryDate && deliveryEndDate) {
       dispatch(rangeDeliveries(deliveryDate, deliveryEndDate, currentPage));
@@ -66,6 +75,7 @@ const AllDeliveries = () => {
       dispatch(allDeliveries(deliveryDate, currentPage));
     }
   }, [deliveryDate, deliveryEndDate, currentPage]);
+
   useEffect(() => {
     if (success) {
       console.log("Received Deliveries Successfully.");
@@ -103,6 +113,7 @@ const AllDeliveries = () => {
                 <DeliveryTable
                   deliveries={deliveries}
                   deliveryTotal={deliveryTotal}
+                  onRefresh={onRefresh}
                 />
                 {totalPages > 1 && (
                   <Pagination

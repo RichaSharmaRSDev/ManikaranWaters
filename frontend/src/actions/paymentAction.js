@@ -63,6 +63,29 @@ export const rangePayments =
       });
     }
   };
+
+export const deletePayment = (paymentId, customerId) => async (dispatch) => {
+  dispatch({ type: "deletePaymentRequest" });
+
+  try {
+    const response = await axios.delete(
+      `/api/v1/expenses/${customerId}/${paymentId}`
+    );
+
+    const data = response.data;
+
+    dispatch({
+      type: "deletePaymentSuccess",
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: "deletePaymentFail",
+      payload: error.response?.data?.message || "Error deleting payment",
+    });
+  }
+};
+
 export const clearNewPayment = () => async (dispatch) => {
   dispatch({ type: "clearNewPayment" });
 };

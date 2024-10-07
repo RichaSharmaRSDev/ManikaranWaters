@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { deleteDelivery } from "../../actions/deliveryAction";
+import { useDispatch, useSelector } from "react-redux";
 
-const DeliveryTable = ({ deliveries, deliveryTotal }) => {
+const DeliveryTable = ({ deliveries, deliveryTotal, onRefresh }) => {
+  const dispatch = useDispatch();
+  const { deleteDeliverySuccess } =
+    useSelector((state) => state.deliveries) || {};
   const formatDate = (date) => {
     if (date == null) {
       return "";
@@ -29,6 +34,15 @@ const DeliveryTable = ({ deliveries, deliveryTotal }) => {
       );
     }
   };
+  const handleDelete = async (deliveryId, customerId) => {
+    dispatch(deleteDelivery(deliveryId, customerId));
+  };
+  useEffect(() => {
+    if (deleteDeliverySuccess) {
+      onRefresh(); // Call the onRefresh function to fetch deliveries again
+    }
+  }, [deleteDeliverySuccess, onRefresh]);
+
   return (
     <div className="delivery-list">
       <table>
@@ -41,6 +55,7 @@ const DeliveryTable = ({ deliveries, deliveryTotal }) => {
             <th className="delivery-security">Delivered Jars</th>
             <th className="delivery-security">Returned Jars</th>
             <th className="delivery-security">Amount Paid</th>
+            <th className="delivery-action">Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -61,6 +76,16 @@ const DeliveryTable = ({ deliveries, deliveryTotal }) => {
                 {delivery.amountReceived > 0
                   ? ` - ${delivery.paymentMode}`
                   : ""}
+              </td>
+              <td>
+                <button
+                  onClick={() =>
+                    handleDelete(delivery._id, delivery.customerId)
+                  }
+                  className="delete-button"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}

@@ -108,6 +108,21 @@ const customerSchema = mongoose.Schema(
     deliveries: { type: [], default: [] },
   }
 );
+
+customerSchema.methods.updateAmounts = function () {
+  const totalBilled = this.deliveries.reduce((sum, delivery) => {
+    return sum + (delivery.amountReceived || 0);
+  }, 0);
+
+  const totalPaid = this.payments.reduce((sum, payment) => {
+    return sum + (payment.amount || 0);
+  }, 0);
+
+  this.billedAmount = totalBilled;
+  this.paidAmount = totalPaid;
+  this.remainingAmount = this.billedAmount - this.paidAmount;
+};
+
 customerSchema.pre("save", async function (next) {
   // Generate and set the customerId based on zone and a unique number
   if (!this.customerId) {
@@ -150,6 +165,10 @@ customerSchema.pre("save", async function (next) {
   }
 
   next();
+});
+
+customerSchema.post("save", function () {
+  this.updateAmounts();
 });
 
 module.exports = mongoose.model("Customer", customerSchema);

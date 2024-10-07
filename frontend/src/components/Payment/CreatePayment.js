@@ -119,6 +119,11 @@ const CreatePayment = () => {
                     placeholder="date"
                     value={formData.paymentDate}
                     onChange={handleInputChange}
+                    max={
+                      new Date(Date.now() + 19800000)
+                        .toISOString()
+                        .split("T")[0]
+                    }
                   />
                 </div>
                 <div className="fields">

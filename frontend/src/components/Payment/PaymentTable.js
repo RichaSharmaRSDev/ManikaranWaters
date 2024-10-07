@@ -1,6 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { deletePayment } from "../../actions/paymentAction";
 
-const PaymentTable = ({ payments, paymentTotal }) => {
+const PaymentTable = ({ payments, paymentTotal, onRefresh }) => {
+  const dispatch = useDispatch();
+  const { deletePaymentSuccess } =
+    useSelector((state) => state.deliveries) || {};
+  const handleDelete = async (paymentId, customerId) => {
+    dispatch(deletePayment(paymentId, customerId));
+  };
   const formatDate = (date) => {
     if (date == null) {
       return "";
@@ -8,6 +16,11 @@ const PaymentTable = ({ payments, paymentTotal }) => {
     const options = { day: "2-digit", month: "short" };
     return new Intl.DateTimeFormat("en-IN", options).format(new Date(date));
   };
+  useEffect(() => {
+    if (deletePaymentSuccess) {
+      onRefresh(); // Call the onRefresh function to fetch payments again
+    }
+  }, [deletePaymentSuccess, onRefresh]);
   return (
     <div className="payment-list">
       <table>
@@ -19,6 +32,7 @@ const PaymentTable = ({ payments, paymentTotal }) => {
             <th className="payment-security">Payment Date</th>
             <th className="payment-security">Amount Paid</th>
             <th className="payment-security">Payment Mode</th>
+            <th className="payment-security">Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -32,6 +46,14 @@ const PaymentTable = ({ payments, paymentTotal }) => {
               </td>
               <td className="payment-name">&#8377;{payment.amount}</td>
               <td className="payment-phone">{payment.paymentMode}</td>
+              <td>
+                <button
+                  onClick={() => handleDelete(payment._id, payment.customer)}
+                  className="delete-button"
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

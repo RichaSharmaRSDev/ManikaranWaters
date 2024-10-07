@@ -274,34 +274,74 @@ exports.getDeliveryDetails = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.updateDelivery = catchAsyncError(async (req, res, next) => {
-  const delivery = await Delivery.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-    useFindAndModify: false,
-  });
-
-  if (!delivery) {
-    return next(new ErrorHandler("Delivery not found", 404));
-  }
-
-  res.status(200).json({
-    success: true,
-    delivery,
-  });
-});
-
 exports.deleteDelivery = catchAsyncError(async (req, res, next) => {
-  const delivery = await Delivery.findById(req.params.id);
+  const { customerId, deliveryId } = req.params;
 
-  if (!delivery) {
-    return next(new ErrorHandler("Delivery not found", 404));
+  try {
+    // Find the customer by customerId
+    const customer = await Customer.findOne({ customerId });
+
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    // Find the delivery to delete by deliveryId
+    const deliveryToDelete = await Delivery.findById(deliveryId);
+
+    if (!deliveryToDelete) {
+      return res.status(404).json({
+        success: false,
+        message: "Delivery not found",
+      });
+    }
+
+    // Check if the delivery belongs to the customer
+    if (deliveryToDelete.customer !== customerId) {
+      return res.status(403).json({
+        success: false,
+        message: "This delivery does not belong to the specified customer",
+      });
+    }
+
+    // Delete the delivery
+    await Delivery.findByIdAndDelete(deliveryId);
+
+    // Update currentJars by adjusting based on delivered and returned jars
+    customer.currentJars -= deliveryToDelete.deliveredQuantity;
+    customer.currentJars += deliveryToDelete.returnedJars;
+
+    customer.extraJars = customer.currentJars - customer.allotment;
+    if (customer.extraJars < 0) {
+      customer.extraJars = 0;
+    }
+
+    customer.billedAmount -= customer.rate * deliveryToDelete.deliveredQuantity;
+    customer.remainingAmount = customer.billedAmount - customer.paidAmount;
+
+    const lastDelivery = await Delivery.findOne({
+      customer: customerId,
+    }).sort({ deliveryDate: -1 });
+
+    customer.lastDeliveryDate = lastDelivery?.deliveryDate;
+
+    if (customer.customerType === "subscription" && customer.frequency) {
+      const nextDeliveryDate = new Date(lastDelivery?.deliveryDate);
+      nextDeliveryDate.setDate(nextDeliveryDate.getDate() + customer.frequency);
+      customer.nextDelivery = nextDeliveryDate;
+    }
+
+    // Save updated customer details
+    await customer.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Delivery deleted successfully, customer data updated.",
+    });
+  } catch (error) {
+    console.error(
+      "Error deleting delivery or updating customer:",
+      error.message
+    );
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  await delivery.deleteOne();
-
-  res.status(200).json({
-    success: true,
-    message: "Delivery Deleted Successfully",
-  });
 });

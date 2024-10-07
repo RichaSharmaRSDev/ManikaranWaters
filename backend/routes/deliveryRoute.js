@@ -3,7 +3,6 @@ const {
   getDeliveriesForDay,
   createDelivery,
   getDeliveryDetails,
-  updateDelivery,
   deleteDelivery,
   getDeliveriesForRange,
 } = require("../controllers/deliveryController");
@@ -14,10 +13,8 @@ const router = express.Router();
 router.route("/deliveries/range").get(getDeliveriesForRange);
 router.route("/deliveries/:deliveryDate?").get(getDeliveriesForDay);
 router.route("/delivery/new").post(createDelivery);
-router
-  .route("/delivery/:id")
-  .get(getDeliveryDetails)
-  .put(updateDelivery)
-  .delete(isAuthenticatedUser, deleteDelivery);
+router.route("/delivery/:id").get(getDeliveryDetails);
+
+router.route("/deliveries/:customerId/:deliveryId").delete(deleteDelivery);
 
 module.exports = router;

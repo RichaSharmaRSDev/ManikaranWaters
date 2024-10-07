@@ -66,6 +66,28 @@ export const rangeDeliveries =
     }
   };
 
+export const deleteDelivery = (deliveryId, customerId) => async (dispatch) => {
+  dispatch({ type: "deleteDeliveryRequest" });
+
+  try {
+    const response = await axios.delete(
+      `/api/v1/deliveries/${customerId}/${deliveryId}`
+    );
+
+    const data = response.data;
+
+    dispatch({
+      type: "deleteDeliverySuccess",
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: "deleteDeliveryFail",
+      payload: error.response?.data?.message || "Error deleting delivery",
+    });
+  }
+};
+
 export const clearNewDelivery = () => async (dispatch) => {
   dispatch({ type: "clearNewDelivery" });
 };

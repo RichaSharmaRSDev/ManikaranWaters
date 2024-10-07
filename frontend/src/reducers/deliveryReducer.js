@@ -58,6 +58,26 @@ const deliveryReducer = (state = initialState, action) => {
         deliveryTotal: null,
         error: action.payload,
       };
+    case "deleteDeliveryRequest":
+      return {
+        ...state,
+        loading: true,
+        error: null,
+        deleteDeliverySuccess: false,
+      };
+    case "deleteDeliverySuccess":
+      return {
+        ...state,
+        loading: false,
+        deleteDeliverySuccess: true,
+        error: null,
+      };
+    case "deleteDeliveryFail":
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
     case "clearNewDelivery":
       return {
         ...state,

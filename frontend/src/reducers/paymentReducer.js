@@ -54,6 +54,26 @@ const paymentReducer = (state = initialState, action) => {
         paymentCount: null,
         error: action.payload,
       };
+    case "deletePaymentRequest":
+      return {
+        ...state,
+        loading: true,
+        error: null,
+        deletePaymentSuccess: false,
+      };
+    case "deletePaymentSuccess":
+      return {
+        ...state,
+        loading: false,
+        deletePaymentSuccess: true,
+        error: null,
+      };
+    case "deletePaymentFail":
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
     case "clearNewPayment":
       return {
         ...state,

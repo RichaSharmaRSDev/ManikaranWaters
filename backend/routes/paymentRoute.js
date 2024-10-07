@@ -4,6 +4,7 @@ const {
   createPayment,
   getPaymentsForDay,
   getPaymentsForRange,
+  deletePayment,
 } = require("../controllers/paymentController");
 
 const router = express.Router();
@@ -13,5 +14,7 @@ router.route("/payments/range").get(getPaymentsForRange);
 router
   .route("/payments/:paymentDate?")
   .get(isAuthenticatedUser, getPaymentsForDay);
+
+router.route("/expenses/:customerId/:paymentId").delete(deletePayment);
 
 module.exports = router;

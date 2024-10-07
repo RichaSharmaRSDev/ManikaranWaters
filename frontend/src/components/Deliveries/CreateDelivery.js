@@ -187,6 +187,11 @@ const CreateDelivery = () => {
                     placeholder="date"
                     value={formData.deliveryDate}
                     onChange={handleInputChange}
+                    max={
+                      new Date(Date.now() + 19800000)
+                        .toISOString()
+                        .split("T")[0]
+                    }
                   />
                   <button
                     type="button"

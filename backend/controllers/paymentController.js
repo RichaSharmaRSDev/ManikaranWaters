@@ -230,3 +230,54 @@ exports.getPaymentsForRange = catchAsyncError(async (req, res) => {
     paymentTotal: finalPaymentTotal,
   });
 });
+
+exports.deletePayment = catchAsyncError(async (req, res, next) => {
+  const { customerId, paymentId } = req.params;
+
+  try {
+    // Find the customer by customerId
+    const customer = await Customer.findOne({ customerId });
+
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+    // Find the payment to delete by paymentId
+    const paymentToDelete = await Payment.findById(paymentId);
+
+    if (!paymentToDelete) {
+      return res.status(404).json({
+        success: false,
+        message: "Payment not found",
+      });
+    }
+    console.log(customerId);
+    // Check if the payment belongs to the customer
+    if (paymentToDelete.customer !== customerId) {
+      return res.status(403).json({
+        success: false,
+        message: "This payment does not belong to the specified customer",
+      });
+    }
+
+    // Delete the payment
+    await Payment.findByIdAndDelete(paymentId);
+
+    // Update remaining amount
+    customer.paidAmount -= paymentToDelete.amount;
+    customer.remainingAmount = customer.billedAmount - customer.paidAmount;
+
+    // Save updated customer details
+    await customer.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Payment deleted successfully, customer data updated.",
+    });
+  } catch (error) {
+    console.error(
+      "Error deleting payment or updating customer:",
+      error.message
+    );
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
