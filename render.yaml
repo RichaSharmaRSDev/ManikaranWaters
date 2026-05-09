@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: manikaranwaters
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: PRODUCTION
+      - key: PORT
+        value: 10000
+      - key: DB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRE
+        sync: false
+      - key: COOKIE_EXPIRE
+        sync: false
+      - key: SMPT_SERVICE
+        sync: false
+      - key: SMPT_HOST
+        sync: false
+      - key: SMPT_PORT
+        sync: false
+      - key: SMPT_MAIL
+        sync: false
+      - key: SMPT_PASSWORD
+        sync: false
