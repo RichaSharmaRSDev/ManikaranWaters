@@ -1,6 +1,9 @@
 {
   "name": "manikaran-waters",
   "version": "1.0.0",
+  "engines": {
+    "node": "18.x"
+  },
   "description": "",
   "main": "backend/server.js",
   "scripts": {
