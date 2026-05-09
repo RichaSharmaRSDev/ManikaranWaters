@@ -10,7 +10,7 @@
   "test": "echo \"Error: no test specified\" && exit 1",
   "start": "NODE_ENV=PRODUCTION node backend/server.js",
   "dev": "nodemon backend/server.js",
-  "build": "NPM_CONFIG_PRODUCTION=false && npm install --prefix frontend && npm run build --prefix frontend"
+  "build": "cd frontend && npm install && npm run build"
 },
   "author": "",
   "license": "ISC",
