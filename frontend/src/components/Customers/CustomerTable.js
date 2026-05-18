@@ -23,7 +23,7 @@ const CustomerTable = ({ customers }) => {
     if (date == null) {
       return "";
     }
-    const options = { day: "2-digit", month: "short" };
+    const options = { day: "2-digit", month: "short", timeZone: "Asia/Kolkata" };
     return new Intl.DateTimeFormat("en-IN", options).format(new Date(date));
   };
   return (

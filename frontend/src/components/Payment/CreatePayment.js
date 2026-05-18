@@ -7,6 +7,7 @@ import IdLogo from "../../assets/id-badge.svg";
 import CardLogo from "../../assets/credit-card.svg";
 import deliveryDateLogo from "../../assets/calendar-check.svg";
 import Navigation from "../Navigation/Navigation";
+import { todayIST } from "../../utils/istDate";
 import Ruppee from "../../assets/indian-rupee-sign.svg";
 // import { useAlert } from "react-alert";
 import Title from "../layout/Title";
@@ -33,9 +34,7 @@ const CreatePayment = () => {
 
   const initialState = {
     customerId: "",
-    paymentDate: new Date(Date.now() + 5.5 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    paymentDate: todayIST(),
     amount: 0,
     paymentMode: "",
   };
@@ -119,11 +118,7 @@ const CreatePayment = () => {
                     placeholder="date"
                     value={formData.paymentDate}
                     onChange={handleInputChange}
-                    max={
-                      new Date(Date.now() + 19800000)
-                        .toISOString()
-                        .split("T")[0]
-                    }
+                    max={todayIST()}
                   />
                 </div>
                 <div className="fields">
@@ -178,7 +173,7 @@ const CreatePayment = () => {
                   <span>Payment Date:</span>{" "}
                   {new Date(newPayment.paymentDate).toLocaleDateString(
                     "en-GB",
-                    { day: "2-digit", month: "short" }
+                    { day: "2-digit", month: "short", timeZone: "Asia/Kolkata" }
                   )}
                 </div>
                 {newPayment.amount && (

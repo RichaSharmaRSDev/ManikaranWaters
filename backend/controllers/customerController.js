@@ -31,19 +31,7 @@ exports.getAllCustomers = catchAsyncError(async (req, res) => {
 //get all customers basic details
 exports.getAllCustomersBasicDetails = catchAsyncError(async (req, res) => {
   const resultsPerPage = 20;
-  const customerCount = await Customer.countDocuments();
   const apiFeature = new ApiFeatures(
-    Customer.find()
-      .select("-deliveries -payments -createdAt -zone")
-      .sort({ name: 1 }),
-    req.query
-  )
-    .search()
-    .filter();
-  const customersQuery = await apiFeature.query;
-  const customerFeatureCount = customersQuery.length;
-
-  const apiFeatureWithPagination = new ApiFeatures(
     Customer.find()
       .select("-deliveries -payments -createdAt -zone")
       .sort({ name: 1 }),
@@ -53,7 +41,13 @@ exports.getAllCustomersBasicDetails = catchAsyncError(async (req, res) => {
     .filter()
     .pagination(resultsPerPage);
 
-  const customers = await apiFeatureWithPagination.query;
+  const filteredConditions = apiFeature.query._conditions;
+
+  const [customers, customerCount, customerFeatureCount] = await Promise.all([
+    apiFeature.query,
+    Customer.countDocuments(),
+    Customer.countDocuments(filteredConditions),
+  ]);
 
   res.status(200).json({
     success: true,
@@ -103,13 +97,16 @@ exports.getCustomersByNextDeliveryDate = catchAsyncError(async (req, res) => {
 
   const apiFeature = new ApiFeatures(customersQuery, req.query).pagination(20);
 
-  const customers = await apiFeature.query;
-  const customerCount = await Customer.countDocuments({
+  const filter = {
     $or: [
       { nextDelivery: { $gte: startDate, $lte: endDate } },
-      { nextDelivery: { $lt: startDate } }, // Include customers with back-dated nextDeliveryDate
+      { nextDelivery: { $lt: startDate } },
     ],
-  });
+  };
+  const [customers, customerCount] = await Promise.all([
+    apiFeature.query,
+    Customer.countDocuments(filter),
+  ]);
 
   res.status(200).json({
     success: true,
@@ -147,13 +144,16 @@ exports.getCustomersByNextDeliveryDateMore = catchAsyncError(
       50
     );
 
-    const customers = await apiFeature.query;
-    const customerCount = await Customer.countDocuments({
+    const filter = {
       $or: [
         { nextDelivery: { $gte: startDate, $lte: endDate } },
-        { nextDelivery: { $lt: startDate } }, // Include customers with back-dated nextDeliveryDate
+        { nextDelivery: { $lt: startDate } },
       ],
-    });
+    };
+    const [customers, customerCount] = await Promise.all([
+      apiFeature.query,
+      Customer.countDocuments(filter),
+    ]);
 
     res.status(200).json({
       success: true,
@@ -182,12 +182,10 @@ exports.getCustomerDetails = catchAsyncError(async (req, res, next) => {
 // Get Customer's Delivery and Payments
 exports.getCustomerDeliveryHistory = catchAsyncError(async (req, res, next) => {
   const customerId = req.params.customerId;
-  const customerHistoryDeliveries = await Delivery.find({
-    customer: customerId,
-  });
-  const customerHistoryPaymnets = await Payment.find({
-    customer: customerId,
-  });
+  const [customerHistoryDeliveries, customerHistoryPaymnets] = await Promise.all([
+    Delivery.find({ customer: customerId }),
+    Payment.find({ customer: customerId }),
+  ]);
 
   if (!customerId) {
     return next(new ErrorHandler("CustomerId not found", 404));
@@ -241,7 +239,7 @@ exports.updateCustomer = catchAsyncError(async (req, res, next) => {
     }
   );
 
-  customer.lastUpdated = Date.now() + 5.5 * 60 * 60 * 1000;
+  customer.lastUpdated = Date.now();
 
   await customer.save();
 

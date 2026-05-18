@@ -104,7 +104,7 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
     customer.remainingAmount = remainingAmount;
   }
 
-  customer.lastUpdated = Date.now() + 5.5 * 60 * 60 * 1000;
+  customer.lastUpdated = Date.now();
 
   await customer.save();
 
@@ -121,7 +121,6 @@ exports.getDeliveriesForDay = catchAsyncError(async (req, res) => {
     const startDate = new Date(req.query.deliveryDate);
     const endDate = new Date(startDate);
     endDate.setHours(23, 59, 59, 999);
-    endDate.setTime(endDate.getTime() + 5.5 * 60 * 60 * 1000);
     apiFeature.query = apiFeature.query
       .where("deliveryDate")
       .gte(startDate)
@@ -194,7 +193,6 @@ exports.getDeliveriesForRange = catchAsyncError(async (req, res) => {
     const startDate = new Date(req.query.deliveryStartDate);
     const endDate = new Date(req.query.deliveryEndDate);
     endDate.setHours(23, 59, 59, 999);
-    endDate.setTime(endDate.getTime() + 5.5 * 60 * 60 * 1000);
 
     apiFeature.query = apiFeature.query
       .where("deliveryDate")

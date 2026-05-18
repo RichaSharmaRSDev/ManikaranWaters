@@ -8,6 +8,7 @@ import {
 import Loader from "../layout/Loader/Loader";
 import { useLocation } from "react-router-dom";
 import Navigation from "../Navigation/Navigation";
+import { todayIST, yesterdayIST } from "../../utils/istDate";
 // import { useAlert } from "react-alert";
 import Title from "../layout/Title";
 import { Pagination } from "../layout/Pagination/Pagination";
@@ -40,11 +41,9 @@ const AllDeliveries = () => {
   let deliveryEndDate; // in case of range date
 
   if (deliveryDateText === "today") {
-    const today = new Date(Date.now());
-    deliveryDate = formatDate(today);
+    deliveryDate = todayIST();
   } else if (deliveryDateText === "yesterday") {
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    deliveryDate = formatDate(yesterday);
+    deliveryDate = yesterdayIST();
   } else if (deliveryRangeStartDate && deliveryRangeEndDate) {
     const customDeliveryRangeStartDate = new Date(deliveryRangeStartDate);
     const customDeliveryRangeEndDate = new Date(deliveryRangeEndDate);

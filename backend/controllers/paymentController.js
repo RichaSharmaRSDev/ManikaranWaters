@@ -7,7 +7,7 @@ const ApiFeatures = require("../utils/apiFeatures");
 exports.createPayment = catchAsyncError(async (req, res, next) => {
   const {
     customerId,
-    paymentDate = Date.now() + 5.5 * 60 * 60 * 1000,
+    paymentDate = Date.now(),
     amount,
     paymentMode,
   } = req.body;
@@ -34,7 +34,7 @@ exports.createPayment = catchAsyncError(async (req, res, next) => {
   customer.remainingAmount = remainingAmount;
 
   //update lastUpdated in customer
-  customer.lastUpdated = Date.now() + 5.5 * 60 * 60 * 1000;
+  customer.lastUpdated = Date.now();
 
   // Add the delivery details to the deliveries array in the customer document
   customer.payments.push({
@@ -57,7 +57,6 @@ exports.getPaymentsForDay = catchAsyncError(async (req, res) => {
     const startDate = new Date(req.query.paymentDate);
     const endDate = new Date(startDate);
     endDate.setHours(23, 59, 59, 999);
-    endDate.setTime(endDate.getTime() + 5.5 * 60 * 60 * 1000);
     apiFeature.query = apiFeature.query
       .where("paymentDate")
       .gte(startDate)
@@ -145,7 +144,6 @@ exports.getPaymentsForRange = catchAsyncError(async (req, res) => {
     const startDate = new Date(req.query.paymentStartDate);
     const endDate = new Date(req.query.paymentEndDate);
     endDate.setHours(23, 59, 59, 999);
-    endDate.setTime(endDate.getTime() + 5.5 * 60 * 60 * 1000);
     apiFeature.query = apiFeature.query
       .where("paymentDate")
       .gte(startDate)

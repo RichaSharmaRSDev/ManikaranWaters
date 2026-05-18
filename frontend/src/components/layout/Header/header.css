@@ -11,7 +11,7 @@ header img {
 }
 
 header h1 {
-  color: #0163a2;
+  color: var(--color-primary);
   display: inline-block;
   width: 70vw;
   text-align: center;

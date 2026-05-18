@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Loader from "../layout/Loader/Loader";
 import Navigation from "../Navigation/Navigation";
+import { dateToIST } from "../../utils/istDate";
 import Title from "../layout/Title";
 import { getTripsByDate } from "../../actions/tripsAction";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,9 +14,7 @@ const ArrangeTrips = () => {
   const { tripsByDate, tripsByDateLoading } = useSelector(
     (state) => state.trips
   );
-  const formatDate = (date) => {
-    return date.toISOString().split("T")[0];
-  };
+  const formatDate = (date) => dateToIST(date);
 
   const handleDateChange = (event) => {
     const newDate = new Date(event.target.value);

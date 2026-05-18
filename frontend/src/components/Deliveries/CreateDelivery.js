@@ -8,6 +8,7 @@ import Name from "../../assets/id-card-clip-alt.svg";
 import CardLogo from "../../assets/credit-card.svg";
 import deliveryDateLogo from "../../assets/calendar-check.svg";
 import Navigation from "../Navigation/Navigation";
+import { todayIST, yesterdayIST } from "../../utils/istDate";
 import Ruppee from "../../assets/indian-rupee-sign.svg";
 // import { useAlert } from "react-alert";
 import emptyJar from "../../assets/emptyJar.png";
@@ -45,9 +46,7 @@ const CreateDelivery = () => {
 
   const initialState = {
     customerId: "",
-    deliveryDate: new Date(Date.now() + 5.5 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    deliveryDate: todayIST(),
     deliveredQuantity: 0,
     deliveryAssociateName: "",
     returnedJars: 0,
@@ -72,13 +71,9 @@ const CreateDelivery = () => {
     }
   };
   const handleYesterdayButton = () => {
-    const yesterdayDate = new Date(
-      Date.now() + 5.5 * 60 * 60 * 1000 - 24 * 60 * 60 * 1000
-    );
-
     setFormData((prevData) => ({
       ...prevData,
-      deliveryDate: yesterdayDate.toISOString().split("T")[0], // Format as "yyyy-mm-dd"
+      deliveryDate: yesterdayIST(),
     }));
   };
   const handleDeliverySubmit = (e) => {
@@ -187,11 +182,7 @@ const CreateDelivery = () => {
                     placeholder="date"
                     value={formData.deliveryDate}
                     onChange={handleInputChange}
-                    max={
-                      new Date(Date.now() + 19800000)
-                        .toISOString()
-                        .split("T")[0]
-                    }
+                    max={todayIST()}
                   />
                   <button
                     type="button"
@@ -203,6 +194,7 @@ const CreateDelivery = () => {
                     ).toLocaleDateString("en-IN", {
                       day: "2-digit",
                       month: "short",
+                      timeZone: "Asia/Kolkata",
                     })}
                   </button>
                 </div>
@@ -291,7 +283,7 @@ const CreateDelivery = () => {
                   <span>
                     {new Date(newDelivery.deliveryDate).toLocaleDateString(
                       "en-GB",
-                      { day: "2-digit", month: "short" }
+                      { day: "2-digit", month: "short", timeZone: "Asia/Kolkata" }
                     )}
                   </span>
                 </div>

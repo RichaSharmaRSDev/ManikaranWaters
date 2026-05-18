@@ -8,6 +8,7 @@ import {
 import Loader from "../layout/Loader/Loader";
 import { useLocation } from "react-router-dom";
 import Navigation from "../Navigation/Navigation";
+import { todayIST, yesterdayIST } from "../../utils/istDate";
 // import { useAlert } from "react-alert";
 import Title from "../layout/Title";
 import { Pagination } from "../layout/Pagination/Pagination";
@@ -40,11 +41,9 @@ const AllPayments = () => {
   let paymentEndDate; // in case of range date
 
   if (paymentDateText === "today") {
-    const today = new Date(Date.now());
-    paymentDate = formatDate(today);
+    paymentDate = todayIST();
   } else if (paymentDateText === "yesterday") {
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    paymentDate = formatDate(yesterday);
+    paymentDate = yesterdayIST();
   } else if (paymentRangeStartDate && paymentRangeEndDate) {
     const customPaymentRangeStartDate = new Date(paymentRangeStartDate);
     const customPaymentRangeEndDate = new Date(paymentRangeEndDate);

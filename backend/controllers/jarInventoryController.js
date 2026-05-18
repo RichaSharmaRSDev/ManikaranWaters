@@ -54,7 +54,7 @@ exports.getInventoryRecord = catchAsyncError(async (req, res, next) => {
 exports.getInventoryRecordMonth = catchAsyncError(async (req, res, next) => {
   const { month } = req.params;
 
-  const year = new Date(Date.now()).getFullYear();
+  const year = new Date().getFullYear();
   // Create a start date for the month
   const startDate = new Date(`${year}-${month}-01T00:00:00Z`);
 

@@ -1,3 +1,64 @@
+:root {
+  /* brand blues */
+  --color-navy:            #012e4f;
+  --color-navy-mid:        #01436e;
+  --color-primary:         #0163a2;
+  --color-primary-hover:   #1a86cc;
+  --color-primary-sky:     #7ec8e3;
+  --color-primary-light:   #b8dff0;
+  --color-primary-lighter: #e6f4fb;
+
+  /* accent */
+  --color-accent:          #f79c1e;
+  --color-accent-light:    #fef3dc;
+
+  /* neutrals */
+  --color-white:           #ffffff;
+  --color-black:           #000000;
+  --color-surface:         #ffffff;
+  --color-surface-2:       #f5f7fa;
+  --color-surface-3:       #eef1f6;
+  --color-border:          #e3e8ef;
+  --color-border-strong:   #c9d3de;
+  --color-loader-track:    #f3f3f3;
+
+  /* text */
+  --color-text:            #0f1c2e;
+  --color-text-mid:        #3d5166;
+  --color-text-muted:      #7a8fa6;
+  --color-text-on-brand:   #ffffff;
+
+  /* semantic */
+  --color-danger:          #d93025;
+  --color-danger-light:    #fef2f1;
+  --color-danger-mid:      #fad4d1;
+  --color-success:         #0a7c4e;
+  --color-success-light:   #edf8f3;
+  --color-warning:         #c47d00;
+  --color-warning-light:   #fef8ec;
+
+  /* font */
+  --font-sans:   'Plus Jakarta Sans', sans-serif;
+  --font-mono:   'DM Mono', monospace;
+
+  /* spacing */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-full: 9999px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+ 
 body {
   margin: 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--color-text);
+  background: var(--color-surface-2);
+  -webkit-font-smoothing: antialiased;
 }

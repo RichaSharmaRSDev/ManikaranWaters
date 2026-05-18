@@ -46,7 +46,7 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
 // Logout User
 exports.logout = catchAsyncError(async (req, res, next) => {
   res.cookie("token", null, {
-    expires: new Date(Date.now() + 5.5 * 60 * 60 * 1000),
+    expires: new Date(Date.now()),
     httpOnly: true,
   });
   res.status(200).json({
@@ -102,7 +102,7 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
 
   const user = await User.findOne({
     resetPasswordToken,
-    resetPasswordExpire: { $gt: Date.now() + 5.5 * 60 * 60 * 1000 },
+    resetPasswordExpire: { $gt: Date.now() },
   });
 
   if (!user) {

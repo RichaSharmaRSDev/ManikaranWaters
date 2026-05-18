@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../layout/Loader/Loader";
 import Navigation from "../Navigation/Navigation";
+import { todayIST, yesterdayIST } from "../../utils/istDate";
 // import { useAlert } from "react-alert";
 import Title from "../layout/Title";
 import { Pagination } from "../layout/Pagination/Pagination";
@@ -31,11 +32,9 @@ const AllExpenses = () => {
   let expenseDate;
 
   if (date === "today") {
-    const today = new Date(Date.now());
-    expenseDate = formatDate(today);
+    expenseDate = todayIST();
   } else if (date === "yesterday") {
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    expenseDate = formatDate(yesterday);
+    expenseDate = yesterdayIST();
   } else {
     const customPaymentDate = new Date(date);
     expenseDate = formatDate(customPaymentDate);

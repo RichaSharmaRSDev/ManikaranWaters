@@ -20,4 +20,7 @@ const paymentSchema = mongoose.Schema({
   },
 });
 
+paymentSchema.index({ customer: 1 });
+paymentSchema.index({ paymentDate: 1 });
+
 module.exports = mongoose.model("Payment", paymentSchema);

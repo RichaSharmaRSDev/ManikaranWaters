@@ -80,11 +80,11 @@ const customerSchema = mongoose.Schema(
     },
     createdAt: {
       type: Date,
-      default: Date.now() + 5.5 * 60 * 60 * 1000,
+      default: Date.now,
     },
     lastUpdated: {
       type: Date,
-      default: Date.now() + 5.5 * 60 * 60 * 1000,
+      default: Date.now,
     },
     deliveries: [
       {
@@ -170,5 +170,12 @@ customerSchema.pre("save", async function (next) {
 customerSchema.post("save", function () {
   this.updateAmounts();
 });
+
+customerSchema.index({ customerId: 1 });
+customerSchema.index({ nextDelivery: 1 });
+customerSchema.index({ zone: 1 });
+customerSchema.index({ name: 1 });
+customerSchema.index({ remainingAmount: 1 });
+customerSchema.index({ customerType: 1, nextDelivery: 1 });
 
 module.exports = mongoose.model("Customer", customerSchema);

@@ -23,8 +23,12 @@ const FrequencyCustomers = () => {
     setCurrentPage(page);
   };
   useEffect(() => {
-    dispatch(frequencyCustomers(input, currentPage));
+    setCurrentPage(1);
   }, [input]);
+
+  useEffect(() => {
+    dispatch(frequencyCustomers(input, currentPage));
+  }, [input, currentPage]);
   useEffect(() => {
     if (successfrequency === true) {
       console.log("Reterived data successfully.");

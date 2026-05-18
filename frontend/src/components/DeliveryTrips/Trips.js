@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../layout/Loader/Loader";
 import Navigation from "../Navigation/Navigation";
+import { todayIST, dateToIST } from "../../utils/istDate";
 import Title from "../layout/Title";
 import Alert from "../layout/Alert/Alert";
 import "./Trip.scss";
@@ -18,11 +19,7 @@ const Trips = () => {
   const { tripsByDate, tripsByDateLoading, deliveryGuyNames } = useSelector(
     (state) => state.trips || {}
   );
-  const formatDate = (date) => {
-    return date.toISOString().split("T")[0];
-  };
-
-  const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
+  const [selectedDate, setSelectedDate] = useState(todayIST());
   const [customers, setCustomers] = useState([]);
   const [currentTripIndex, setCurrentTripIndex] = useState(0);
   const [newCustomerInput, setNewCustomerInput] = useState("");
@@ -32,8 +29,7 @@ const Trips = () => {
   const dispatch = useDispatch();
 
   const handleDateChange = (event) => {
-    const newDate = new Date(event.target.value);
-    setSelectedDate(formatDate(newDate));
+    setSelectedDate(dateToIST(new Date(event.target.value)));
   };
 
   const dragCustomer = useRef(null);

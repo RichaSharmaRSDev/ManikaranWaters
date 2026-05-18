@@ -29,7 +29,7 @@ const CreateJarsCount = () => {
     (state) => state.jars
   );
   const [successMsgAlert, setSuccessMsgAlert] = useState(false);
-  const date = new Date(Date.now());
+  const date = new Date();
   date.setHours(0, 0, 0, 0);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -196,9 +196,10 @@ const CreateJarsCount = () => {
               <div className="fields-wrapper">
                 <div className="todaysDate">
                   Date:{" "}
-                  {new Date(Date.now()).toLocaleString("en-IN", {
+                  {new Date().toLocaleString("en-IN", {
                     month: "short",
                     day: "numeric",
+                    timeZone: "Asia/Kolkata",
                   })}
                 </div>
                 {/* Morning */}

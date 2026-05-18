@@ -7,6 +7,7 @@ import {
 import Loader from "../layout/Loader/Loader";
 import { useLocation } from "react-router-dom";
 import Navigation from "../Navigation/Navigation";
+import { todayIST, tomorrowIST } from "../../utils/istDate";
 // import { useAlert } from "react-alert";
 import HabitsCustomerTable from "../Customers/HabitsCustomerTable";
 import "../Customers/Table.scss";
@@ -41,11 +42,9 @@ const AllPredictions = () => {
   let nextDeliveryDate;
 
   if (nextDeliveryDateText === "today") {
-    nextDeliveryDate = new Date(Date.now());
-    nextDeliveryDate = formatDate(nextDeliveryDate);
+    nextDeliveryDate = todayIST();
   } else if (nextDeliveryDateText === "tomorrow") {
-    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    nextDeliveryDate = formatDate(tomorrow);
+    nextDeliveryDate = tomorrowIST();
   } else {
     const customDeliveryDate = new Date(nextDeliveryDateText);
     nextDeliveryDate = formatDate(customDeliveryDate);

@@ -1,0 +1,40 @@
+/* frontend/src/components/layout/AppLayout.css */
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: margin-left 0.25s ease;
+}
+
+/* These match your existing navigation.scss nav widths */
+.app-main.nav-open {
+  margin-left: 14vw;
+}
+
+.app-main.nav-closed {
+  margin-left: 4vw;
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .app-main.nav-open {
+    margin-left: 40vw;
+  }
+  .app-main.nav-closed {
+    margin-left: 0;
+  }
+}

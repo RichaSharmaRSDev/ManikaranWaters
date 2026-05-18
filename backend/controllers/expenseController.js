@@ -4,7 +4,7 @@ const ApiFeatures = require("../utils/apiFeatures");
 
 exports.createExpense = catchAsyncError(async (req, res, next) => {
   const {
-    expenseDate = Date.now() + 5.5 * 60 * 60 * 100,
+    expenseDate = Date.now(),
     category,
     amount,
     description,
@@ -22,9 +22,7 @@ exports.createExpense = catchAsyncError(async (req, res, next) => {
 
 exports.getExpensesForDate = catchAsyncError(async (req, res, next) => {
   const { date } = req.params;
-  const reportDate = date
-    ? new Date(date) // + 5.5 * 60 * 60 * 1000
-    : Date.now() + 5.5 * 60 * 60 * 1000;
+  const reportDate = date ? new Date(date) : new Date();
 
   // Set the start and end of the selected date
   const startDate = new Date(reportDate);

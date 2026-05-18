@@ -4,6 +4,7 @@ import { createExpense, clearNewExpense } from "../../actions/expenseAction.js";
 import Loader from "../layout/Loader/Loader.js";
 import deliveryDateLogo from "../../assets/calendar-check.svg";
 import Navigation from "../Navigation/Navigation";
+import { todayIST } from "../../utils/istDate";
 import Ruppee from "../../assets/indian-rupee-sign.svg";
 import Type from "../../assets/rectangle-list.svg";
 // import { useAlert } from "react-alert";
@@ -24,9 +25,7 @@ const CreateExpenses = () => {
   }, [newExpenseError]);
 
   const initialState = {
-    expenseDate: new Date(Date.now() + 5.5 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    expenseDate: todayIST(),
     category: "",
     amount: 0,
     description: "",
@@ -149,7 +148,7 @@ const CreateExpenses = () => {
                   <span>Expense Date:</span>{" "}
                   {new Date(newExpense.expenseDate).toLocaleDateString(
                     "en-GB",
-                    { day: "2-digit", month: "short" }
+                    { day: "2-digit", month: "short", timeZone: "Asia/Kolkata" }
                   )}
                 </div>
 

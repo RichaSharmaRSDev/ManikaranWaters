@@ -29,4 +29,8 @@ const deliverySchema = mongoose.Schema({
   },
 });
 
+deliverySchema.index({ customer: 1 });
+deliverySchema.index({ deliveryDate: 1 });
+deliverySchema.index({ customer: 1, deliveryDate: -1 });
+
 module.exports = mongoose.model("Delivery", deliverySchema);

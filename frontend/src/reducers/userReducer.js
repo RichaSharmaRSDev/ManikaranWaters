@@ -1,4 +1,4 @@
-export const userReducer = (state = { user: {} }, action) => {
+export const userReducer = (state = { user: {}, loading: true, isAuthenticated: false }, action) => {
   switch (action.type) {
     case "LoginRequest":
     case "RegisterUserRequest":

@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Loader from "../layout/Loader/Loader";
 import Navigation from "../Navigation/Navigation";
+import { dateToIST } from "../../utils/istDate";
 import Title from "../layout/Title";
 import { getCustomersByNextDeliveryDateMore } from "../../actions/customerAction";
 import "./Trip.scss";
@@ -19,9 +20,9 @@ const DeliveryList = () => {
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [chosenTrip, setChosenTrip] = useState("");
   const [deliveryGuy, setDeliveryGuy] = useState("");
-  const [selectedDate, setSelectedDate] = useState(new Date(Date.now()));
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [alert, setAlert] = useState(null);
-  const [nextDeliveryDay, setNextDeliveryDay] = useState(new Date(Date.now()));
+  const [nextDeliveryDay, setNextDeliveryDay] = useState(new Date());
   // const [exisitingCustomers, setExsistingCustomers] = useState(null);
   const previousDeliveryDayRef = useRef(null);
   const { allTrips, deliveryGuyNames, tripsByDate } = useSelector(
@@ -85,7 +86,7 @@ const DeliveryList = () => {
       allTrips?.some(
         (details) =>
           chosenTrip === details.tripNumber &&
-          selectedDate.toISOString().split("T")[0] ===
+          dateToIST(selectedDate) ===
             details.tripDate.split("T")[0]
       )
     ) {
@@ -94,7 +95,7 @@ const DeliveryList = () => {
           .put(`/api/v1/trip/${selectedDate}/${chosenTrip}`, {
             customers: selectedCustomers,
             tripNumber: chosenTrip,
-            tripDate: selectedDate.toISOString().split("T")[0],
+            tripDate: dateToIST(selectedDate),
             deliveryGuy,
           })
           .then((res) => {
@@ -115,7 +116,7 @@ const DeliveryList = () => {
           .post(`/api/v1/trip/new`, {
             customers: selectedCustomers,
             tripNumber: chosenTrip,
-            tripDate: selectedDate.toISOString().split("T")[0],
+            tripDate: dateToIST(selectedDate),
             deliveryGuy,
           })
           .then((res) => {
@@ -179,30 +180,14 @@ const DeliveryList = () => {
               <span>Next Delivery Date</span>
               <input
                 type="date"
-                value={
-                  new Date(
-                    nextDeliveryDay.getTime() +
-                      nextDeliveryDay.getTimezoneOffset() * 60000 +
-                      5.5 * 60 * 60 * 1000
-                  )
-                    .toISOString()
-                    .split("T")[0]
-                }
+                value={dateToIST(nextDeliveryDay)}
                 onChange={(e) => setNextDeliveryDay(new Date(e.target.value))}
               />
             </div>
             <div className="tripActions">
               <input
                 type="date"
-                value={
-                  new Date(
-                    selectedDate.getTime() +
-                      selectedDate.getTimezoneOffset() * 60000 +
-                      5.5 * 60 * 60 * 1000 // Adjusting for IST (5.5 hours ahead of GMT)
-                  )
-                    .toISOString()
-                    .split("T")[0]
-                }
+                value={dateToIST(selectedDate)}
                 onChange={(e) => setSelectedDate(new Date(e.target.value))}
               />
 

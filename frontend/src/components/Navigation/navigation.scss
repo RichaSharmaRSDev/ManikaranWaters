@@ -62,12 +62,19 @@
       border: 1px solid transparent;
       border-radius: 5px;
       font-family: "Poppins";
+      display: flex;
+      align-items: center;
+      gap: 8px;
       &:hover {
         opacity: 0.7;
       }
       a {
         text-decoration: unset;
         color: inherit;
+      }
+      svg {
+        flex-shrink: 0;
+        opacity: 0.85;
       }
     }
 
@@ -82,6 +89,16 @@
 
 /* CSS for navigation styling */
 
+.nav-section-label {
+  padding: 12px 10px 3px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  white-space: nowrap;
+}
+
 .menu {
   position: relative;
   padding-top: 3vh;
@@ -95,6 +112,13 @@
   border: none;
   color: white;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  svg {
+    flex-shrink: 0;
+    opacity: 0.85;
+  }
 }
 
 .submenu {
@@ -131,12 +155,14 @@
 // common code for other components
 
 .beNeutral {
-  margin-left: 15vw;
-  height: 89vh;
+  margin-left: 10px;
+  min-height: 89vh;
+  position: relative;
 }
 .shiftLeft {
-  margin-left: 5vw;
-  height: 89vh;
+  margin-left: 10px;
+  min-height: 89vh;
+  position: relative;
 }
 .common-heading {
   color: #0163a2;
@@ -232,6 +258,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 9999;
   .modal-bg {
     position: absolute;
     width: 100vw;

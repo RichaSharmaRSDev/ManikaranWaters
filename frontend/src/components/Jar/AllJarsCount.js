@@ -27,7 +27,7 @@ const AllJarsCount = () => {
     jarForMonth,
     successMonth,
   } = useSelector((state) => state.jars) || {};
-  const [date, setDate] = useState(formatDate(new Date(Date.now())));
+  const [date, setDate] = useState(formatDate(new Date()));
 
   const currentDate = new Date();
   currentDate.setUTCHours(0, 0, 0, 0); // Set UTC midnight time
