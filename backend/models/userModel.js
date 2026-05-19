@@ -11,15 +11,18 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: [true, "Please enter your email"],
     unique: true,
-    validator: [validator.isEmail, "Please neter a valid email"],
+    sparse: true,
+    validate: [validator.isEmail, "Please enter a valid email"],
+  },
+  username: {
+    type: String,
+    unique: true,
+    sparse: true,
   },
   password: {
     type: String,
-    required: [true, "Please enter your password"],
     minLength: [8, "Password should be greater than 8 characters"],
-    validator: [validator.isEmail, "Please neter a valid email"],
     select: false,
   },
   role: {

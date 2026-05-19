@@ -203,6 +203,20 @@ export const logout = () => async (dispatch) => {
 //   }
 // };
 
+// Admin: create a user without touching the current session
+export const createUser = (userData) => async (dispatch) => {
+  try {
+    dispatch({ type: "AdminCreateUserRequest" });
+    const { data } = await axios.post(`/api/v1/register`, userData);
+    dispatch({ type: "AdminCreateUserSuccess", payload: data.user });
+  } catch (error) {
+    dispatch({
+      type: "AdminCreateUserFail",
+      payload: error.response.data.message,
+    });
+  }
+};
+
 // Clearing Errors
 export const clearErrors = () => async (dispatch) => {
   dispatch({ type: "clearErrors" });

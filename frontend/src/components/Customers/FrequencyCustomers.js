@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { clearErrors, frequencyCustomers } from "../../actions/customerAction";
 import { useDispatch, useSelector } from "react-redux";
 import Navigation from "../Navigation/Navigation";
 import Loader from "../layout/Loader/Loader";
 import "./Table.scss";
 // // import { useAlert } from "react-alert";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { Pagination } from "../layout/Pagination/Pagination";
 import Title from "../layout/Title";
 import HabitsCustomerTable from "./HabitsCustomerTable";
@@ -17,13 +17,20 @@ const FrequencyCustomers = () => {
     useSelector((state) => state.customers);
   // const alert = useAlert();
   const dispatch = useDispatch();
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get("page")) || 1;
+  useEffect(() => {
+    if (!searchParams.get("page")) {
+      setSearchParams({ page: 1 }, { replace: true });
+    }
+  }, []);
   const totalPages = Math.ceil(customerFeatureCount / 20);
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    setSearchParams({ page });
+    window.scrollTo(0, 0);
   };
   useEffect(() => {
-    setCurrentPage(1);
+    setSearchParams({ page: 1 });
   }, [input]);
 
   useEffect(() => {
@@ -55,11 +62,16 @@ const FrequencyCustomers = () => {
                 frequencyField={false}
               />
               {totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
+                <>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                  <span style={{ fontSize: "12px", color: "#7a8fa6" }}>
+                    Page {currentPage} of {totalPages}
+                  </span>
+                </>
               )}
             </>
           )}

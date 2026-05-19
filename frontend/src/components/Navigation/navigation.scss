@@ -1,86 +1,166 @@
 .navigated-container {
   position: relative;
-  .profileDetails {
-    position: fixed;
-    right: 3vw;
-    top: 0;
-    h3 {
-      margin: 0;
-      font-family: "Tillana";
-      font-size: 1.2vw;
-    }
-    .logout-container {
-      display: flex;
-      align-items: center;
-      img {
-        max-height: 1.7vw;
-        margin-left: 0.8vw;
-      }
-      button {
-        background-color: #89c8fd;
-        color: #000;
-        font-size: 1vw;
-        padding: 5px 15px;
-        border: 1px solid transparent;
-        border-radius: 5px;
-        font-family: "Poppins";
-      }
-    }
-  }
   nav {
     position: fixed;
     left: 0;
     width: 14vw;
-    height: 89vh;
-    top: 8vh;
+    height: 100vh;
+    top: 0;
     display: flex;
     flex-direction: column;
-    background-color: #005ea5;
-    border-top-right-radius: 30px;
-    border-bottom-right-radius: 30px;
+    background-color: #012e4f;
+    overflow-y: auto;
+    .nav-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.2vw 0.5vw 0.8vw;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      .nav-logo {
+        width: 3.5vw;
+        height: 3.5vw;
+        object-fit: contain;
+        margin-bottom: 0.4vw;
+      }
+      .nav-brand-title {
+        color: #fff;
+        font-family: "Poppins", sans-serif;
+        font-size: clamp(10px, 0.75vw, 12px);
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        text-align: center;
+        line-height: 1.4;
+      }
+    }
     .menu-toggle-button {
-      background-color: #005ea5;
-      align-self: self-end;
+      background-color: transparent;
+      align-self: flex-end;
       border: none;
-      padding: 0;
-      border-top-right-radius: 30px;
-      img {
-        max-width: 4vw;
-        max-height: 4vw;
-        &.show {
-          transform: rotate(-180deg);
-        }
-        &.hide {
-          transform: rotate(0deg);
-        }
+      padding: 0.4vw 0.5vw;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.8);
+      &:hover {
+        color: #fff;
       }
     }
     .menu-button {
       width: 100%;
       color: #fff;
-      font-size: 1.3vw;
-      border: 1px solid transparent;
-      border-radius: 5px;
+      font-size: clamp(12px, 0.95vw, 14px);
+      border: none;
+      border-radius: 6px;
       font-family: "Poppins";
       display: flex;
       align-items: center;
       gap: 8px;
+      background: none;
+      cursor: pointer;
+      padding: 0.45vw 0.7vw;
+      text-decoration: none;
       &:hover {
-        opacity: 0.7;
-      }
-      a {
-        text-decoration: unset;
-        color: inherit;
+        background: rgba(255, 255, 255, 0.08);
       }
       svg {
         flex-shrink: 0;
         opacity: 0.85;
+        width: 1.2em;
+        height: 1.2em;
+      }
+      span:not(.menu-chevron) {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .menu-chevron {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        opacity: 0.55;
+        svg {
+          width: 1.1em;
+          height: 1.1em;
+        }
+      }
+    }
+
+    .nav-user {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.6vw;
+      padding: 1vw 0.8vw 1.2vw;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      .nav-user-avatar {
+        flex-shrink: 0;
+        width: 2.2vw;
+        height: 2.2vw;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Poppins";
+        font-size: clamp(9px, 0.7vw, 11px);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+      .nav-user-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        .nav-user-name {
+          color: #fff;
+          font-family: "Poppins";
+          font-size: clamp(12px, 1vw, 15px);
+          font-weight: 600;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .nav-user-meta {
+          color: rgba(255, 255, 255, 0.55);
+          font-family: "Poppins";
+          font-size: clamp(9px, 0.7vw, 11px);
+          .nav-user-logout {
+            cursor: pointer;
+            &:hover {
+              color: #fff;
+            }
+          }
+        }
       }
     }
 
     &.hide {
       width: 4vw;
+      .nav-user {
+        justify-content: center;
+        padding: 0.8vw 0;
+        .nav-user-avatar {
+          width: 2.5vw;
+          height: 2.5vw;
+          font-size: clamp(12px, 0.8vw, 14px);
+        }
+        .nav-user-info {
+          display: none;
+        }
+      }
+      .nav-brand {
+        padding: 0.8vw 0.2vw;
+        .nav-logo {
+          width: 2.5vw;
+          height: 2.5vw;
+        }
+        .nav-brand-title {
+          display: none;
+        }
+      }
       .menu {
+        display: none;
+      }
+      .nav-section-label {
         display: none;
       }
     }
@@ -91,7 +171,7 @@
 
 .nav-section-label {
   padding: 12px 10px 3px;
-  font-size: 9px;
+  font-size: clamp(9px, 0.7vw, 11px);
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -101,10 +181,7 @@
 
 .menu {
   position: relative;
-  padding-top: 3vh;
-  &:first-of-type {
-    padding-top: 2vh;
-  }
+  padding: 0.3vh 0.4vw 0;
 }
 
 .menu-button {
@@ -123,56 +200,83 @@
 
 .submenu {
   display: none;
-  background-color: #eef6fb;
-  padding: 0.5vw;
-  border-radius: 5px;
-  font-family: "Work Sans";
-  font-size: 1.2vw;
-  text-align: center;
-  & > div {
+  padding: 0.2vw 0 0.4vw;
+  font-family: "Poppins";
+  font-size: clamp(12px, 1vw, 15px);
+
+  &.open {
+    display: block;
+  }
+
+  a,
+  .submenu-item {
+    position: relative;
+    display: block;
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    /* left padding: 2vw for dot + indentation, right matches button */
+    padding: 0.38vw 0.7vw 0.38vw 2.4vw;
+    border-radius: 6px;
     cursor: pointer;
+    transition: color 0.12s, background-color 0.12s;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0.95vw;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.25);
+      transition: background-color 0.12s;
+    }
+
     &:hover {
-      opacity: 0.7;
+      color: rgba(255, 255, 255, 0.85);
+      background-color: rgba(255, 255, 255, 0.06);
+    }
+
+    &.active {
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.12);
+      &::before {
+        background-color: #fec41b;
+      }
     }
   }
-}
 
-.menu:hover .submenu {
-  display: block;
-}
-
-.submenu a {
-  display: block;
-  color: #000;
-  text-decoration: none;
-  padding: 5px 0 10px;
-}
-
-.submenu a:hover {
-  opacity: 0.7;
+  .submenu-divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 0.3vw 0.7vw;
+  }
 }
 
 // common code for other components
 
 .beNeutral {
   margin-left: 10px;
-  min-height: 89vh;
+  min-height: 100vh;
   position: relative;
 }
 .shiftLeft {
   margin-left: 10px;
-  min-height: 89vh;
+  min-height: 100vh;
   position: relative;
 }
 .common-heading {
-  color: #0163a2;
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 1vh;
-  font-family: "Cinzel";
-}
-.common-heading-form {
-  font-family: "Overlock";
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(10px, 0.72vw, 11px);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  text-align: left;
+  margin: 0 0 8px;
+  padding: 8px 0 6px;
+  border-bottom: 1px solid var(--color-border);
 }
 .common-cta {
   background-color: #fec41b;
@@ -401,34 +505,48 @@ input[type="checkbox"] {
       border-bottom-right-radius: 10px;
       width: 40vw;
 
-      .menu-toggle-button img {
-        max-width: 7vw;
-        max-height: 7vw;
+      .nav-brand {
+        padding: 3vw 1vw 2vw;
+        .nav-logo {
+          width: 10vw;
+          height: 10vw;
+        }
+        .nav-brand-title {
+          font-size: 2vw;
+        }
       }
 
       .menu {
         .menu-button {
           font-size: 16px;
         }
-
         .submenu {
           font-size: 14px;
+          padding-left: 6vw;
+          a, .submenu-item {
+            padding: 1.5vw 1vw 1.5vw 3vw;
+            &::before {
+              width: 6px;
+              height: 6px;
+            }
+          }
         }
       }
     }
-    .profileDetails {
-      right: 1%;
-      h3 {
-        font-size: 12px;
-        margin-bottom: 5px;
-      }
-      .logout-container {
-        button {
-          font-size: 12px;
+    nav {
+      .nav-user {
+        gap: 2vw;
+        padding: 3vw 2vw;
+        .nav-user-avatar {
+          width: 8vw;
+          height: 8vw;
+          font-size: 3vw;
         }
-        img {
-          max-height: 6vw;
-          margin-left: 1.5vw;
+        .nav-user-name {
+          font-size: 3vw;
+        }
+        .nav-user-meta {
+          font-size: 2.5vw;
         }
       }
     }

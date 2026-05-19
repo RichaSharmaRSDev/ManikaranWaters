@@ -1,25 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Loader from "../../components/layout/Loader/Loader.js";
-import Marker from "../../assets/marker.svg";
-import Allotment from "../../assets/user-unlock.svg";
-import Name from "../../assets/id-card-clip-alt.svg";
-import Phone from "../../assets/circle-phone-flip.svg";
-import Zone from "../../assets/map.svg";
-import Ruppee from "../../assets/indian-rupee-sign.svg";
-import Type from "../../assets/rectangle-list.svg";
 import Navigation from "../Navigation/Navigation";
 import {
   createNewCustomer,
   clearNewCustomer,
 } from "../../actions/customerAction";
-// // import { useAlert } from "react-alert";
 import Title from "../layout/Title.js";
+import "./CreateCustomer.scss";
 
 const CreateCustomer = () => {
-  // // const alert = useAlert();
   const { showNavigation } = useSelector((state) => state.navigation);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { loading, successCreate, newCustomer, newCustomerError } = useSelector(
     (state) => state.customers
   );
@@ -40,7 +34,6 @@ const CreateCustomer = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
     if (name === "name") {
       const formattedValue = value
         .split(" ")
@@ -78,184 +71,207 @@ const CreateCustomer = () => {
           <Title title={"Create New Customer"} />
           <Navigation />
           <div className={showNavigation ? "beNeutral" : "shiftLeft"}>
-            <h2 className="common-heading common-heading-form">
-              Create New Customer
-            </h2>
-            <form
-              onSubmit={handleCreateCustomerSubmit}
-              className="createForm createCustomerForm"
-            >
-              <div className="fields-wrapper">
-                <div className="fields">
-                  <label htmlFor="name">
-                    <img src={Name} alt="zone" />
-                    Name:
-                  </label>
-                  <input
-                    required
-                    type="string"
-                    name="name"
-                    placeholder="Customer Name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                <div className="fields">
-                  <label htmlFor="zone">
-                    <img src={Zone} alt="zone" />
-                    Zone:
-                  </label>
-                  <select
-                    name="zone"
-                    value={formData.zone}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Select Customer Zone</option>
-                    <option value="AA">AA</option>
-                    <option value="AB">AB</option>
-                    <option value="AC">AC</option>
-                    <option value="BA">BA</option>
-                    <option value="BB">BB</option>
-                    <option value="BC">BC</option>
-                    <option value="C">C</option>
-                    <option value="D">D</option>
-                    <option value="EA">EA</option>
-                    <option value="EB">EB</option>
-                    <option value="EC">EC</option>
-                    <option value="F">F</option>
-                  </select>
-                </div>
-
-                <div className="fields">
-                  <label htmlFor="customerType">
-                    <img src={Type} alt="customerType" />
-                    Customer Type:
-                  </label>
-                  <select
-                    name="customerType"
-                    value={formData.customerType}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Select Customer Type</option>
-                    <option value="on demand">On Demand</option>
-                    <option value="subscription">Subscription</option>
-                  </select>
-                </div>
-                {formData.customerType === "subscription" && (
-                  <div className="fields">
-                    <label htmlFor="frequency">
-                      <img src={Name} alt="zone" />
-                      Frequency:
-                    </label>
-                    <input
-                      required
-                      type="number"
-                      name="frequency"
-                      placeholder="Frequency"
-                      value={formData.frequency}
-                      onChange={handleInputChange}
-                      min="1"
-                    />
+            <div className="create-customer">
+              <form
+                onSubmit={handleCreateCustomerSubmit}
+                className="create-customer__form"
+              >
+                <div className="form-section">
+                  <div className="form-section__header">Basic Information</div>
+                  <div className="form-grid">
+                    <div className="form-field">
+                      <label className="form-label" htmlFor="name">
+                        Customer name
+                      </label>
+                      <input
+                        className="form-input"
+                        required
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Full name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="form-field">
+                      <label className="form-label" htmlFor="phoneNo">
+                        Phone number
+                      </label>
+                      <input
+                        className="form-input"
+                        type="tel"
+                        id="phoneNo"
+                        name="phoneNo"
+                        placeholder="10-digit mobile"
+                        value={formData.phoneNo}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-field">
+                      <label className="form-label" htmlFor="zone">
+                        Zone
+                      </label>
+                      <select
+                        className="form-select"
+                        id="zone"
+                        name="zone"
+                        value={formData.zone}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        <option value="">Select zone...</option>
+                        <option value="AA">AA</option>
+                        <option value="AB">AB</option>
+                        <option value="AC">AC</option>
+                        <option value="BA">BA</option>
+                        <option value="BB">BB</option>
+                        <option value="BC">BC</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="EA">EA</option>
+                        <option value="EB">EB</option>
+                        <option value="EC">EC</option>
+                        <option value="F">F</option>
+                      </select>
+                    </div>
+                    <div className="form-field">
+                      <label className="form-label" htmlFor="customerType">
+                        Customer type
+                      </label>
+                      <select
+                        className="form-select"
+                        id="customerType"
+                        name="customerType"
+                        value={formData.customerType}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        <option value="">Select type...</option>
+                        <option value="on demand">On Demand</option>
+                        <option value="subscription">Subscription</option>
+                      </select>
+                    </div>
+                    {formData.customerType === "subscription" && (
+                      <div className="form-field">
+                        <label className="form-label" htmlFor="frequency">
+                          Frequency
+                        </label>
+                        <input
+                          className="form-input"
+                          required
+                          type="number"
+                          id="frequency"
+                          name="frequency"
+                          placeholder="Delivery frequency"
+                          value={formData.frequency}
+                          onChange={handleInputChange}
+                          min="1"
+                        />
+                      </div>
+                    )}
+                    <div className="form-field form-field--full">
+                      <label className="form-label" htmlFor="address">
+                        Address
+                      </label>
+                      <input
+                        className="form-input"
+                        type="text"
+                        id="address"
+                        name="address"
+                        placeholder="Full delivery address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                      />
+                    </div>
                   </div>
-                )}
-
-                <div className="fields">
-                  <label htmlFor="rate">
-                    <img src={Ruppee} alt="rate" />
-                    Rate:
-                  </label>
-                  <input
-                    type="number"
-                    name="rate"
-                    placeholder="Rate"
-                    value={formData.rate}
-                    onChange={handleInputChange}
-                    min="1"
-                    required
-                  />
                 </div>
 
-                <div className="fields">
-                  <label htmlFor="phoneNo">
-                    <img src={Phone} alt="zone" />
-                    Phone No:
-                  </label>
-                  <input
-                    type="tel"
-                    name="phoneNo"
-                    placeholder="Phone No"
-                    value={formData.phoneNo}
-                    onChange={handleInputChange}
-                    required
-                  />
+                <div className="form-section">
+                  <div className="form-section__header">Jar &amp; Billing</div>
+                  <div className="form-grid">
+                    <div className="form-field">
+                      <label className="form-label" htmlFor="rate">
+                        Rate per jar (₹)
+                      </label>
+                      <input
+                        className="form-input"
+                        type="number"
+                        id="rate"
+                        name="rate"
+                        placeholder="0"
+                        value={formData.rate}
+                        onChange={handleInputChange}
+                        min="1"
+                        required
+                      />
+                    </div>
+                    <div className="form-field">
+                      <label className="form-label" htmlFor="allotment">
+                        Jar allotment
+                      </label>
+                      <input
+                        className="form-input"
+                        type="number"
+                        id="allotment"
+                        name="allotment"
+                        placeholder="0"
+                        value={formData.allotment}
+                        onChange={handleInputChange}
+                        min="0"
+                        required
+                      />
+                    </div>
+                    <div className="form-field">
+                      <label className="form-label" htmlFor="securityMoney">
+                        Security deposit (₹)
+                      </label>
+                      <input
+                        className="form-input"
+                        type="number"
+                        id="securityMoney"
+                        name="securityMoney"
+                        placeholder="0"
+                        value={formData.securityMoney}
+                        onChange={handleInputChange}
+                        min="0"
+                        required
+                      />
+                    </div>
+                    <div className="form-field">
+                      <label className="form-label" htmlFor="billedAmount">
+                        Outstanding amount (₹)
+                      </label>
+                      <input
+                        className="form-input"
+                        type="number"
+                        id="billedAmount"
+                        name="billedAmount"
+                        placeholder="0"
+                        value={formData.billedAmount}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="fields">
-                  <label htmlFor="allotment">
-                    <img src={Allotment} alt="zone" />
-                    Allotment:
-                  </label>
-                  <input
-                    type="number"
-                    name="allotment"
-                    placeholder="Allotment of Jars"
-                    value={formData.allotment}
-                    onChange={handleInputChange}
-                    min="0"
-                    required
-                  />
+                <div className="form-actions">
+                  <button type="submit" className="btn btn--primary">
+                    Create customer
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn--secondary"
+                    onClick={() => navigate(-1)}
+                  >
+                    Cancel
+                  </button>
                 </div>
-                <div className="fields">
-                  <label htmlFor="securityMoney">
-                    <img src={Allotment} alt="zone" />
-                    Security Money:
-                  </label>
-                  <input
-                    type="number"
-                    name="securityMoney"
-                    placeholder="Security Money"
-                    value={formData.securityMoney}
-                    onChange={handleInputChange}
-                    min="0"
-                    required
-                  />
-                </div>
-
-                <div className="fields">
-                  <label htmlFor="address">
-                    <img src={Marker} alt="zone" />
-                    Address:
-                  </label>
-                  <input
-                    type="string"
-                    name="address"
-                    placeholder="Address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="fields">
-                  <label htmlFor="billedAmount">
-                    <img src={Ruppee} alt="billedAmount" />
-                    Outstanding Amount:
-                  </label>
-                  <input
-                    type="number"
-                    name="billedAmount"
-                    placeholder="Billed Amount"
-                    value={formData.billedAmount}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <button className="common-cta" type="submit">
-                  Create Customer
-                </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
+
           {newCustomer && (
             <div className="modal create-customer-modal">
               <div className="modal-bg"></div>
@@ -265,7 +281,8 @@ const CreateCustomer = () => {
                   <span>Name:</span> <span>{newCustomer.name}</span>
                 </div>
                 <div className="values">
-                  <span>CustomerId:</span> <span>{newCustomer.customerId}</span>
+                  <span>CustomerId:</span>{" "}
+                  <span>{newCustomer.customerId}</span>
                 </div>
                 <div className="values">
                   <span>Zone:</span> <span>{newCustomer.zone}</span>

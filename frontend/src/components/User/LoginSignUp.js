@@ -1,177 +1,111 @@
-import React, { Fragment, useRef, useState, useEffect } from "react";
-import "./LoginSignUp.css";
+import React, { useState, useEffect } from "react";
+import "./LoginSignUp.scss";
 import Loader from "../layout/Loader/Loader";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { clearErrors, login, register } from "../../actions/userAction";
-import { useNavigate } from "react-router-dom";
+import { clearErrors, login } from "../../actions/userAction";
+import { IconEye, IconEyeOff } from "@tabler/icons-react";
+import Logo from "../../assets/manikaran_waters_logo.png";
 import Title from "../layout/Title";
-// import { useAlert } from "react-alert";
 
 const LoginSignUp = () => {
-  // const alert = useAlert();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { error, loading, isAuthenticated } = useSelector(
     (state) => state.user
   );
 
-  useEffect(() => {
-    // if (error) {
-    //   console.log(error);
-    //   dispatch(clearErrors());
-    // }
-    if (isAuthenticated) {
-      console.log("Logged In Successfulyy");
-    }
-  }, [dispatch, error, alert, isAuthenticated]);
-
-  const loginTab = useRef(null);
-  const registerTab = useRef(null);
-  const switcherTab = useRef(null);
-
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-
-  const { name, email, password } = user;
-
-  const loginSubmit = async (e) => {
+  const loginSubmit = (e) => {
     e.preventDefault();
-
     dispatch(login(loginEmail, loginPassword));
   };
-
-  const registerSubmit = (e) => {
-    e.preventDefault();
-
-    const userData = {
-      name,
-      email,
-      password,
-    };
-    dispatch(register(userData));
-  };
-
-  const registerDataChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  };
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (error) {
       dispatch(clearErrors());
     }
-
     if (isAuthenticated) {
       navigate("/dashboard");
     }
   }, [dispatch, error, isAuthenticated, navigate]);
 
-  const switchTabs = (e, tab) => {
-    if (tab === "login") {
-      switcherTab.current.classList.add("shiftToNeutral");
-      switcherTab.current.classList.remove("shiftToRight");
-
-      registerTab.current.classList.remove("shiftToNeutralForm");
-      loginTab.current.classList.remove("shiftToLeft");
-    }
-    if (tab === "register") {
-      switcherTab.current.classList.add("shiftToRight");
-      switcherTab.current.classList.remove("shiftToNeutral");
-
-      registerTab.current.classList.add("shiftToNeutralForm");
-      loginTab.current.classList.add("shiftToLeft");
-    }
-  };
-
   return (
-    <Fragment>
+    <>
       {loading ? (
         <Loader />
       ) : (
-        <Fragment>
-          <Title title="Home Page" />
-          <div className="LoginSignUpContainer">
-            <div className="LoginSignUpBox">
-              <div>
-                <div className="login_signUp_toggle">
-                  <p onClick={(e) => switchTabs(e, "login")}>LOGIN</p>
-                  <p onClick={(e) => switchTabs(e, "register")}>REGISTER</p>
-                </div>
-                <button ref={switcherTab}></button>
+        <>
+          <Title title="Login" />
+          <div className="login-page">
+            <div className="login-card">
+              <div className="login-brand">
+                <img
+                  src={Logo}
+                  alt="Manikaran Waters"
+                  className="login-brand__logo"
+                />
+                <span className="login-brand__name">Manikaran Waters</span>
+                <span className="login-brand__tagline">Sign in to continue</span>
               </div>
-              <form className="loginForm" ref={loginTab} onSubmit={loginSubmit}>
-                <div className="loginEmail">
+
+              <form className="login-form" onSubmit={loginSubmit}>
+                <div className="login-field">
+                  <label className="login-label">Email address</label>
                   <input
+                    className="login-input"
                     type="email"
-                    placeholder="Email"
+                    placeholder="you@example.com"
                     required
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                   />
                 </div>
-                <div className="loginPassword">
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    required
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                  />
-                </div>
-                <Link to="/password/forgot">Forget Password ?</Link>
-                <input type="submit" value="Login" className="loginBtn" />
-              </form>
-              <form
-                className="signUpForm"
-                ref={registerTab}
-                encType="multipart/form-data"
-                onSubmit={registerSubmit}
-              >
-                <div className="signUpName">
-                  <input
-                    type="text"
-                    placeholder="Name"
-                    required
-                    name="name"
-                    value={name}
-                    onChange={registerDataChange}
-                  />
-                </div>
-                <div className="signUpEmail">
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    required
-                    name="email"
-                    value={email}
-                    onChange={registerDataChange}
-                  />
-                </div>
-                <div className="signUpPassword">
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    required
-                    name="password"
-                    value={password}
-                    onChange={registerDataChange}
-                  />
+
+                <div className="login-field">
+                  <label className="login-label">Password</label>
+                  <div className="login-input-wrap">
+                    <input
+                      className="login-input"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      required
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="login-eye"
+                      onClick={() => setShowPassword((v) => !v)}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <IconEyeOff size={16} />
+                      ) : (
+                        <IconEye size={16} />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
-                <input type="submit" value="Register" className="signUpBtn" />
+                <Link to="/password/forgot" className="login-forgot">
+                  Forgot password?
+                </Link>
+
+                <button type="submit" className="login-btn">
+                  Login
+                </button>
               </form>
+
+              <p className="login-footer">Access is by invitation only</p>
             </div>
           </div>
-        </Fragment>
+        </>
       )}
-    </Fragment>
+    </>
   );
 };
 

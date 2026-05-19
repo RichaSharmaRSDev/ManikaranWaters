@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Loader from "../layout/Loader/Loader";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../../actions/userAction";
 import { useDispatch, useSelector } from "react-redux";
-import logoutSvg from "../../assets/sign-out-alt.svg";
+import Logo from "../../assets/manikaran_waters_logo.png";
 import "./navigation.scss";
-import expandCollapseLogo from "../../assets/expandCollapse.svg";
 // import { useAlert } from "react-alert";
 import { toggleNavigation } from "../../actions/navigationAction";
 import {
@@ -20,6 +19,11 @@ import {
   IconTruckDelivery,
   IconChartBar,
   IconMapPin,
+  IconUserPlus,
+  IconLayoutSidebarLeftCollapse,
+  IconLayoutSidebarLeftExpand,
+  IconChevronUp,
+  IconChevronDown,
 } from "@tabler/icons-react";
 
 const Navigation = () => {
@@ -119,6 +123,37 @@ const Navigation = () => {
     setSalesDailyDate("");
   };
 
+  const location = useLocation();
+
+  const getInitialMenu = (pathname) => {
+    if (pathname === "/customers" || pathname.startsWith("/customer/") || pathname === "/quickaccess") return "customer";
+    if (pathname.startsWith("/customers/frequency")) return "habits";
+    if (pathname === "/delivery/new" || pathname === "/payment/new") return "entries";
+    if (pathname.startsWith("/deliveries") || pathname.startsWith("/payments")) return "reports";
+    if (pathname.startsWith("/expense")) return "expense";
+    if (pathname.startsWith("/customerspredictions")) return "prediction";
+    if (pathname.startsWith("/jarInventory")) return "jarcount";
+    if (["/trips", "/makeDeliveryList", "/arrangetrips"].includes(pathname)) return "trips";
+    if (pathname.startsWith("/report")) return "sales";
+    if (pathname === "/deliveryPanel") return "delivery-panel";
+    return null;
+  };
+
+  const [openMenu, setOpenMenu] = useState(() => getInitialMenu(location.pathname));
+
+  const toggleMenu = (key) =>
+    setOpenMenu((prev) => (prev === key ? null : key));
+
+  const isActive = (to) => {
+    const [path, qs] = to.split("?");
+    if (!qs)
+      return (
+        location.pathname === path ||
+        location.pathname.startsWith(path + "/")
+      );
+    return location.pathname === path && location.search === "?" + qs;
+  };
+
   const toggleNavigationInside = () => {
     showNavigation = !showNavigation;
     dispatch(toggleNavigation(showNavigation));
@@ -147,207 +182,217 @@ const Navigation = () => {
         <Loader />
       ) : (
         <div className="navigated-container">
-          <div className="profileDetails">
-            <h3>Hi {user.name}!</h3>
-            <div className="logout-container" onClick={logoutUser}>
-              <button>Logout</button>
-              <img src={logoutSvg} alt="logout" />
-            </div>
-          </div>
           <nav className={`${showNavigation ? "show" : "hide"}`}>
+            <Link to="/dashboard" className="nav-brand">
+              <img src={Logo} alt="Manikaran Waters" className="nav-logo" />
+              <span className="nav-brand-title">MANIKARAN WATERS</span>
+            </Link>
             <button
               className="menu-toggle-button"
               onClick={toggleNavigationInside}
+              title={showNavigation ? "Collapse sidebar" : "Expand sidebar"}
             >
-              <img
-                src={expandCollapseLogo}
-                className={`${showNavigation ? "show" : "hide"}`}
-                alt="toggle"
-              />
+              {showNavigation
+                ? <IconLayoutSidebarLeftCollapse size={22} />
+                : <IconLayoutSidebarLeftExpand size={22} />
+              }
             </button>
 
             {(user.role === "admin" || user.role === "user") && (
               <>
                 <div className="nav-section-label">Customers</div>
                 <div className="menu">
-                  <button className="menu-button"><IconUsers size={18} /><span>Customer</span></button>
-                  <div className="submenu">
-                    <Link to="/customer/new">Create New Customer</Link>
-                    <Link to="/customers">Customer Details</Link>
-                    <Link to="/quickaccess">Quick Access</Link>
+                  <button className="menu-button" onClick={() => toggleMenu("customer")}>
+                    <IconUsers size={18} />
+                    <span>Customer</span>
+                    <span className="menu-chevron">
+                      {openMenu === "customer" ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+                    </span>
+                  </button>
+                  <div className={`submenu${openMenu === "customer" ? " open" : ""}`}>
+                    <Link to="/customer/new" className={isActive("/customer/new") ? "active" : ""}>Create New Customer</Link>
+                    <Link to="/customers" className={isActive("/customers") ? "active" : ""}>Customer Details</Link>
+                    <Link to="/quickaccess" className={isActive("/quickaccess") ? "active" : ""}>Quick Access</Link>
                   </div>
                 </div>
 
-                {/* Customer Habits */}
                 <div className="menu">
-                  <button className="menu-button"><IconRepeat size={18} /><span>Customer Habits</span></button>
-                  <div className="submenu">
-                    <Link to="/customers/frequency/1">Daily Customers</Link>
-                    <Link to="/customers/frequency/2">Alternate Customers</Link>
-                    <Link to="/customers/frequency/3">Ternary Customers</Link>
-                    <div
-                      className="customCustomerFrequencyLink"
-                      to="#"
-                      onClick={() => setCustomerFrequencyModal(true)}
-                    >
-                      Custom Interval Customers
-                    </div>
+                  <button className="menu-button" onClick={() => toggleMenu("habits")}>
+                    <IconRepeat size={18} />
+                    <span>Customer Habits</span>
+                    <span className="menu-chevron">
+                      {openMenu === "habits" ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+                    </span>
+                  </button>
+                  <div className={`submenu${openMenu === "habits" ? " open" : ""}`}>
+                    <Link to="/customers/frequency/1" className={isActive("/customers/frequency/1") ? "active" : ""}>Daily Customers</Link>
+                    <Link to="/customers/frequency/2" className={isActive("/customers/frequency/2") ? "active" : ""}>Alternate Customers</Link>
+                    <Link to="/customers/frequency/3" className={isActive("/customers/frequency/3") ? "active" : ""}>Ternary Customers</Link>
+                    <div className="submenu-item" onClick={() => setCustomerFrequencyModal(true)}>Custom Interval</div>
                   </div>
                 </div>
 
                 <div className="nav-section-label">Operations</div>
-                {/* Enteries */}
                 <div className="menu">
-                  <button className="menu-button"><IconPencil size={18} /><span>Entries</span></button>
-                  <div className="submenu">
-                    <Link to="/delivery/new">New Delivery</Link>
-                    <Link to="/payment/new">New Payment</Link>
+                  <button className="menu-button" onClick={() => toggleMenu("entries")}>
+                    <IconPencil size={18} />
+                    <span>Entries</span>
+                    <span className="menu-chevron">
+                      {openMenu === "entries" ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+                    </span>
+                  </button>
+                  <div className={`submenu${openMenu === "entries" ? " open" : ""}`}>
+                    <Link to="/delivery/new" className={isActive("/delivery/new") ? "active" : ""}>New Delivery</Link>
+                    <Link to="/payment/new" className={isActive("/payment/new") ? "active" : ""}>New Payment</Link>
                   </div>
                 </div>
 
-                {/* Reports */}
                 <div className="menu">
-                  <button className="menu-button"><IconReportAnalytics size={18} /><span>Reports</span></button>
-                  <div className="submenu">
-                    <Link to="/deliveries?deliveryDate=today">
-                      Today's Deliveries
-                    </Link>
-                    <Link to="/deliveries?deliveryDate=yesterday">
-                      Yesterday's Deliveries
-                    </Link>
-                    <div to="#" onClick={() => setDeliveryModal(true)}>
-                      Custom Day Deliveries
-                    </div>
-                    <div
-                      to="#"
-                      onClick={() => setDeliveryRangeModal(true)}
-                      style={{ marginTop: "10px" }}
-                    >
-                      Date Range Deliveries
-                    </div>
-                    <hr></hr>
-                    <Link to="/payments?paymentDate=today">
-                      Today's Payments
-                    </Link>
-                    <Link to="/payments?paymentDate=yesterday">
-                      Yesterday's Payments
-                    </Link>
-                    <div
-                      className="customPaymentLink"
-                      to="#"
-                      onClick={() => setPaymentModal(true)}
-                    >
-                      Custom Payments
-                    </div>
-                    <div
-                      to="#"
-                      onClick={() => setPaymentRangeModal(true)}
-                      style={{ marginTop: "10px" }}
-                    >
-                      Date Range Payments
-                    </div>
+                  <button className="menu-button" onClick={() => toggleMenu("reports")}>
+                    <IconReportAnalytics size={18} />
+                    <span>Reports</span>
+                    <span className="menu-chevron">
+                      {openMenu === "reports" ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+                    </span>
+                  </button>
+                  <div className={`submenu${openMenu === "reports" ? " open" : ""}`}>
+                    <Link to="/deliveries?deliveryDate=today" className={isActive("/deliveries?deliveryDate=today") ? "active" : ""}>Today's Deliveries</Link>
+                    <Link to="/deliveries?deliveryDate=yesterday" className={isActive("/deliveries?deliveryDate=yesterday") ? "active" : ""}>Yesterday's Deliveries</Link>
+                    <div className="submenu-item" onClick={() => setDeliveryModal(true)}>Custom Day Deliveries</div>
+                    <div className="submenu-item" onClick={() => setDeliveryRangeModal(true)}>Date Range Deliveries</div>
+                    <div className="submenu-divider" />
+                    <Link to="/payments?paymentDate=today" className={isActive("/payments?paymentDate=today") ? "active" : ""}>Today's Payments</Link>
+                    <Link to="/payments?paymentDate=yesterday" className={isActive("/payments?paymentDate=yesterday") ? "active" : ""}>Yesterday's Payments</Link>
+                    <div className="submenu-item" onClick={() => setPaymentModal(true)}>Custom Payments</div>
+                    <div className="submenu-item" onClick={() => setPaymentRangeModal(true)}>Date Range Payments</div>
                   </div>
                 </div>
 
-                {/* Expense */}
                 <div className="menu">
-                  <button className="menu-button"><IconReceipt size={18} /><span>Expense</span></button>
-                  <div className="submenu">
-                    <Link to="/expense/new">Create Expense</Link>
-                    <Link to="/expenses/today">Today's Expense</Link>
-                    <Link to="/expenses/yesterday">Yesterday's Expense</Link>
-                    <div
-                      className="customExpenseLink"
-                      to="#"
-                      onClick={() => setExpenseModal(true)}
-                    >
-                      Custom Date Expenses
-                    </div>
+                  <button className="menu-button" onClick={() => toggleMenu("expense")}>
+                    <IconReceipt size={18} />
+                    <span>Expense</span>
+                    <span className="menu-chevron">
+                      {openMenu === "expense" ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+                    </span>
+                  </button>
+                  <div className={`submenu${openMenu === "expense" ? " open" : ""}`}>
+                    <Link to="/expense/new" className={isActive("/expense/new") ? "active" : ""}>Create Expense</Link>
+                    <Link to="/expenses/today" className={isActive("/expenses/today") ? "active" : ""}>Today's Expense</Link>
+                    <Link to="/expenses/yesterday" className={isActive("/expenses/yesterday") ? "active" : ""}>Yesterday's Expense</Link>
+                    <div className="submenu-item" onClick={() => setExpenseModal(true)}>Custom Date Expenses</div>
                   </div>
                 </div>
 
-                {/* Prediction */}
                 <div className="menu">
-                  <button className="menu-button"><IconTrendingUp size={18} /><span>Prediction</span></button>
-                  <div className="submenu">
-                    <Link to="/customerspredictions?nextDelivery=tomorrow">
-                      Expected Tomorrow's Deliveries
-                    </Link>
-                    <Link to="/customerspredictions?nextDelivery=today">
-                      Expected Today's Deliveries
-                    </Link>
-                    <div
-                      className="customPredictionLink"
-                      to="#"
-                      onClick={() => setPredictionModal(true)}
-                    >
-                      Custom Date Prediction
-                    </div>
+                  <button className="menu-button" onClick={() => toggleMenu("prediction")}>
+                    <IconTrendingUp size={18} />
+                    <span>Prediction</span>
+                    <span className="menu-chevron">
+                      {openMenu === "prediction" ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+                    </span>
+                  </button>
+                  <div className={`submenu${openMenu === "prediction" ? " open" : ""}`}>
+                    <Link to="/customerspredictions?nextDelivery=tomorrow" className={isActive("/customerspredictions?nextDelivery=tomorrow") ? "active" : ""}>Expected Tomorrow</Link>
+                    <Link to="/customerspredictions?nextDelivery=today" className={isActive("/customerspredictions?nextDelivery=today") ? "active" : ""}>Expected Today</Link>
+                    <div className="submenu-item" onClick={() => setPredictionModal(true)}>Custom Date Prediction</div>
                   </div>
                 </div>
 
-                {/* Jar Count */}
                 <div className="menu">
-                  <button className="menu-button"><IconHexagon size={18} /><span>Jar Count</span></button>
-                  <div className="submenu">
-                    <Link to="/jarInventory/today">Today's Jar Count</Link>
-                    <Link to="/jarInventory">Jar Inventory</Link>
+                  <button className="menu-button" onClick={() => toggleMenu("jarcount")}>
+                    <IconHexagon size={18} />
+                    <span>Jar Count</span>
+                    <span className="menu-chevron">
+                      {openMenu === "jarcount" ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+                    </span>
+                  </button>
+                  <div className={`submenu${openMenu === "jarcount" ? " open" : ""}`}>
+                    <Link to="/jarInventory/today" className={isActive("/jarInventory/today") ? "active" : ""}>Today's Jar Count</Link>
+                    <Link to="/jarInventory" className={isActive("/jarInventory") ? "active" : ""}>Jar Inventory</Link>
                   </div>
                 </div>
               </>
             )}
 
-            {/* Delivery Trips */}
             <div className="menu">
-              <button className="menu-button"><IconTruckDelivery size={18} /><span>Delivery Trips</span></button>
-              <div className="submenu">
-                <Link to="/makeDeliveryList">Make Trips</Link>
-                <Link to="/trips">Modify Trips</Link>
-                <Link to="/arrangetrips">Arrange Trips</Link>
+              <button className="menu-button" onClick={() => toggleMenu("trips")}>
+                <IconTruckDelivery size={18} />
+                <span>Delivery Trips</span>
+                <span className="menu-chevron">
+                  {openMenu === "trips" ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+                </span>
+              </button>
+              <div className={`submenu${openMenu === "trips" ? " open" : ""}`}>
+                <Link to="/makeDeliveryList" className={isActive("/makeDeliveryList") ? "active" : ""}>Make Trips</Link>
+                <Link to="/trips" className={isActive("/trips") ? "active" : ""}>Modify Trips</Link>
+                <Link to="/arrangetrips" className={isActive("/arrangetrips") ? "active" : ""}>Arrange Trips</Link>
               </div>
             </div>
 
-            {/* Sales Report */}
             {user.role === "admin" && (
               <div className="nav-section-label">Analytics</div>
             )}
             {user.role === "admin" && (
               <div className="menu">
-                <button className="menu-button"><IconChartBar size={18} /><span>Sales Report</span></button>
-                <div className="submenu">
-                  <div
-                    to="#"
-                    onClick={() => setSalesDailyModal(true)}
-                    style={{ marginTop: "10px" }}
-                  >
-                    Daily Report
-                  </div>
-                  <div
-                    to="#"
-                    onClick={() => setSalesMonthlyModal(true)}
-                    style={{ marginTop: "10px" }}
-                  >
-                    Monthly Report
-                  </div>
-                  <div
-                    to="#"
-                    onClick={() => setSalesDetailedMonthlyModal(true)}
-                    style={{ marginTop: "10px" }}
-                  >
-                    Detailed Monthly Report
-                  </div>
+                <button className="menu-button" onClick={() => toggleMenu("sales")}>
+                  <IconChartBar size={18} />
+                  <span>Sales Report</span>
+                  <span className="menu-chevron">
+                    {openMenu === "sales" ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+                  </span>
+                </button>
+                <div className={`submenu${openMenu === "sales" ? " open" : ""}`}>
+                  <div className="submenu-item" onClick={() => setSalesDailyModal(true)}>Daily Report</div>
+                  <div className="submenu-item" onClick={() => setSalesMonthlyModal(true)}>Monthly Report</div>
+                  <div className="submenu-item" onClick={() => setSalesDetailedMonthlyModal(true)}>Detailed Monthly Report</div>
                 </div>
               </div>
             )}
 
-            {/* Delivery App */}
+            {user.role === "admin" && (
+              <>
+                <div className="nav-section-label">Admin</div>
+                <div className="menu">
+                  <Link
+                    to="/admin/create-user"
+                    className={`menu-button${isActive("/admin/create-user") ? " active" : ""}`}
+                  >
+                    <IconUserPlus size={18} />
+                    <span>Create User</span>
+                  </Link>
+                </div>
+              </>
+            )}
+
             {(user.role === "delivery" || user.role === "admin") && (
               <div className="menu">
-                <button className="menu-button">
-                  <IconMapPin size={18} /><Link to="/deliveryPanel">Delivery Panel</Link>
+                <button className="menu-button" onClick={() => toggleMenu("delivery-panel")}>
+                  <IconMapPin size={18} />
+                  <span>Delivery Panel</span>
+                  <span className="menu-chevron">
+                    {openMenu === "delivery-panel" ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+                  </span>
                 </button>
+                <div className={`submenu${openMenu === "delivery-panel" ? " open" : ""}`}>
+                  <Link to="/deliveryPanel" className={isActive("/deliveryPanel") ? "active" : ""}>Open Panel</Link>
+                </div>
               </div>
             )}
+
+            <div className="nav-user">
+              <div className="nav-user-avatar">
+                {user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
+              </div>
+              <div className="nav-user-info">
+                <span className="nav-user-name">{user.name}</span>
+                <span className="nav-user-meta">
+                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  {" · "}
+                  <span className="nav-user-logout" onClick={logoutUser}>Logout</span>
+                </span>
+              </div>
+            </div>
 
           </nav>
         </div>

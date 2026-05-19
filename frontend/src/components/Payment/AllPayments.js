@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   allPayments,
@@ -6,7 +6,7 @@ import {
   rangePayments,
 } from "../../actions/paymentAction";
 import Loader from "../layout/Loader/Loader";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import Navigation from "../Navigation/Navigation";
 import { todayIST, yesterdayIST } from "../../utils/istDate";
 // import { useAlert } from "react-alert";
@@ -16,7 +16,19 @@ import PaymentTable from "./PaymentTable";
 
 const AllPayments = () => {
   const dispatch = useDispatch();
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const currentPage = parseInt(queryParams.get("page")) || 1;
+  useEffect(() => {
+    if (!queryParams.get("page")) {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("page", 1);
+        return next;
+      }, { replace: true });
+    }
+  }, []);
 
   const { isAuthenticated } = useSelector((state) => state.user);
   const { showNavigation } = useSelector((state) => state.navigation);
@@ -24,8 +36,6 @@ const AllPayments = () => {
     useSelector((state) => state.payments) || {};
   const totalPages = Math.ceil(paymentCount / 20);
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
   const paymentDateText = queryParams.get("paymentDate");
   const paymentRangeStartDate = queryParams.get("paymentStartDate");
   const paymentRangeEndDate = queryParams.get("paymentEndDate");
@@ -56,7 +66,12 @@ const AllPayments = () => {
 
   // const alert = useAlert();
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("page", page);
+      return next;
+    });
+    window.scrollTo(0, 0);
   };
   useEffect(() => {
     if (paymentDate && paymentEndDate) {
@@ -101,11 +116,16 @@ const AllPayments = () => {
                 </h2>
                 <PaymentTable payments={payments} paymentTotal={paymentTotal} />
                 {totalPages > 1 && (
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                  />
+                  <>
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                    <span style={{ fontSize: "12px", color: "#7a8fa6" }}>
+                      Page {currentPage} of {totalPages}
+                    </span>
+                  </>
                 )}
               </>
             ) : (

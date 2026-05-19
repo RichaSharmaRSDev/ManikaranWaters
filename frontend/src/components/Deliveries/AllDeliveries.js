@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   allDeliveries,
@@ -6,7 +6,7 @@ import {
   rangeDeliveries,
 } from "../../actions/deliveryAction";
 import Loader from "../layout/Loader/Loader";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import Navigation from "../Navigation/Navigation";
 import { todayIST, yesterdayIST } from "../../utils/istDate";
 // import { useAlert } from "react-alert";
@@ -16,7 +16,19 @@ import DeliveryTable from "./DeliveryTable";
 
 const AllDeliveries = () => {
   const dispatch = useDispatch();
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const currentPage = parseInt(queryParams.get("page")) || 1;
+  useEffect(() => {
+    if (!queryParams.get("page")) {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("page", 1);
+        return next;
+      }, { replace: true });
+    }
+  }, []);
 
   const { isAuthenticated } = useSelector((state) => state.user);
   const { showNavigation } = useSelector((state) => state.navigation);
@@ -24,8 +36,6 @@ const AllDeliveries = () => {
     useSelector((state) => state.deliveries) || {};
   const totalPages = Math.ceil(deliveryCount / 20);
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
   const deliveryDateText = queryParams.get("deliveryDate");
   const deliveryRangeStartDate = queryParams.get("deliveryStartDate");
   const deliveryRangeEndDate = queryParams.get("deliveryEndDate");
@@ -56,7 +66,12 @@ const AllDeliveries = () => {
 
   // const alert = useAlert();
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("page", page);
+      return next;
+    });
+    window.scrollTo(0, 0);
   };
 
   const onRefresh = () => {
@@ -115,11 +130,16 @@ const AllDeliveries = () => {
                   onRefresh={onRefresh}
                 />
                 {totalPages > 1 && (
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                  />
+                  <>
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                    <span style={{ fontSize: "12px", color: "#7a8fa6" }}>
+                      Page {currentPage} of {totalPages}
+                    </span>
+                  </>
                 )}
               </>
             ) : (

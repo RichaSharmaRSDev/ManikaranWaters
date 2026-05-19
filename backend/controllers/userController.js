@@ -7,15 +7,34 @@ const crypto = require("crypto");
 
 //Register a User
 exports.registerUser = catchAsyncError(async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role, username } = req.body;
 
-  const user = await User.create({
-    name,
-    email,
-    password,
+  const userData = { name };
+  if (role) userData.role = role;
+
+  if (role === "delivery" || role === "user") {
+    if (!username) {
+      return next(new ErrorHandler("Please provide a username", 400));
+    }
+    userData.username = username;
+    userData.email = `${username}@mw.com`;
+    userData.password = password;
+  } else {
+    userData.email = email;
+    userData.password = password;
+  }
+
+  const user = await User.create(userData);
+
+  res.status(201).json({
+    success: true,
+    user: {
+      _id: user._id,
+      name: user.name,
+      role: user.role,
+      username: user.username,
+    },
   });
-
-  sendToken(user, 200, res);
 });
 
 // Login User

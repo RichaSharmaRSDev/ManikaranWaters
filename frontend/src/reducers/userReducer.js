@@ -48,6 +48,15 @@ export const userReducer = (state = { user: {}, loading: true, isAuthenticated: 
         error: action.payload,
       };
 
+    case "AdminCreateUserRequest":
+      return { ...state, adminCreateLoading: true, adminCreateSuccess: false, adminCreateError: null };
+    case "AdminCreateUserSuccess":
+      return { ...state, adminCreateLoading: false, adminCreateSuccess: true, adminCreateError: null };
+    case "AdminCreateUserFail":
+      return { ...state, adminCreateLoading: false, adminCreateSuccess: false, adminCreateError: action.payload };
+    case "AdminCreateUserReset":
+      return { ...state, adminCreateLoading: false, adminCreateSuccess: false, adminCreateError: null };
+
     case "clearErrors":
       return {
         ...state,

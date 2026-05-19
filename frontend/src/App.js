@@ -7,6 +7,7 @@ import { loadUser } from "./actions/userAction.js";
 
 import AppLayout from "./components/layout/App/AppLayout.js";
 import LoginSignUp from "./components/User/LoginSignUp.js";
+import AdminCreateUser from "./components/User/AdminCreateUser.js";
 import AuthenticatedRoute from "./Routes/AuthenticatedRoute.js";
 import Loader from "./components/layout/Loader/Loader.js";
 
@@ -44,10 +45,6 @@ const AuthPage = ({ children }) => (
   </AuthenticatedRoute>
 );
 
-// Delivery panel gets AuthenticatedRoute but NO AppLayout — it's a mobile-only minimal UI
-const DeliveryPage = ({ children }) => (
-  <AuthenticatedRoute>{children}</AuthenticatedRoute>
-);
 
 function App() {
   const { loading } = useSelector((state) => state.user);
@@ -117,8 +114,11 @@ function App() {
         <Route path="/trips" element={<AuthPage><Trips /></AuthPage>} />
         <Route path="/arrangetrips" element={<AuthPage><ArrangeTrips /></AuthPage>} />
 
-        {/* Delivery Panel — mobile only, no sidebar */}
-        <Route path="/deliveryPanel" element={<DeliveryPage><DeliveryPanel /></DeliveryPage>} />
+        {/* Admin */}
+        <Route path="/admin/create-user" element={<AuthPage><AdminCreateUser /></AuthPage>} />
+
+        {/* Delivery Panel */}
+        <Route path="/deliveryPanel" element={<AuthPage><DeliveryPanel /></AuthPage>} />
       </Routes>
     </Router>
   );

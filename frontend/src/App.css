@@ -1,3 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
+
+/* ── Global table card wrapper ── */
+.customer-list,
+.delivery-list,
+.payment-list,
+.expense-list {
+  background: #ffffff;
+  border: 0.5px solid #e3e8ef;
+  border-radius: 10px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+
+.customer-list table,
+.delivery-list table,
+.payment-list table,
+.expense-list table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* ── Headers ── */
+.customer-list thead th,
+.delivery-list thead th,
+.payment-list thead th,
+.expense-list thead th {
+  background: #f5f7fa;
+  color: #7a8fa6;
+  font-size: clamp(9px, 0.7vw, 11px);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border-bottom: 0.5px solid #e3e8ef;
+  white-space: nowrap;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ── Body rows ── */
+.customer-list tbody tr,
+.delivery-list tbody tr,
+.payment-list tbody tr,
+.expense-list tbody tr {
+  border-bottom: 0.5px solid #f0f2f5;
+  background: #ffffff;
+  transition: background 0.1s;
+}
+
+.customer-list tbody tr:last-child,
+.delivery-list tbody tr:last-child,
+.payment-list tbody tr:last-child,
+.expense-list tbody tr:last-child {
+  border-bottom: none;
+}
+
+.customer-list tbody tr:hover,
+.delivery-list tbody tr:hover,
+.payment-list tbody tr:hover,
+.expense-list tbody tr:hover {
+  background: #e6f4fb;
+}
+
+/* ── Body cells ── */
+.customer-list tbody td,
+.delivery-list tbody td,
+.payment-list tbody td,
+.expense-list tbody td {
+  padding: 6px 10px;
+  font-size: clamp(11px, 0.85vw, 13px);
+  color: #3d5166;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ── Amount/number cells — mono font ── */
+.customer-list td.customer-rate,
+.customer-list td.customer-remaining-amount,
+.customer-list td.customer-security,
+.delivery-list td.delivery-rate,
+.payment-list td.payment-name,
+.expense-list td.expense-name {
+  font-family: 'DM Mono', monospace;
+  font-size: clamp(11px, 0.85vw, 12.5px);
+}
+
+/* ── needAttention: only name + amount cells stay red ── */
+.customer-list tbody tr.needAttention td {
+  color: #3d5166;
+}
+.customer-list tbody tr.needAttention td:nth-child(2),
+.customer-list tbody tr.needAttention td.customer-remaining-amount {
+  color: #d93025;
+}
+
+/* ── Summary rows (tfoot) ── */
+.customer-list tfoot,
+.delivery-list tfoot,
+.payment-list tfoot,
+.expense-list tfoot {
+  background: #f5f7fa;
+  border-top: 0.5px solid #e3e8ef;
+}
+
+.customer-list tfoot td,
+.delivery-list tfoot td,
+.payment-list tfoot td,
+.expense-list tfoot td {
+  padding: 8px 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: clamp(11px, 0.85vw, 12.5px);
+  background: transparent;
+  border-bottom: none;
+}
+
+/* label column */
+.customer-list tfoot td:first-child,
+.delivery-list tfoot td:first-child,
+.payment-list tfoot td:first-child,
+.expense-list tfoot td:first-child {
+  color: #7a8fa6;
+  font-weight: 400;
+}
+
+/* value column */
+.customer-list tfoot td:last-child,
+.delivery-list tfoot td:last-child,
+.payment-list tfoot td:last-child,
+.expense-list tfoot td:last-child {
+  color: #0f1c2e;
+  font-weight: 500;
+}
+
 :root {
   /* brand blues */
   --color-navy:            #012e4f;
