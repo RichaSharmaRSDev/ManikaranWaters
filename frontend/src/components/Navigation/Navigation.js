@@ -134,6 +134,7 @@ const Navigation = () => {
     if (pathname.startsWith("/customerspredictions")) return "prediction";
     if (pathname.startsWith("/jarInventory")) return "jarcount";
     if (["/trips", "/makeDeliveryList", "/arrangetrips"].includes(pathname)) return "trips";
+    if (pathname === "/deliverytrips") return "deliverytrips-v2";
     if (pathname.startsWith("/report")) return "sales";
     if (pathname === "/deliveryPanel") return "delivery-panel";
     return null;
@@ -328,6 +329,16 @@ const Navigation = () => {
                 <Link to="/trips" className={isActive("/trips") ? "active" : ""}>Modify Trips</Link>
                 <Link to="/arrangetrips" className={isActive("/arrangetrips") ? "active" : ""}>Arrange Trips</Link>
               </div>
+            </div>
+
+            <div className="menu">
+              <Link
+                to="/deliverytrips"
+                className={`menu-button${isActive("/deliverytrips") ? " active" : ""}`}
+              >
+                <IconTruckDelivery size={18} />
+                <span>Delivery Trips V2</span>
+              </Link>
             </div>
 
             {user.role === "admin" && (

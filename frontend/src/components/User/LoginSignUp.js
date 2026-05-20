@@ -91,9 +91,9 @@ const LoginSignUp = () => {
                   </div>
                 </div>
 
-                <Link to="/password/forgot" className="login-forgot">
+                {/* <Link to="/password/forgot" className="login-forgot">
                   Forgot password?
-                </Link>
+                </Link> */}
 
                 <button type="submit" className="login-btn">
                   Login

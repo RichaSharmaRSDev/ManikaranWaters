@@ -1,7 +1,7 @@
 .pagination-container {
-  display: flex;
-  justify-content: center;
+  display: inline-flex;
   padding: 10px 2px 4px;
+  vertical-align: middle;
 }
 
 .pagination {
@@ -14,22 +14,32 @@
 }
 
 .pagination li button {
-  width: clamp(28px, 2vw, 34px);
-  height: clamp(28px, 2vw, 34px);
-  background-color: unset;
-  border: 1px solid var(--color-primary);
-  border-radius: 50%;
-  color: var(--color-primary);
-  font-size: clamp(11px, 0.9vw, 13px);
-  line-height: 1;
-  font-family: "Poppins";
-  font-weight: 700;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #d8e0e9;
+  border-radius: 6px;
+  color: #444;
+  font-size: 12px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
   cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.pagination li button:hover:not(:disabled) {
+  border-color: #0163a2;
+  color: #0163a2;
 }
 
 .pagination li.active button {
-  background-color: var(--color-primary);
-  color: var(--color-white);
+  border-color: #0163a2;
+  color: #0163a2;
+  font-weight: 600;
+  background: #fff;
 }
 
 .pagination li.disabled button {
@@ -38,26 +48,20 @@
   pointer-events: none;
 }
 
-.pagination li button span {
-  display: block;
-  transform: scale(2.5, 1.5);
-  margin-top: -0.1vw;
-}
-
-/* "Page X of Y" label — sits left, buttons sit right */
+/* "Page X of Y" label — inline next to pagination */
 .pagination-container + span {
-  display: block;
-  text-align: left;
+  display: inline-block;
+  vertical-align: middle;
   font-family: "Poppins", sans-serif;
   font-size: 11px;
   color: #7a8fa6;
-  padding: 0 2px 8px;
+  padding-left: 12px;
 }
 
 @media (max-width: 600px) {
   .pagination li button {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     font-size: 11px;
   }
 }

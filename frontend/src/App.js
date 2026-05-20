@@ -35,6 +35,7 @@ import DeliveryPanel from "./components/DeliveryPanel/DeliveryPanel.js";
 import DeliveryList from "./components/DeliveryTrips/DeliveryList.js";
 import Trips from "./components/DeliveryTrips/Trips.js";
 import ArrangeTrips from "./components/DeliveryTrips/ArrangeTrips.js";
+import DeliveryTripsV2 from "./components/DeliveryTripsV2/DeliveryTripsV2.js";
 
 import "./App.css";
 
@@ -113,6 +114,7 @@ function App() {
         <Route path="/makeDeliveryList" element={<AuthPage><DeliveryList /></AuthPage>} />
         <Route path="/trips" element={<AuthPage><Trips /></AuthPage>} />
         <Route path="/arrangetrips" element={<AuthPage><ArrangeTrips /></AuthPage>} />
+        <Route path="/deliverytrips" element={<AuthPage><DeliveryTripsV2 /></AuthPage>} />
 
         {/* Admin */}
         <Route path="/admin/create-user" element={<AuthPage><AdminCreateUser /></AuthPage>} />
