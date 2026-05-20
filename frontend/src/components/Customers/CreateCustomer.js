@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import Loader from "../../components/layout/Loader/Loader.js";
 import Navigation from "../Navigation/Navigation";
 import {
@@ -13,7 +12,6 @@ import "./CreateCustomer.scss";
 const CreateCustomer = () => {
   const { showNavigation } = useSelector((state) => state.navigation);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { loading, successCreate, newCustomer, newCustomerError } = useSelector(
     (state) => state.customers
   );
@@ -259,13 +257,6 @@ const CreateCustomer = () => {
                 <div className="form-actions">
                   <button type="submit" className="btn btn--primary">
                     Create customer
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn--secondary"
-                    onClick={() => navigate(-1)}
-                  >
-                    Cancel
                   </button>
                 </div>
               </form>

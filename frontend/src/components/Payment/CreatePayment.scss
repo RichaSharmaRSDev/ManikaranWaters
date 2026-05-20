@@ -1,0 +1,60 @@
+/* ── Payment-specific grid ── */
+.form-grid--payment {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ── Customer ID verify row ── */
+.payment-id-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.payment-id-input {
+  /* inherits form-input */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  max-width: 180px;
+
+  &--verified {
+    border-color: #198752 !important;
+    background: #f0fdf4 !important;
+    color: #198752 !important;
+  }
+
+  &--unverified {
+    border-color: #dc3545 !important;
+    background: #fff5f5 !important;
+    color: #dc3545 !important;
+  }
+}
+
+.payment-id-badge {
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(11px, 0.82vw, 13px);
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+
+  &--ok {
+    background: #d1fae5;
+    color: #198752;
+  }
+
+  &--err {
+    background: #fee2e2;
+    color: #dc3545;
+    font-size: clamp(10px, 0.75vw, 12px);
+  }
+}
+
+/* Field icon (shared — also used in CreateDelivery.scss) */
+.field-icon {
+  width: 1em;
+  height: 1em;
+  margin-right: 6px;
+  vertical-align: middle;
+  opacity: 0.7;
+}
