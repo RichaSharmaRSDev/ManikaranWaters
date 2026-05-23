@@ -1,20 +1,5 @@
 import axios from "axios";
 
-// All Trips
-export const getAllTrips = () => async (dispatch) => {
-  dispatch({ type: "allTripsRequest" });
-  try {
-    const response = await axios.get(`/api/v1/trips`);
-
-    dispatch({
-      type: "allTripsSuccess",
-      payload: response.data,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 // Trips By Date
 export const getTripsByDate = (date) => async (dispatch) => {
   dispatch({ type: "tripsByDateRequest" });

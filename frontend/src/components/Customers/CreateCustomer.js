@@ -66,7 +66,7 @@ const CreateCustomer = () => {
         <Loader />
       ) : (
         <>
-          <Title title={"Create New Customer"} />
+          <Title title={"New Customer"} />
           <Navigation />
           <div className={showNavigation ? "beNeutral" : "shiftLeft"}>
             <div className="create-customer">

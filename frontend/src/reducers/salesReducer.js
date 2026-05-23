@@ -1,6 +1,7 @@
 const initialState = {
   loading: false,
   report: [],
+  growthData: null,
 };
 
 const salesReducer = (state = initialState, action) => {
@@ -24,14 +25,20 @@ const salesReducer = (state = initialState, action) => {
         success: true,
       };
     case "dailyReportFail":
-    case "monthlyReportSuccessFail":
-    case "detailedMonthlyReportSuccessFail":
+    case "monthlyReportFail":
+    case "detailedMonthlyReportFail":
       return {
         ...state,
         loading: false,
         report: null,
         error: action.payload,
       };
+    case "growthReportRequest":
+      return { ...state, loading: true, error: null };
+    case "growthReportSuccess":
+      return { ...state, loading: false, growthData: action.payload, error: null };
+    case "growthReportFail":
+      return { ...state, loading: false, growthData: null, error: action.payload };
     case "clearErrors":
       return {
         ...state,

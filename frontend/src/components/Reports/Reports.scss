@@ -1,0 +1,69 @@
+// ── Period bar ────────────────────────────────────────────────────────
+.rp-period-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.rp-period-btn {
+  padding: 6px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  transition: border-color 0.1s, color 0.1s, background 0.1s;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: #0163a2;
+    color: #0163a2;
+  }
+
+  &.active {
+    background: #0163a2;
+    border-color: #0163a2;
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+.rp-period-sep {
+  color: #d0d0d0;
+  font-size: 18px;
+  padding: 0 6px;
+  user-select: none;
+  line-height: 1;
+}
+
+.rp-datepicker-chip {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  padding: 5px 10px;
+
+  input[type="date"] {
+    border: none;
+    outline: none;
+    font-size: 13px;
+    background: transparent;
+    color: #111;
+    cursor: pointer;
+  }
+}
+
+.rp-to-text {
+  font-size: 13px;
+  color: #777;
+  padding: 0 2px;
+}
+
+// ── Action cell ───────────────────────────────────────────────────────
+.rp-action-cell {
+  width: 40px;
+  text-align: center;
+}

@@ -55,7 +55,8 @@ exports.getPaymentsForDay = catchAsyncError(async (req, res) => {
     .pagination(resultsPerPage);
   if (req.query.paymentDate) {
     const startDate = new Date(req.query.paymentDate);
-    const endDate = new Date(startDate);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(req.query.paymentDate);
     endDate.setHours(23, 59, 59, 999);
     apiFeature.query = apiFeature.query
       .where("paymentDate")
@@ -92,40 +93,27 @@ exports.getPaymentsForDay = catchAsyncError(async (req, res) => {
     })
   );
 
-  //get totalpayment , payment in cash and payment online
-  const totalPaymentReceived = payments.reduce((accumulator, payment) => {
-    if (typeof payment.amount === "number") {
-      return accumulator + payment.amount;
-    }
-    return accumulator;
-  }, 0);
-  const calculateCashPayment = (payments) => {
-    return payments.reduce((accumulator, payment) => {
-      if (
-        payment.paymentMode === "cash" &&
-        typeof payment.amount === "number"
-      ) {
-        return accumulator + payment.amount;
-      }
-      return accumulator;
-    }, 0);
-  };
-  const calculateOnlinePayment = (payments) => {
-    return payments.reduce((accumulator, payment) => {
-      if (
-        payment.paymentMode === "online" &&
-        typeof payment.amount === "number"
-      ) {
-        return accumulator + payment.amount;
-      }
-      return accumulator;
-    }, 0);
-  };
+  // Aggregate totals across ALL matching records (not just current page)
+  const [payTotals] = await Payment.aggregate([
+    { $match: apiFeature.query._conditions },
+    {
+      $group: {
+        _id: null,
+        totalPaymentReceived: { $sum: "$amount" },
+        totalCashPayment: {
+          $sum: { $cond: [{ $eq: ["$paymentMode", "cash"] }, "$amount", 0] },
+        },
+        totalOnlinePayment: {
+          $sum: { $cond: [{ $eq: ["$paymentMode", "online"] }, "$amount", 0] },
+        },
+      },
+    },
+  ]);
 
   const finalPaymentTotal = {
-    totalPaymentReceived: totalPaymentReceived,
-    totalCashPayment: calculateCashPayment(payments),
-    totalOnlinePayment: calculateOnlinePayment(payments),
+    totalPaymentReceived: payTotals?.totalPaymentReceived || 0,
+    totalCashPayment: payTotals?.totalCashPayment || 0,
+    totalOnlinePayment: payTotals?.totalOnlinePayment || 0,
   };
 
   res.status(200).json({
@@ -142,6 +130,7 @@ exports.getPaymentsForRange = catchAsyncError(async (req, res) => {
 
   if (req.query.paymentStartDate && req.query.paymentEndDate) {
     const startDate = new Date(req.query.paymentStartDate);
+    startDate.setHours(0, 0, 0, 0);
     const endDate = new Date(req.query.paymentEndDate);
     endDate.setHours(23, 59, 59, 999);
     apiFeature.query = apiFeature.query
@@ -184,47 +173,33 @@ exports.getPaymentsForRange = catchAsyncError(async (req, res) => {
     })
   );
 
-  // Get total payment, payment in cash and payment online
-  const totalPaymentReceived = payments.reduce((accumulator, payment) => {
-    if (typeof payment.amount === "number") {
-      return accumulator + payment.amount;
-    }
-    return accumulator;
-  }, 0);
-
-  const calculateCashPayment = (payments) => {
-    return payments.reduce((accumulator, payment) => {
-      if (
-        payment.paymentMode === "cash" &&
-        typeof payment.amount === "number"
-      ) {
-        return accumulator + payment.amount;
-      }
-      return accumulator;
-    }, 0);
-  };
-
-  const calculateOnlinePayment = (payments) => {
-    return payments.reduce((accumulator, payment) => {
-      if (
-        payment.paymentMode === "online" &&
-        typeof payment.amount === "number"
-      ) {
-        return accumulator + payment.amount;
-      }
-      return accumulator;
-    }, 0);
-  };
+  // Aggregate totals across ALL matching records (not just current page)
+  const [payTotalsRange] = await Payment.aggregate([
+    { $match: apiFeature.query._conditions },
+    {
+      $group: {
+        _id: null,
+        totalPaymentReceived: { $sum: "$amount" },
+        totalCashPayment: {
+          $sum: { $cond: [{ $eq: ["$paymentMode", "cash"] }, "$amount", 0] },
+        },
+        totalOnlinePayment: {
+          $sum: { $cond: [{ $eq: ["$paymentMode", "online"] }, "$amount", 0] },
+        },
+      },
+    },
+  ]);
 
   const finalPaymentTotal = {
-    totalPaymentReceived: totalPaymentReceived,
-    totalCashPayment: calculateCashPayment(payments),
-    totalOnlinePayment: calculateOnlinePayment(payments),
+    totalPaymentReceived: payTotalsRange?.totalPaymentReceived || 0,
+    totalCashPayment: payTotalsRange?.totalCashPayment || 0,
+    totalOnlinePayment: payTotalsRange?.totalOnlinePayment || 0,
   };
 
   res.status(200).json({
     success: true,
     payments: paymentsWithCustomerDetails,
+    paymentCount,
     paymentTotal: finalPaymentTotal,
   });
 });

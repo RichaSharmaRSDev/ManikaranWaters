@@ -15,7 +15,7 @@ const ExpenseTable = ({ expenses, expenseTotal }) => {
           <tr>
             <th className="expense-security">Category</th>
             <th className="expense-security">Amount Paid</th>
-            <th className="expense-security">Descriptiom</th>
+            <th className="expense-security">Description</th>
             <th className="expense-security">Expense Date</th>
           </tr>
         </thead>

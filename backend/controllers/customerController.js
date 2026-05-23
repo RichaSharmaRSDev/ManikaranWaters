@@ -163,6 +163,52 @@ exports.getCustomersByNextDeliveryDateMore = catchAsyncError(
   }
 );
 
+// Get customers for trip-making — excludes already-assigned customers for that date
+exports.getCustomersForTrips = catchAsyncError(async (req, res) => {
+  const { date } = req.query;
+
+  if (!date) {
+    return res.status(400).json({ success: false, message: "Date parameter is required" });
+  }
+
+  const startDate = new Date(date);
+  const endDate = new Date(date);
+  endDate.setHours(23, 59, 59, 999);
+
+  const dateFilter = {
+    $or: [
+      { nextDelivery: { $gte: startDate, $lte: endDate } },
+      { nextDelivery: { $lt: startDate } },
+    ],
+  };
+
+  const Trip = require("../models/tripsSchema");
+  const tripsOnDate = await Trip.find({
+    tripDate: { $gte: startDate, $lte: endDate },
+  }).select("customers");
+
+  const alreadyAssignedIds = tripsOnDate.flatMap((t) =>
+    t.customers.map((c) => c.customerId)
+  );
+
+  const customerFilter = alreadyAssignedIds.length
+    ? { ...dateFilter, customerId: { $nin: alreadyAssignedIds } }
+    : dateFilter;
+
+  const customersQuery = Customer.find(customerFilter)
+    .select("-deliveries -payments -createdAt")
+    .sort({ nextDelivery: -1, frequency: 1, zone: 1 });
+
+  const apiFeature = new ApiFeatures(customersQuery, req.query).pagination(20);
+
+  const [customers, customerCount] = await Promise.all([
+    apiFeature.query,
+    Customer.countDocuments(customerFilter),
+  ]);
+
+  res.status(200).json({ success: true, customers, customerCount });
+});
+
 // Get Customer's Details
 exports.getCustomerDetails = catchAsyncError(async (req, res, next) => {
   const customer = await Customer.findOne({

@@ -53,12 +53,6 @@ exports.editTrip = async (req, res) => {
   }
 };
 
-exports.getAllTrips = catchAsyncError(async (req, res, next) => {
-  const trips = await Trip.find();
-
-  res.status(200).json({ success: true, trips });
-});
-
 exports.getTripsByDate = catchAsyncError(async (req, res, next) => {
   const { date } = req.params;
 

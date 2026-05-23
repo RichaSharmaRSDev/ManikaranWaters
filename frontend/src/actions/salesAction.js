@@ -56,6 +56,16 @@ export const detailedMonthlyReport = (monthYear) => async (dispatch) => {
   }
 };
 
+export const growthReport = (params) => async (dispatch) => {
+  dispatch({ type: "growthReportRequest" });
+  try {
+    const response = await axios.get(`/api/v1/report/growth?${params}`);
+    dispatch({ type: "growthReportSuccess", payload: response.data.data });
+  } catch (error) {
+    dispatch({ type: "growthReportFail", payload: error.response });
+  }
+};
+
 export const clearReport = () => async (dispatch) => {
   dispatch({ type: "clearReport" });
 };

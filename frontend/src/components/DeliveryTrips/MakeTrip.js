@@ -1,14 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Loader from "../layout/Loader/Loader";
 import { dateToIST } from "../../utils/istDate";
-import { getCustomersByNextDeliveryDateMore } from "../../actions/customerAction";
-import {
-  getAllTrips,
-  getAllDeliveryGuyName,
-  getTripsByDate,
-} from "../../actions/tripsAction";
+import { getCustomersForTrips } from "../../actions/customerAction";
+import { getAllDeliveryGuyName, getTripsByDate } from "../../actions/tripsAction";
 import { Pagination } from "../layout/Pagination/Pagination";
 import Alert from "../layout/Alert/Alert";
 
@@ -22,16 +18,12 @@ const MakeTrip = () => {
   const [alert, setAlert] = useState(null);
   const previousPredictionDateRef = useRef(null);
 
-  const { allTrips, deliveryGuyNames, tripsByDate } = useSelector(
-    (state) => state.trips || {}
+  const { deliveryGuyNames, tripsByDate } = useSelector((state) => state.trips || {});
+  const { customersPredictions, loading, customersPredictionsCount } = useSelector(
+    (state) => state.customers || {}
   );
-  const customerIds = tripsByDate?.flatMap((t) =>
-    t.customers.map((c) => c.customerId)
-  );
-  const { customersPredictions, loading, customersPredictionsCount } =
-    useSelector((state) => state.customers || {});
   const dispatch = useDispatch();
-  const totalPages = Math.ceil(customersPredictionsCount / 50);
+  const totalPages = Math.ceil(customersPredictionsCount / 20);
 
   useEffect(() => {
     previousPredictionDateRef.current = predictionDate;
@@ -46,18 +38,21 @@ const MakeTrip = () => {
     }
   };
 
+  const handleTripChange = (tripNumber) => {
+    setChosenTrip(tripNumber);
+    const existingTrip = tripsByDate?.find((t) => t.tripNumber === tripNumber);
+    if (existingTrip) setDeliveryGuy(existingTrip.deliveryGuy);
+    else setDeliveryGuy("");
+  };
+
   const handleAddToTrip = async () => {
     if (!selectedCustomers.length || !chosenTrip || !deliveryGuy) return;
 
-    const tripExists = allTrips?.some(
-      (details) =>
-        chosenTrip === details.tripNumber &&
-        dateToIST(deliveryDate) === details.tripDate.split("T")[0]
-    );
+    const tripExists = tripsByDate?.some((t) => t.tripNumber === chosenTrip);
 
     try {
       if (tripExists) {
-        const res = await axios.put(`/api/v1/trip/${deliveryDate}/${chosenTrip}`, {
+        const res = await axios.put(`/api/v1/trip/${dateToIST(deliveryDate)}/${chosenTrip}`, {
           customers: selectedCustomers,
           tripNumber: chosenTrip,
           tripDate: dateToIST(deliveryDate),
@@ -84,26 +79,25 @@ const MakeTrip = () => {
     setSelectedCustomers([]);
     setChosenTrip("");
     setDeliveryGuy("");
-    setTimeout(() => dispatch(getAllTrips()), 1200);
+    dispatch(getTripsByDate(dateToIST(deliveryDate)));
   };
 
   useEffect(() => {
     if (predictionDate !== previousPredictionDateRef.current) {
-      dispatch(getCustomersByNextDeliveryDateMore(predictionDate, 1));
+      dispatch(getCustomersForTrips(dateToIST(predictionDate), 1));
       previousPredictionDateRef.current = predictionDate;
       setCurrentPage(1);
     } else {
-      dispatch(getCustomersByNextDeliveryDateMore(predictionDate, currentPage));
+      dispatch(getCustomersForTrips(dateToIST(predictionDate), currentPage));
     }
   }, [predictionDate, currentPage]);
 
   useEffect(() => {
-    dispatch(getAllTrips());
     dispatch(getAllDeliveryGuyName());
   }, []);
 
   useEffect(() => {
-    dispatch(getTripsByDate(deliveryDate));
+    dispatch(getTripsByDate(dateToIST(deliveryDate)));
   }, [deliveryDate]);
 
   return (
@@ -122,7 +116,7 @@ const MakeTrip = () => {
               />
             </label>
             <div className="maketrip-divider" />
-            <select value={chosenTrip} onChange={(e) => setChosenTrip(e.target.value)}>
+            <select value={chosenTrip} onChange={(e) => handleTripChange(e.target.value)}>
               <option value="" hidden>Trip</option>
               <option value="trip1">Trip 1</option>
               <option value="trip2">Trip 2</option>
@@ -145,11 +139,11 @@ const MakeTrip = () => {
               &#x2715; Clear
             </button>
             <button
-              className="maketrip-add"
+              className="btn btn--primary"
               onClick={handleAddToTrip}
               disabled={!selectedCustomers.length || !chosenTrip || !deliveryGuy}
             >
-              Add to trip &#x2192;
+              Add to trip
             </button>
             <label className="maketrip-datepicker maketrip-prediction">
               <span className="maketrip-datelabel">Prediction</span>
@@ -174,7 +168,6 @@ const MakeTrip = () => {
             </div>
             <div className="maketrip-tbody">
               {customersPredictions?.map((customer) => {
-                if (customerIds?.length && customerIds.includes(customer.customerId)) return null;
                 const isSelected = selectedCustomers.some((s) => s.customerId === customer.customerId);
                 return (
                   <div
@@ -195,7 +188,10 @@ const MakeTrip = () => {
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => {}}
-                        onClick={(e) => { e.stopPropagation(); toggleCustomer(customer.customerId, customer.name, customer.phoneNo, customer.address, customer.allotment); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleCustomer(customer.customerId, customer.name, customer.phoneNo, customer.address, customer.allotment);
+                        }}
                       />
                     </div>
                     <div className="mt-id">{customer.customerId}</div>

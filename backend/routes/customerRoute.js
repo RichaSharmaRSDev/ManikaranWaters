@@ -11,6 +11,7 @@ const {
   getCustomersByNextDeliveryDate,
   getCustomerDetailsForTrips,
   getCustomersByNextDeliveryDateMore,
+  getCustomersForTrips,
 } = require("../controllers/customerController");
 const { isAuthenticatedUser, authorizedroles } = require("../middleware/auth");
 
@@ -29,6 +30,9 @@ router
 router
   .route("/customerspredictionsmore/")
   .get(isAuthenticatedUser, getCustomersByNextDeliveryDateMore);
+router
+  .route("/customerpredictionfortrips")
+  .get(isAuthenticatedUser, getCustomersForTrips);
 router.route("/customer/new").post(isAuthenticatedUser, createCustomer);
 router
   .route("/customerForTrips/:customerId")

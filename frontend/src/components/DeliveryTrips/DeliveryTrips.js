@@ -3,9 +3,10 @@ import { useSelector } from "react-redux";
 import Title from "../layout/Title";
 import Navigation from "../Navigation/Navigation";
 import MakeTrip from "./MakeTrip";
-import "./DeliveryTripsV2.scss";
+import EditTrip from "./EditTrip";
+import "./DeliveryTrips.scss";
 
-const DeliveryTripsV2 = () => {
+const DeliveryTrips = () => {
   const [activeTab, setActiveTab] = useState("make");
   const { showNavigation } = useSelector((state) => state.navigation);
 
@@ -33,7 +34,7 @@ const DeliveryTripsV2 = () => {
           {activeTab === "make" ? (
             <MakeTrip />
           ) : (
-            <div>Edit trip — coming soon</div>
+            <EditTrip onSwitchTab={setActiveTab} />
           )}
         </div>
       </div>
@@ -41,4 +42,4 @@ const DeliveryTripsV2 = () => {
   );
 };
 
-export default DeliveryTripsV2;
+export default DeliveryTrips;

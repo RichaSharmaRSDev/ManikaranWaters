@@ -4,6 +4,7 @@ const {
   generateDailyReport,
   generateMonthlyReport,
   generateDetailedMonthlyReport,
+  generateGrowthReport,
 } = require("./dailyReport");
 
 const router = express.Router();
@@ -19,5 +20,9 @@ router
 router
   .route("/report/detailedMonthly/:monthYear?")
   .get(isAuthenticatedUser, generateDetailedMonthlyReport);
+
+router
+  .route("/report/growth")
+  .get(isAuthenticatedUser, generateGrowthReport);
 
 module.exports = router;

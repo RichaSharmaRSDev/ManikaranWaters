@@ -119,7 +119,8 @@ exports.getDeliveriesForDay = catchAsyncError(async (req, res) => {
 
   if (req.query.deliveryDate) {
     const startDate = new Date(req.query.deliveryDate);
-    const endDate = new Date(startDate);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(req.query.deliveryDate);
     endDate.setHours(23, 59, 59, 999);
     apiFeature.query = apiFeature.query
       .where("deliveryDate")
@@ -154,25 +155,24 @@ exports.getDeliveriesForDay = catchAsyncError(async (req, res) => {
     })
   );
 
-  const totalDeliveredJars = deliveries.reduce((accumulator, delivery) => {
-    if (typeof delivery.deliveredQuantity === "number") {
-      return accumulator + delivery.deliveredQuantity;
-    }
-    return accumulator;
-  }, 0);
+  // Aggregate totals across ALL matching records (not just current page)
+  const [totalsAgg] = await Delivery.aggregate([
+    { $match: apiFeature.query._conditions },
+    {
+      $group: {
+        _id: null,
+        totalDeliveredJars: { $sum: "$deliveredQuantity" },
+        totalReturnedJars: { $sum: "$returnedJars" },
+        totalAmountCollected: { $sum: { $ifNull: ["$amountReceived", 0] } },
+      },
+    },
+  ]);
 
-  const totalReturnedJars = deliveries.reduce((accumulator, delivery) => {
-    if (typeof delivery.returnedJars === "number") {
-      return accumulator + delivery.returnedJars;
-    }
-    return accumulator;
-  }, 0);
-
-  const diff = (totalDeliveredJars || 0) - (totalReturnedJars || 0);
   const finalDeliveryTotal = {
-    totalDeliveredJars: totalDeliveredJars,
-    totalReturnedJars: totalReturnedJars,
-    diff: diff,
+    totalDeliveredJars: totalsAgg?.totalDeliveredJars || 0,
+    totalReturnedJars: totalsAgg?.totalReturnedJars || 0,
+    totalAmountCollected: totalsAgg?.totalAmountCollected || 0,
+    diff: (totalsAgg?.totalDeliveredJars || 0) - (totalsAgg?.totalReturnedJars || 0),
   };
 
   res.status(200).json({
@@ -191,6 +191,7 @@ exports.getDeliveriesForRange = catchAsyncError(async (req, res) => {
 
   if (req.query.deliveryStartDate && req.query.deliveryEndDate) {
     const startDate = new Date(req.query.deliveryStartDate);
+    startDate.setHours(0, 0, 0, 0);
     const endDate = new Date(req.query.deliveryEndDate);
     endDate.setHours(23, 59, 59, 999);
 
@@ -229,26 +230,24 @@ exports.getDeliveriesForRange = catchAsyncError(async (req, res) => {
     })
   );
 
-  //get delivered jars , returned Jars and their difference
-  const totalDeliveredJars = deliveries.reduce((accumulator, delivery) => {
-    if (typeof delivery.deliveredQuantity === "number") {
-      return accumulator + delivery.deliveredQuantity;
-    }
-    return accumulator;
-  }, 0);
+  // Aggregate totals across ALL matching records (not just current page)
+  const [totalsAggRange] = await Delivery.aggregate([
+    { $match: apiFeature.query._conditions },
+    {
+      $group: {
+        _id: null,
+        totalDeliveredJars: { $sum: "$deliveredQuantity" },
+        totalReturnedJars: { $sum: "$returnedJars" },
+        totalAmountCollected: { $sum: { $ifNull: ["$amountReceived", 0] } },
+      },
+    },
+  ]);
 
-  const totalReturnedJars = deliveries.reduce((accumulator, delivery) => {
-    if (typeof delivery.returnedJars === "number") {
-      return accumulator + delivery.returnedJars;
-    }
-    return accumulator;
-  }, 0);
-
-  const diff = (totalDeliveredJars || 0) - (totalReturnedJars || 0);
   const finalDeliveryTotal = {
-    totalDeliveredJars: totalDeliveredJars,
-    totalReturnedJars: totalReturnedJars,
-    diff: diff,
+    totalDeliveredJars: totalsAggRange?.totalDeliveredJars || 0,
+    totalReturnedJars: totalsAggRange?.totalReturnedJars || 0,
+    totalAmountCollected: totalsAggRange?.totalAmountCollected || 0,
+    diff: (totalsAggRange?.totalDeliveredJars || 0) - (totalsAggRange?.totalReturnedJars || 0),
   };
 
   res.status(200).json({

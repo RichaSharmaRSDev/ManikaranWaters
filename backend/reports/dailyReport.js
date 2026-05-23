@@ -97,15 +97,11 @@ exports.generateMonthlyReport = catchAsyncError(async (req, res, next) => {
   const { monthYear } = req.params;
   const [year, month] = monthYear.split("-");
 
-  const reportStartDate = new Date(
-    Date.UTC(parseInt(year), parseInt(month) - 1, 1, 0, 0, 0, 0)
-  );
-
-  // Calculate the last day of the month
-  const lastDayOfMonth = new Date(
-    Date.UTC(parseInt(year), parseInt(month), 0, 23, 59, 59, 999)
-  );
-  const reportEndDate = new Date(lastDayOfMonth);
+  // Use local time (IST) so month boundaries align with IST midnight
+  const reportStartDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+  reportStartDate.setHours(0, 0, 0, 0);
+  const reportEndDate = new Date(parseInt(year), parseInt(month), 0);
+  reportEndDate.setHours(23, 59, 59, 999);
 
   // Fetch relevant data from the database
   const customers = await Customer.find();
@@ -242,20 +238,87 @@ exports.generateMonthlyReport = catchAsyncError(async (req, res, next) => {
   res.status(200).json({ success: true, report: monthlyReport });
 });
 
+exports.generateGrowthReport = catchAsyncError(async (req, res, next) => {
+  const { months, from, to } = req.query;
+  const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  const monthList = [];
+
+  if (from && to) {
+    const [fromYear, fromMonth] = from.split('-').map(Number);
+    const [toYear, toMonth] = to.split('-').map(Number);
+    let y = fromYear, m = fromMonth;
+    while (y < toYear || (y === toYear && m <= toMonth)) {
+      monthList.push({ year: y, month: m });
+      m++;
+      if (m > 12) { m = 1; y++; }
+    }
+  } else {
+    const n = parseInt(months) || 6;
+    const now = new Date();
+    let y = now.getFullYear();
+    let m = now.getMonth() + 1;
+    for (let i = 0; i < n; i++) {
+      monthList.unshift({ year: y, month: m });
+      m--;
+      if (m < 1) { m = 12; y--; }
+    }
+  }
+
+  const allCustomers = await Customer.find().select('customerId rate');
+  const rateMap = {};
+  allCustomers.forEach(c => { rateMap[c.customerId] = c.rate || 0; });
+
+  const data = await Promise.all(monthList.map(async ({ year, month }) => {
+    const startDate = new Date(year, month - 1, 1);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(year, month, 0);
+    endDate.setHours(23, 59, 59, 999);
+
+    const [deliveries, payments, connections] = await Promise.all([
+      Delivery.find({ deliveryDate: { $gte: startDate, $lte: endDate } }).select('customer deliveredQuantity returnedJars'),
+      Payment.find({ paymentDate: { $gte: startDate, $lte: endDate } }).select('amount paymentMode'),
+      Customer.countDocuments({ createdAt: { $gte: startDate, $lte: endDate } }),
+    ]);
+
+    let revenue = 0, cans = 0, returned = 0;
+    deliveries.forEach(d => {
+      const qty = d.deliveredQuantity || 0;
+      cans += qty;
+      returned += d.returnedJars || 0;
+      revenue += qty * (rateMap[d.customer] || 0);
+    });
+
+    let cash = 0, online = 0;
+    payments.forEach(p => {
+      if (p.paymentMode === 'cash') cash += p.amount;
+      else online += p.amount;
+    });
+
+    return {
+      month: `${MONTH_NAMES[month - 1]} ${String(year).slice(-2)}`,
+      revenue,
+      cash,
+      online,
+      cans,
+      returned,
+      connections,
+    };
+  }));
+
+  res.status(200).json({ success: true, data });
+});
+
 exports.generateDetailedMonthlyReport = catchAsyncError(
   async (req, res, next) => {
     const { monthYear } = req.params;
     const [year, month] = monthYear.split("-");
 
-    const reportStartDate = new Date(
-      Date.UTC(parseInt(year), parseInt(month) - 1, 1, 0, 0, 0, 0)
-    );
-
-    // Calculate the last day of the month
-    const lastDayOfMonth = new Date(
-      Date.UTC(parseInt(year), parseInt(month), 0, 23, 59, 59, 999)
-    );
-    const reportEndDate = new Date(lastDayOfMonth);
+    // Use local time (IST) so month boundaries align with IST midnight
+    const reportStartDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+    reportStartDate.setHours(0, 0, 0, 0);
+    const reportEndDate = new Date(parseInt(year), parseInt(month), 0);
+    reportEndDate.setHours(23, 59, 59, 999);
 
     // Fetch relevant data from the database
     const deliveries = await Delivery.find({

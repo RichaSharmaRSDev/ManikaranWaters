@@ -16,6 +16,7 @@
       align-items: center;
       padding: 1.2vw 0.5vw 0.8vw;
       border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      text-decoration: none;
       .nav-logo {
         width: 3.5vw;
         height: 3.5vw;
@@ -257,12 +258,12 @@
 // common code for other components
 
 .beNeutral {
-  margin-left: 10px;
+  margin: 0 10px;
   min-height: 100vh;
   position: relative;
 }
 .shiftLeft {
-  margin-left: 10px;
+  margin: 0 10px;
   min-height: 100vh;
   position: relative;
 }
