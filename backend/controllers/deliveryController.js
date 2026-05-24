@@ -13,6 +13,7 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
     returnedJars,
     amountReceived,
     paymentMode,
+    couponsCollected,
     deliveryAssociateName,
     deliveryComment,
   } = req.body;
@@ -86,7 +87,11 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
 
   //updating payment too if they paid at time of delivery
   let payment;
-  if (amountReceived && paymentMode) {
+  if (paymentMode === "coupon") {
+    // Coupon delivery: decrement by coupons actually collected, not full delivered qty
+    const deduct = parseInt(couponsCollected, 10) ?? parseInt(deliveredQuantity, 10);
+    customer.couponBalance = (customer.couponBalance || 0) - deduct;
+  } else if (amountReceived && paymentMode) {
     payment = await Payment.create({
       customer: customerId,
       paymentDate: deliveryDate,
@@ -119,7 +124,7 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
 
 exports.getDeliveriesForDay = catchAsyncError(async (req, res) => {
   const resultsPerPage = 20;
-  const apiFeature = new ApiFeatures(Delivery.find(), req.query)
+  const apiFeature = new ApiFeatures(Delivery.find().sort({ deliveryDate: -1 }), req.query)
     .filter()
     .pagination(resultsPerPage);
 
@@ -191,7 +196,7 @@ exports.getDeliveriesForDay = catchAsyncError(async (req, res) => {
 
 exports.getDeliveriesForRange = catchAsyncError(async (req, res) => {
   const resultsPerPage = 20;
-  const apiFeature = new ApiFeatures(Delivery.find(), req.query)
+  const apiFeature = new ApiFeatures(Delivery.find().sort({ deliveryDate: -1 }), req.query)
     .filter()
     .pagination(resultsPerPage);
 

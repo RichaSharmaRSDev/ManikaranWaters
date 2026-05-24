@@ -63,3 +63,34 @@
   vertical-align: middle;
   opacity: 0.7;
 }
+
+/* ── Payment type toggle ── */
+.payment-type-group {
+  display: flex;
+  gap: 8px;
+}
+
+.payment-type-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1.5px solid #d0dde8;
+  border-radius: 8px;
+  background: #fff;
+  color: #555;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &--active {
+    background: #012e4f;
+    border-color: #012e4f;
+    color: #fff;
+  }
+
+  &:not(&--active):hover {
+    border-color: #0163a2;
+    color: #0163a2;
+  }
+}

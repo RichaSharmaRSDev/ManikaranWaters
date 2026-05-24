@@ -73,6 +73,7 @@ const CustomerFullDetails = ({
     if (payment.amount > 0) {
       data["amountReceived"] = payment.amount;
       data["paymentMode"] = payment.paymentMode;
+      data["paymentType"] = payment.paymentType;
     }
 
     groupedData[monthYear][formattedDate].push(data);
@@ -111,10 +112,29 @@ const CustomerFullDetails = ({
       })
       .catch((error) => console.error("Failed to copy:", error));
   };
+  const couponBalance = customerDeliveriesHistory?.couponBalance;
+
   return (
     <div className="modal full-customer-modal">
       <div className="modal-bg"></div>
       <div className="modal-text">
+        {couponBalance != null && (
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            background: couponBalance < 0 ? "#fff1f2" : "#fffbe6",
+            color: couponBalance < 0 ? "#be123c" : "#b45309",
+            border: `1px solid ${couponBalance < 0 ? "#fda4af" : "#fcd34d"}`,
+            borderRadius: "10px",
+            padding: "4px 12px",
+            fontSize: "13px",
+            fontWeight: 700,
+            marginBottom: "14px",
+          }}>
+            🎫 Coupon balance: {couponBalance}
+          </div>
+        )}
         {Object.keys(groupedData).map((monthYear) => (
           <div key={monthYear} className="customerDeliveriesHistory">
             <span>{monthYear}</span>
@@ -144,7 +164,23 @@ const CustomerFullDetails = ({
                         {i?.amountReceived > 0 && (
                           <>
                             <div>Amount: {i?.amountReceived}</div>
-                            <div>Mode: {i?.paymentMode}</div>
+                            <div>
+                              Mode: {i?.paymentMode}
+                              {i?.paymentType === "coupon" && (
+                                <span style={{
+                                  marginLeft: "6px",
+                                  background: "#fffbe6",
+                                  color: "#b45309",
+                                  border: "1px solid #fcd34d",
+                                  borderRadius: "8px",
+                                  padding: "1px 7px",
+                                  fontSize: "11px",
+                                  fontWeight: 700,
+                                }}>
+                                  🎫 Coupon
+                                </span>
+                              )}
+                            </div>
                           </>
                         )}
                       </div>

@@ -18,6 +18,10 @@ const paymentSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  paymentType: {
+    type: String,
+    default: "regular",
+  },
 });
 
 paymentSchema.index({ customer: 1 });

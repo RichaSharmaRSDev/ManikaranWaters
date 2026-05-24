@@ -10,6 +10,7 @@ import Navigation from "../Navigation/Navigation";
 import { todayIST } from "../../utils/istDate";
 import Ruppee from "../../assets/indian-rupee-sign.svg";
 import Title from "../layout/Title";
+import { IconCash } from "@tabler/icons-react";
 import "./CreatePayment.scss";
 
 const CreatePayment = () => {
@@ -23,6 +24,7 @@ const CreatePayment = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedCustomerName, setSelectedCustomerName] = useState("");
+  const [selectedCustomerRate, setSelectedCustomerRate] = useState(null);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const dropdownRef = useRef(null);
 
@@ -50,6 +52,8 @@ const CreatePayment = () => {
     paymentDate: todayIST(),
     amount: "",
     paymentMode: "",
+    paymentType: "regular",
+    couponQuantity: 10,
   };
   const [formData, setFormData] = useState(initialState);
 
@@ -62,7 +66,15 @@ const CreatePayment = () => {
   });
 
   const handleCustomerSelect = (customer) => {
-    setFormData((prev) => ({ ...prev, customerId: customer.customerId }));
+    const rate = customer.rate ?? null;
+    setSelectedCustomerRate(rate);
+    setFormData((prev) => ({
+      ...prev,
+      customerId: customer.customerId,
+      ...(prev.paymentType === "coupon" && rate
+        ? { amount: rate * prev.couponQuantity }
+        : {}),
+    }));
     setSelectedCustomerName(customer.name);
     setSearchQuery("");
     setIsDropdownOpen(false);
@@ -76,6 +88,7 @@ const CreatePayment = () => {
     if (formData.customerId) {
       setFormData((prev) => ({ ...prev, customerId: "" }));
       setSelectedCustomerName("");
+      setSelectedCustomerRate(null);
     }
   };
 
@@ -99,7 +112,13 @@ const CreatePayment = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    setFormData((prevData) => {
+      const updated = { ...prevData, [name]: value };
+      if (name === "couponQuantity" && prevData.paymentType === "coupon" && selectedCustomerRate) {
+        updated.amount = selectedCustomerRate * Number(value);
+      }
+      return updated;
+    });
   };
 
   const displayValue = formData.customerId
@@ -115,6 +134,7 @@ const CreatePayment = () => {
     dispatch(clearNewPayment());
     setFormData(initialState);
     setSelectedCustomerName("");
+    setSelectedCustomerRate(null);
     setSearchQuery("");
   };
 
@@ -233,12 +253,39 @@ const CreatePayment = () => {
                         min="1"
                         required
                       />
+                      {formData.paymentType === "coupon" && selectedCustomerRate && (
+                        <span style={{ fontSize: "11px", color: "#888", marginTop: "3px" }}>
+                          Expected: ₹{selectedCustomerRate} × {formData.couponQuantity} = ₹{selectedCustomerRate * formData.couponQuantity}
+                        </span>
+                      )}
                     </div>
 
-                    {/* Payment Mode */}
+                    {/* Payment Type */}
+                    <div className="form-field">
+                      <label className="form-label">
+                        <img src={CardLogo} alt="card" className="field-icon" />
+                        Payment type
+                      </label>
+                      <select
+                        className="form-select"
+                        value={formData.paymentType}
+                        onChange={(e) =>
+                          setFormData((p) => ({
+                            ...p,
+                            paymentType: e.target.value,
+                            paymentMode: "",
+                          }))
+                        }
+                      >
+                        <option value="regular">Regular</option>
+                        <option value="coupon">Coupon Purchase</option>
+                      </select>
+                    </div>
+
+                    {/* Received via (paymentMode) — always shown */}
                     <div className="form-field">
                       <label className="form-label" htmlFor="paymentMode">
-                        <img src={CardLogo} alt="card" className="field-icon" />
+                        <IconCash size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
                         Payment mode
                       </label>
                       <select
@@ -253,6 +300,24 @@ const CreatePayment = () => {
                         <option value="online">Online</option>
                       </select>
                     </div>
+
+                    {/* Coupons issued — only for coupon purchase */}
+                    {formData.paymentType === "coupon" && (
+                      <div className="form-field">
+                        <label className="form-label" htmlFor="couponQuantity">
+                          Coupons issued
+                        </label>
+                        <input
+                          className="form-input"
+                          type="number"
+                          name="couponQuantity"
+                          value={formData.couponQuantity}
+                          onChange={handleInputChange}
+                          min="1"
+                          required
+                        />
+                      </div>
+                    )}
 
                   </div>
                 </div>
@@ -295,6 +360,12 @@ const CreatePayment = () => {
                       <span>Payment Mode:</span>
                       <span>{newPayment.paymentMode}</span>
                     </div>
+                    {formData.paymentType === "coupon" && (
+                      <div className="values">
+                        <span>Coupons Issued:</span>
+                        <span>{formData.couponQuantity}</span>
+                      </div>
+                    )}
                   </>
                 )}
                 <div className="closeModal" onClick={handleCloseModal}>

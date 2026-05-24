@@ -73,6 +73,11 @@ const CustomerTable = ({ customers }) => {
               <br />
               Amount
             </th>
+            <th className="customer-security">
+              Coupon
+              <br />
+              Balance
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -108,6 +113,15 @@ const CustomerTable = ({ customers }) => {
               </td>
               <td className="customer-name">&#8377;{customer.paidAmount}</td>
               <td className="customer-name">&#8377;{customer.billedAmount}</td>
+              <td className="customer-coupon">
+                {customer.couponBalance != null ? (
+                  <span className={customer.couponBalance <= customer.allotment ? "needAttention" : ""}>
+                    {customer.couponBalance}
+                  </span>
+                ) : (
+                  <span>—</span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

@@ -1,4 +1,5 @@
 const Trip = require("../models/tripsSchema");
+const Customer = require("../models/customerModel");
 const catchAsyncError = require("../middleware/catchAsyncError");
 const ApiFeatures = require("../utils/apiFeatures");
 
@@ -76,10 +77,33 @@ exports.getTripsByDateAndDeliveryGuy = catchAsyncError(
     startDate.setHours(0, 0, 0, 0);
     const endDate = new Date(date);
     endDate.setHours(23, 59, 59, 999);
-    const tripsByDateAndDeliveryGuy = await Trip.find({
+    const trips = await Trip.find({
       tripDate: { $gte: startDate, $lt: endDate },
       deliveryGuy: deliveryGuyName,
     }).sort({ tripNumber: 1 });
+
+    // Collect all unique customerIds across trips
+    const customerIds = [
+      ...new Set(trips.flatMap((t) => t.customers.map((c) => c.customerId))),
+    ];
+
+    // Fetch live couponBalance for each customer
+    const customerDocs = await Customer.find(
+      { customerId: { $in: customerIds } },
+      { customerId: 1, couponBalance: 1, _id: 0 }
+    );
+    const balanceMap = Object.fromEntries(
+      customerDocs.map((c) => [c.customerId, c.couponBalance ?? 0])
+    );
+
+    // Inject couponBalance into each customer object
+    const tripsByDateAndDeliveryGuy = trips.map((trip) => ({
+      ...trip.toObject(),
+      customers: trip.customers.map((c) => ({
+        ...c,
+        couponBalance: balanceMap[c.customerId] ?? 0,
+      })),
+    }));
 
     res.status(200).json({ success: true, tripsByDateAndDeliveryGuy });
   }

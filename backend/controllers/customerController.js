@@ -60,7 +60,7 @@ exports.getAllCustomersBasicDetails = catchAsyncError(async (req, res) => {
 //get all customers name and Id
 exports.getAllCustomersNameId = catchAsyncError(async (req, res) => {
   const apiFeature = new ApiFeatures(
-    Customer.find().select("customerId name -_id").sort({ name: 1 }),
+    Customer.find().select("customerId name rate -_id").sort({ name: 1 }),
     req.query
   );
   const customers = await apiFeature.query;
@@ -93,7 +93,7 @@ exports.getCustomersByNextDeliveryDate = catchAsyncError(async (req, res) => {
     ],
   })
     .select("-deliveries -payments -createdAt")
-    .sort({ nextDelivery: -1, frequency: 1, zone: 1 });
+    .sort({ nextDelivery: 1, frequency: 1, zone: 1 });
 
   const apiFeature = new ApiFeatures(customersQuery, req.query).pagination(20);
 
@@ -138,7 +138,7 @@ exports.getCustomersByNextDeliveryDateMore = catchAsyncError(
       ],
     })
       .select("-deliveries -payments -createdAt")
-      .sort({ nextDelivery: -1, frequency: 1, zone: 1 });
+      .sort({ nextDelivery: 1, frequency: 1, zone: 1 });
 
     const apiFeature = new ApiFeatures(customersQuery, req.query).pagination(
       50
@@ -197,7 +197,7 @@ exports.getCustomersForTrips = catchAsyncError(async (req, res) => {
 
   const customersQuery = Customer.find(customerFilter)
     .select("-deliveries -payments -createdAt")
-    .sort({ nextDelivery: -1, frequency: 1, zone: 1 });
+    .sort({ nextDelivery: 1, frequency: 1, zone: 1 });
 
   const apiFeature = new ApiFeatures(customersQuery, req.query).pagination(20);
 
@@ -228,19 +228,22 @@ exports.getCustomerDetails = catchAsyncError(async (req, res, next) => {
 // Get Customer's Delivery and Payments
 exports.getCustomerDeliveryHistory = catchAsyncError(async (req, res, next) => {
   const customerId = req.params.customerId;
-  const [customerHistoryDeliveries, customerHistoryPaymnets] = await Promise.all([
-    Delivery.find({ customer: customerId }),
-    Payment.find({ customer: customerId }),
-  ]);
 
   if (!customerId) {
     return next(new ErrorHandler("CustomerId not found", 404));
   }
 
+  const [customerHistoryDeliveries, customerHistoryPaymnets, customer] = await Promise.all([
+    Delivery.find({ customer: customerId }),
+    Payment.find({ customer: customerId }),
+    Customer.findOne({ customerId }).select("couponBalance"),
+  ]);
+
   res.status(200).json({
     status: true,
     customerHistoryDeliveries,
     customerHistoryPaymnets,
+    couponBalance: customer?.couponBalance ?? 0,
   });
 });
 

@@ -45,7 +45,24 @@ const PaymentTable = ({ payments, paymentTotal, onRefresh }) => {
                 {formatDate(payment.paymentDate)}
               </td>
               <td className="payment-name">&#8377;{payment.amount}</td>
-              <td className="payment-phone">{payment.paymentMode}</td>
+              <td className="payment-phone">
+                {payment.paymentMode}
+                {payment.paymentType === "coupon" && (
+                  <span style={{
+                    marginLeft: "6px",
+                    background: "#fffbe6",
+                    color: "#b45309",
+                    border: "1px solid #fcd34d",
+                    borderRadius: "8px",
+                    padding: "1px 7px",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    whiteSpace: "nowrap",
+                  }}>
+                    🎫 Coupon
+                  </span>
+                )}
+              </td>
               <td>
                 <button
                   onClick={() => handleDelete(payment._id, payment.customer)}

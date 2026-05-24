@@ -51,11 +51,12 @@ const TODAY_DATE = todayIST();
 // ── Shared: customer card ─────────────────────────────────────────────
 // isReadOnly=true: no onClick, no chevron, no expand form
 function renderCustomerCard(customer, isReadOnly, ctx = {}) {
-  const { expandedId, onCardTap, formValues, setFormValues, onSubmit, onCancel } = ctx;
+  const { expandedId, onCardTap, formValues, setFormValues, onSubmit, onCancel, bigName } = ctx;
   const isExpanded = !isReadOnly && expandedId === customer.customerId;
   const isDelivered = customer.isDelivered;
   // deliveryNote (new) falls back to customMessage (old) for backward compat
   const note = customer.deliveryNote || customer.customMessage || null;
+  const couponBalance = customer.couponBalance ?? 0;
 
   return (
     <div key={customer.customerId} className="dp-customer">
@@ -71,13 +72,21 @@ function renderCustomerCard(customer, isReadOnly, ctx = {}) {
         style={isReadOnly ? { cursor: "default" } : undefined}
       >
         <div className="dp-card__body">
-          <div className="dp-card__name">{customer.name}</div>
+          <div className={bigName ? "dp-card__name dp-card__name--big" : "dp-card__name"}>
+            {customer.name}
+            {couponBalance !== 0 && (
+              <span className={`dp-coupon-badge${couponBalance < 0 ? " dp-coupon-badge--negative" : ""}`}>
+                🎫 {couponBalance}
+              </span>
+            )}
+          </div>
           {isDelivered ? (
             <div className="dp-card__summary">
               ✓ {customer.deliveredCans} delivered
               {customer.returnedCans > 0 &&
                 ` · ↩ ${customer.returnedCans} returned`}
               {customer.cashReceived > 0 && ` · ₹${customer.cashReceived}`}
+              {customer.deliveryPaymentMode === "coupon" && " · 🎫 coupon"}
             </div>
           ) : (
             <div className="dp-card__meta">
@@ -130,7 +139,11 @@ function renderCustomerCard(customer, isReadOnly, ctx = {}) {
                 className="dp-form-input"
                 value={formValues.delivered}
                 onChange={(e) =>
-                  setFormValues((v) => ({ ...v, delivered: e.target.value }))
+                  setFormValues((v) => ({
+                    ...v,
+                    delivered: e.target.value,
+                    couponsCollected: v.paymentMode === "coupon" ? e.target.value : v.couponsCollected,
+                  }))
                 }
               />
             </div>
@@ -146,18 +159,59 @@ function renderCustomerCard(customer, isReadOnly, ctx = {}) {
                 }
               />
             </div>
-            <div className="dp-form-field">
-              <label className="dp-form-label">Amount ₹</label>
-              <input
-                type="number"
-                className="dp-form-input"
-                value={formValues.amount}
-                placeholder="0"
-                onChange={(e) =>
-                  setFormValues((v) => ({ ...v, amount: e.target.value }))
-                }
-              />
+          </div>
+
+          <div className="dp-form-row dp-form-row--payment">
+            <div className="dp-form-field dp-form-field--mode">
+              <label className="dp-form-label">Payment</label>
+              <div className="dp-payment-mode-group">
+                {["none", "cash", "coupon"].map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    className={`dp-mode-btn${formValues.paymentMode === mode ? " dp-mode-btn--active" : ""}`}
+                    onClick={() =>
+                      setFormValues((v) => ({
+                        ...v,
+                        paymentMode: mode,
+                        amount: mode === "coupon" ? "" : v.amount,
+                        couponsCollected: mode === "coupon" ? v.delivered : v.couponsCollected,
+                      }))
+                    }
+                  >
+                    {mode === "none" ? "None" : mode === "cash" ? "Cash" : "🎫 Coupon"}
+                  </button>
+                ))}
+              </div>
             </div>
+            {formValues.paymentMode === "cash" && (
+              <div className="dp-form-field">
+                <label className="dp-form-label">Amount ₹</label>
+                <input
+                  type="number"
+                  className="dp-form-input"
+                  value={formValues.amount}
+                  placeholder="0"
+                  onChange={(e) =>
+                    setFormValues((v) => ({ ...v, amount: e.target.value }))
+                  }
+                />
+              </div>
+            )}
+            {formValues.paymentMode === "coupon" && (
+              <div className="dp-form-field">
+                <label className="dp-form-label">Coupons Collected</label>
+                <input
+                  type="number"
+                  className="dp-form-input"
+                  value={formValues.couponsCollected}
+                  min="0"
+                  onChange={(e) =>
+                    setFormValues((v) => ({ ...v, couponsCollected: e.target.value }))
+                  }
+                />
+              </div>
+            )}
           </div>
 
           <div className="dp-form-actions">
@@ -259,7 +313,7 @@ const DeliveryView = ({ deliveryGuyName }) => {
   const [activeTripIndex, setActiveTripIndex] = useState(null);
   const [tripCustomers, setTripCustomers] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
-  const [formValues, setFormValues] = useState({ delivered: "", returned: "", amount: "" });
+  const [formValues, setFormValues] = useState({ delivered: "", returned: "", amount: "", paymentMode: "none", couponsCollected: "" });
   const [flash, setFlash] = useState(null);
 
   // Trip lifecycle
@@ -307,10 +361,13 @@ const DeliveryView = ({ deliveryGuyName }) => {
     setExpandedId(customer.customerId);
     // qtyOverride (new field) falls back to allotment for pre-fill
     const qty = customer.qtyOverride ?? customer.allotment ?? "";
+    const deliveredVal = customer.isDelivered ? (customer.deliveredCans ?? "") : qty;
     setFormValues({
-      delivered: customer.isDelivered ? (customer.deliveredCans ?? "") : qty,
+      delivered: deliveredVal,
       returned: customer.isDelivered ? (customer.returnedCans ?? "") : "",
       amount: customer.isDelivered ? (customer.cashReceived ?? "") : "",
+      paymentMode: customer.isDelivered ? (customer.deliveryPaymentMode ?? "none") : "none",
+      couponsCollected: deliveredVal,
     });
   };
 
@@ -321,6 +378,7 @@ const DeliveryView = ({ deliveryGuyName }) => {
     const isUpdate = customer.isDelivered;
     const returnedNum = parseInt(formValues.returned, 10) || 0;
     const amtNum = parseInt(formValues.amount, 10) || 0;
+    const selectedMode = formValues.paymentMode || "none";
 
     const deliveryData = {
       customerId: customer.customerId,
@@ -329,7 +387,10 @@ const DeliveryView = ({ deliveryGuyName }) => {
       deliveryDate: TODAY_DATE,
       returnedJars: returnedNum,
     };
-    if (amtNum > 0) {
+    if (selectedMode === "coupon") {
+      deliveryData.paymentMode = "coupon";
+      deliveryData.couponsCollected = parseInt(formValues.couponsCollected, 10) || qty;
+    } else if (selectedMode === "cash" && amtNum > 0) {
       deliveryData.amountReceived = amtNum;
       deliveryData.paymentMode = "cash";
     }
@@ -344,7 +405,8 @@ const DeliveryView = ({ deliveryGuyName }) => {
                 isDelivered: true,
                 deliveredCans: qty,
                 returnedCans: returnedNum,
-                ...(amtNum > 0 && { cashReceived: amtNum }),
+                ...(selectedMode === "cash" && amtNum > 0 && { cashReceived: amtNum }),
+                deliveryPaymentMode: selectedMode !== "none" ? selectedMode : undefined,
               }
             : c
         );
@@ -628,6 +690,7 @@ const DeliveryView = ({ deliveryGuyName }) => {
                   setFormValues,
                   onSubmit: submitDelivery,
                   onCancel: () => setExpandedId(null),
+                  bigName: true,
                 })
               )}
               {tripEnded ? (

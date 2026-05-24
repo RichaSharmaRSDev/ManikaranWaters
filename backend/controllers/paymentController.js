@@ -10,6 +10,8 @@ exports.createPayment = catchAsyncError(async (req, res, next) => {
     paymentDate = Date.now(),
     amount,
     paymentMode,
+    paymentType = "regular",
+    couponQuantity,
   } = req.body;
 
   const customer = await Customer.findOne({ customerId });
@@ -23,6 +25,7 @@ exports.createPayment = catchAsyncError(async (req, res, next) => {
     paymentDate,
     amount,
     paymentMode,
+    paymentType,
   });
 
   //Update paid Amount
@@ -33,6 +36,15 @@ exports.createPayment = catchAsyncError(async (req, res, next) => {
   const remainingAmount = (customer.billedAmount || 0) - (paidAmount || 0);
   customer.remainingAmount = remainingAmount;
 
+  // Coupon purchase: increment coupon balance
+  if (paymentType === "coupon") {
+    const qty = parseInt(couponQuantity, 10);
+    if (!qty || qty < 1) {
+      return next(new ErrorHandler("Coupon quantity must be at least 1", 400));
+    }
+    customer.couponBalance = (customer.couponBalance || 0) + qty;
+  }
+
   //update lastUpdated in customer
   customer.lastUpdated = Date.now();
 
@@ -41,6 +53,7 @@ exports.createPayment = catchAsyncError(async (req, res, next) => {
     paymentDate,
     amount,
     paymentMode,
+    paymentType,
   });
 
   await customer.save();
@@ -50,7 +63,7 @@ exports.createPayment = catchAsyncError(async (req, res, next) => {
 
 exports.getPaymentsForDay = catchAsyncError(async (req, res) => {
   const resultsPerPage = 20;
-  const apiFeature = new ApiFeatures(Payment.find(), req.query)
+  const apiFeature = new ApiFeatures(Payment.find().sort({ paymentDate: -1 }), req.query)
     .filter()
     .pagination(resultsPerPage);
   if (req.query.paymentDate) {
@@ -126,7 +139,7 @@ exports.getPaymentsForDay = catchAsyncError(async (req, res) => {
 
 exports.getPaymentsForRange = catchAsyncError(async (req, res) => {
   const resultsPerPage = 20;
-  const apiFeature = new ApiFeatures(Payment.find(), req.query).filter();
+  const apiFeature = new ApiFeatures(Payment.find().sort({ paymentDate: -1 }), req.query).filter();
 
   if (req.query.paymentStartDate && req.query.paymentEndDate) {
     const startDate = new Date(req.query.paymentStartDate);
