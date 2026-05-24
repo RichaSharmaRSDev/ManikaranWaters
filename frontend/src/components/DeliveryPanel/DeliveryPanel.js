@@ -397,11 +397,8 @@ const DeliveryView = ({ deliveryGuyName }) => {
     return 0;
   });
 
-  const allTripsComplete =
-    (tripsByDateAndDeliveryGuy || []).length > 0 &&
-    (tripsByDateAndDeliveryGuy || []).every((t) =>
-      t.customers.every((c) => c.isDelivered)
-    );
+  const activeTripComplete =
+    tripCustomers.length > 0 && tripCustomers.every((c) => c.isDelivered);
 
   const jarTotal = tripCustomers.reduce(
     (sum, c) => sum + (c.qtyOverride ?? c.allotment ?? 0),
@@ -468,7 +465,7 @@ const DeliveryView = ({ deliveryGuyName }) => {
             </div>
           ) : (
             <>
-              {allTripsComplete && (
+              {activeTripComplete && (
                 <div className="dp-all-done">
                   All deliveries completed 🎉
                 </div>
@@ -541,6 +538,7 @@ const AdminUserView = () => {
     <>
       <Title title="Delivery Panel" />
       <div className="dp-admin-root">
+        <div className="dp-admin-sticky">
         <div className="dp-admin-topbar">
           {/* Mobile: native dropdown */}
           <select
@@ -583,17 +581,18 @@ const AdminUserView = () => {
           />
         </div>
 
-        {tripsByDateAndDeliveryGuy?.length > 0 && (
-          <div className="dp-admin-trips-section">
-            <TripPills
-              trips={tripsByDateAndDeliveryGuy}
-              activeTripIndex={activeTripIndex}
-              onSelect={setActiveTripIndex}
-              loading={tripsByDateAndDeliveryGuyLoading}
-              light
-            />
-          </div>
-        )}
+          {tripsByDateAndDeliveryGuy?.length > 0 && (
+            <div className="dp-admin-trips-section">
+              <TripPills
+                trips={tripsByDateAndDeliveryGuy}
+                activeTripIndex={activeTripIndex}
+                onSelect={setActiveTripIndex}
+                loading={tripsByDateAndDeliveryGuyLoading}
+                light
+              />
+            </div>
+          )}
+        </div>
 
         <ProgressBar customers={tripCustomers} />
 

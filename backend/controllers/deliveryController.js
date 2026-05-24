@@ -51,6 +51,12 @@ exports.createDelivery = catchAsyncError(async (req, res, next) => {
   }, new Date(0));
   customer.lastDeliveryDate = latestDelivery;
 
+  if (customer.customerType === "subscription" && customer.frequency) {
+    const nextDeliveryDate = new Date(latestDelivery);
+    nextDeliveryDate.setDate(nextDeliveryDate.getDate() + customer.frequency);
+    customer.nextDelivery = nextDeliveryDate;
+  }
+
   //BilledAmount
   if (deliveredQuantity) {
     customer.billedAmount =

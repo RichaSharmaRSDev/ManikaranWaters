@@ -597,6 +597,12 @@
 }
 
 // ── Admin / User view ─────────────────────────────────────────────────
+.dp-admin-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
 .dp-admin-root {
   display: flex;
   flex-direction: column;

@@ -271,7 +271,10 @@ const Navigation = () => {
             )}
 
             <div className="nav-user">
-              <div className="nav-user-avatar">
+              <div
+                className="nav-user-avatar"
+                onClick={() => { if (!showNavigation) dispatch(toggleNavigation(true)); }}
+              >
                 {user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
               </div>
               <div className="nav-user-info">
