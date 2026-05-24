@@ -85,6 +85,59 @@ exports.getTripsByDateAndDeliveryGuy = catchAsyncError(
   }
 );
 
+exports.startTrip = catchAsyncError(async (req, res, next) => {
+  const { tripDate, tripNumber } = req.params;
+  const { filledJarsTaken } = req.body;
+
+  const startDate = new Date(tripDate);
+  startDate.setHours(0, 0, 0, 0);
+  const endDate = new Date(tripDate);
+  endDate.setHours(23, 59, 59, 999);
+
+  const trip = await Trip.findOne({
+    tripNumber,
+    tripDate: { $gte: startDate, $lte: endDate },
+  });
+
+  if (!trip) {
+    return res.status(404).json({ success: false, message: "Trip not found" });
+  }
+
+  trip.tripStatus = "started";
+  trip.filledJarsTaken = filledJarsTaken;
+  trip.tripStartedAt = new Date();
+  await trip.save();
+
+  res.status(200).json({ success: true, trip });
+});
+
+exports.endTrip = catchAsyncError(async (req, res, next) => {
+  const { tripDate, tripNumber } = req.params;
+  const { emptyJarsReturned, filledJarsReturned } = req.body;
+
+  const startDate = new Date(tripDate);
+  startDate.setHours(0, 0, 0, 0);
+  const endDate = new Date(tripDate);
+  endDate.setHours(23, 59, 59, 999);
+
+  const trip = await Trip.findOne({
+    tripNumber,
+    tripDate: { $gte: startDate, $lte: endDate },
+  });
+
+  if (!trip) {
+    return res.status(404).json({ success: false, message: "Trip not found" });
+  }
+
+  trip.tripStatus = "ended";
+  trip.emptyJarsReturned = emptyJarsReturned;
+  trip.filledJarsReturned = filledJarsReturned;
+  trip.tripEndedAt = new Date();
+  await trip.save();
+
+  res.status(200).json({ success: true, trip });
+});
+
 exports.overwriteTrip = async (req, res) => {
   try {
     const { tripDate, tripNumber, deliveryGuy, customers } = req.body;

@@ -5,6 +5,8 @@ import {
   IconPhone,
   IconRosetteDiscountCheckFilled,
   IconLogout,
+  IconPlayerPlay,
+  IconFlagCheck,
 } from "@tabler/icons-react";
 import Title from "../layout/Title";
 import { getTripsByDateAndDeliveryGuy, getAllDeliveryGuyName, clearTripData } from "../../actions/tripsAction";
@@ -260,6 +262,14 @@ const DeliveryView = ({ deliveryGuyName }) => {
   const [formValues, setFormValues] = useState({ delivered: "", returned: "", amount: "" });
   const [flash, setFlash] = useState(null);
 
+  // Trip lifecycle
+  const [showStartModal, setShowStartModal] = useState(false);
+  const [showEndModal, setShowEndModal] = useState(false);
+  const [startJars, setStartJars] = useState("");
+  const [endJarsEmpty, setEndJarsEmpty] = useState("");
+  const [endJarsFilled, setEndJarsFilled] = useState("");
+  const [lifecycleLoading, setLifecycleLoading] = useState(false);
+
   useEffect(() => {
     dispatch(clearTripData());
     dispatch(getTripsByDateAndDeliveryGuy(TODAY_DATE, deliveryGuyName));
@@ -390,6 +400,58 @@ const DeliveryView = ({ deliveryGuyName }) => {
       .catch((err) => console.error("Delivery error:", err));
   };
 
+  const handleStartTrip = async () => {
+    const jars = parseInt(startJars, 10);
+    if (!jars) return;
+    const activeTrip = (tripsByDateAndDeliveryGuy || [])[activeTripIndex];
+    if (!activeTrip) return;
+    setLifecycleLoading(true);
+    try {
+      const res = await fetch(
+        `/api/v1/trips/start/${TODAY_DATE}/${activeTrip.tripNumber}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filledJarsTaken: jars }),
+        }
+      );
+      if (res.ok) {
+        setShowStartModal(false);
+        setStartJars("");
+        dispatch(getTripsByDateAndDeliveryGuy(TODAY_DATE, deliveryGuyName));
+      }
+    } finally {
+      setLifecycleLoading(false);
+    }
+  };
+
+  const handleEndTrip = async () => {
+    const activeTrip = (tripsByDateAndDeliveryGuy || [])[activeTripIndex];
+    if (!activeTrip) return;
+    setLifecycleLoading(true);
+    try {
+      const res = await fetch(
+        `/api/v1/trips/end/${TODAY_DATE}/${activeTrip.tripNumber}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            emptyJarsReturned: parseInt(endJarsEmpty, 10) || 0,
+            filledJarsReturned: parseInt(endJarsFilled, 10) || 0,
+          }),
+        }
+      );
+      if (res.ok) {
+        setShowEndModal(false);
+        setEndJarsEmpty("");
+        setEndJarsFilled("");
+        dispatch(getTripsByDateAndDeliveryGuy(TODAY_DATE, deliveryGuyName));
+      }
+    } finally {
+      setLifecycleLoading(false);
+    }
+  };
+
   // Pending first, delivered pushed to bottom
   const sortedCustomers = [...tripCustomers].sort((a, b) => {
     if (a.isDelivered && !b.isDelivered) return 1;
@@ -405,6 +467,11 @@ const DeliveryView = ({ deliveryGuyName }) => {
     0
   );
 
+  const activeTrip = (tripsByDateAndDeliveryGuy || [])[activeTripIndex];
+  const tripStatus = activeTrip?.tripStatus || "pending";
+  const tripStarted = tripStatus === "started" || tripStatus === "ended";
+  const tripEnded = tripStatus === "ended";
+
   return (
     <>
       <Title title="Delivery Panel" />
@@ -416,6 +483,75 @@ const DeliveryView = ({ deliveryGuyName }) => {
           </div>
           <div className="dp-flash__text">
             {flash === "updated" ? "Delivery updated" : "Delivery recorded"}
+          </div>
+        </div>
+      )}
+
+      {showStartModal && (
+        <div className="dp-modal-overlay" onClick={() => setShowStartModal(false)}>
+          <div className="dp-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="dp-modal__title">
+              Starting {activeTrip?.tripNumber.replace("trip", "Trip ")}
+            </div>
+            <div className="dp-modal__subtitle">
+              How many filled jars are you taking?
+            </div>
+            <input
+              type="number"
+              className="dp-form-input dp-modal__input"
+              value={startJars}
+              onChange={(e) => setStartJars(e.target.value)}
+              placeholder="0"
+              autoFocus
+            />
+            <button
+              className="dp-btn-deliver"
+              onClick={handleStartTrip}
+              disabled={!startJars || lifecycleLoading}
+            >
+              <IconPlayerPlay size={16} />
+              {lifecycleLoading ? "Starting…" : "Start Trip"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showEndModal && (
+        <div className="dp-modal-overlay" onClick={() => setShowEndModal(false)}>
+          <div className="dp-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="dp-modal__title">
+              Ending {activeTrip?.tripNumber.replace("trip", "Trip ")}
+            </div>
+            <div className="dp-form-row">
+              <div className="dp-form-field">
+                <label className="dp-form-label">Empty Jars Returned</label>
+                <input
+                  type="number"
+                  className="dp-form-input"
+                  value={endJarsEmpty}
+                  placeholder="0"
+                  onChange={(e) => setEndJarsEmpty(e.target.value)}
+                />
+              </div>
+              <div className="dp-form-field">
+                <label className="dp-form-label">Filled Jars Returned</label>
+                <input
+                  type="number"
+                  className="dp-form-input"
+                  value={endJarsFilled}
+                  placeholder="0"
+                  onChange={(e) => setEndJarsFilled(e.target.value)}
+                />
+              </div>
+            </div>
+            <button
+              className="dp-btn-deliver dp-btn-deliver--danger"
+              onClick={handleEndTrip}
+              disabled={lifecycleLoading}
+            >
+              <IconFlagCheck size={16} />
+              {lifecycleLoading ? "Ending…" : "End Trip"}
+            </button>
           </div>
         </div>
       )}
@@ -455,7 +591,7 @@ const DeliveryView = ({ deliveryGuyName }) => {
           </div>
         </header>
 
-        <ProgressBar customers={tripCustomers} />
+        {tripStarted && <ProgressBar customers={tripCustomers} />}
 
         <div className="dp-list">
           {!tripsByDateAndDeliveryGuy?.length ? (
@@ -463,12 +599,26 @@ const DeliveryView = ({ deliveryGuyName }) => {
               <span className="dp-empty-state__emoji">🗓</span>
               <span className="dp-empty-state__text">No trips for today</span>
             </div>
+          ) : !tripStarted ? (
+            <div className="dp-gate">
+              <div className="dp-gate__trip-name">
+                {activeTrip?.tripNumber.replace("trip", "Trip ")}
+              </div>
+              <div className="dp-gate__subtitle">
+                {activeTrip?.customers?.length} customers on this route
+              </div>
+              <button
+                className="dp-gate__btn"
+                onClick={() => setShowStartModal(true)}
+              >
+                <IconPlayerPlay size={20} />
+                Start Trip
+              </button>
+            </div>
           ) : (
             <>
-              {activeTripComplete && (
-                <div className="dp-all-done">
-                  All deliveries completed 🎉
-                </div>
+              {activeTripComplete && tripEnded && (
+                <div className="dp-all-done">All deliveries completed 🎉</div>
               )}
               {sortedCustomers.map((customer) =>
                 renderCustomerCard(customer, false, {
@@ -479,6 +629,20 @@ const DeliveryView = ({ deliveryGuyName }) => {
                   onSubmit: submitDelivery,
                   onCancel: () => setExpandedId(null),
                 })
+              )}
+              {tripEnded ? (
+                <div className="dp-trip-ended-banner">
+                  <IconFlagCheck size={18} />
+                  Trip ended
+                </div>
+              ) : (
+                <button
+                  className="dp-end-trip-btn"
+                  onClick={() => setShowEndModal(true)}
+                >
+                  <IconFlagCheck size={16} />
+                  End Trip
+                </button>
               )}
             </>
           )}
@@ -534,52 +698,58 @@ const AdminUserView = () => {
     return 0;
   });
 
+  const activeTrip = tripsByDateAndDeliveryGuy?.[activeTripIndex];
+  const tripInfo =
+    activeTrip?.tripStatus === "started" || activeTrip?.tripStatus === "ended"
+      ? activeTrip
+      : null;
+
   return (
     <>
       <Title title="Delivery Panel" />
       <div className="dp-admin-root">
         <div className="dp-admin-sticky">
-        <div className="dp-admin-topbar">
-          {/* Mobile: native dropdown */}
-          <select
-            className="dp-staff-select"
-            value={selectedStaff || ""}
-            onChange={(e) => setSelectedStaff(e.target.value)}
-          >
-            {(deliveryGuyNames || []).map((guy) => (
-              <option key={guy.name} value={guy.name}>{guy.name}</option>
-            ))}
-          </select>
+          <div className="dp-admin-topbar">
+            {/* Mobile: native dropdown */}
+            <select
+              className="dp-staff-select"
+              value={selectedStaff || ""}
+              onChange={(e) => setSelectedStaff(e.target.value)}
+            >
+              {(deliveryGuyNames || []).map((guy) => (
+                <option key={guy.name} value={guy.name}>{guy.name}</option>
+              ))}
+            </select>
 
-          {/* Desktop: tab pills */}
-          <div className="dp-staff-tabs">
-            {(deliveryGuyNames || []).map((guy) => {
-              const name = guy.name;
-              return (
-                <button
-                  key={name}
-                  className={[
-                    "dp-staff-tab",
-                    selectedStaff === name ? "dp-staff-tab--active" : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  onClick={() => setSelectedStaff(name)}
-                >
-                  {name}
-                </button>
-              );
-            })}
+            {/* Desktop: tab pills */}
+            <div className="dp-staff-tabs">
+              {(deliveryGuyNames || []).map((guy) => {
+                const name = guy.name;
+                return (
+                  <button
+                    key={name}
+                    className={[
+                      "dp-staff-tab",
+                      selectedStaff === name ? "dp-staff-tab--active" : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    onClick={() => setSelectedStaff(name)}
+                  >
+                    {name}
+                  </button>
+                );
+              })}
+            </div>
+
+            <input
+              type="date"
+              value={selectedDate}
+              max={TODAY_DATE}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="dp-datepicker"
+            />
           </div>
-
-          <input
-            type="date"
-            value={selectedDate}
-            max={TODAY_DATE}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="dp-datepicker"
-          />
-        </div>
 
           {tripsByDateAndDeliveryGuy?.length > 0 && (
             <div className="dp-admin-trips-section">
@@ -590,6 +760,35 @@ const AdminUserView = () => {
                 loading={tripsByDateAndDeliveryGuyLoading}
                 light
               />
+            </div>
+          )}
+
+          {tripInfo && (
+            <div className={`dp-trip-info-banner dp-trip-info-banner--${tripInfo.tripStatus}`}>
+              <div className="dp-trip-info-banner__stat">
+                <span className="dp-trip-info-banner__label">Status</span>
+                <span className="dp-trip-info-banner__value">
+                  {tripInfo.tripStatus === "started" ? "In Progress" : "Ended"}
+                </span>
+              </div>
+              {tripInfo.filledJarsTaken != null && (
+                <div className="dp-trip-info-banner__stat">
+                  <span className="dp-trip-info-banner__label">Taken</span>
+                  <span className="dp-trip-info-banner__value">{tripInfo.filledJarsTaken} filled</span>
+                </div>
+              )}
+              {tripInfo.tripStatus === "ended" && tripInfo.emptyJarsReturned != null && (
+                <div className="dp-trip-info-banner__stat">
+                  <span className="dp-trip-info-banner__label">Empty back</span>
+                  <span className="dp-trip-info-banner__value">{tripInfo.emptyJarsReturned}</span>
+                </div>
+              )}
+              {tripInfo.tripStatus === "ended" && tripInfo.filledJarsReturned != null && (
+                <div className="dp-trip-info-banner__stat">
+                  <span className="dp-trip-info-banner__label">Filled back</span>
+                  <span className="dp-trip-info-banner__value">{tripInfo.filledJarsReturned}</span>
+                </div>
+              )}
             </div>
           )}
         </div>

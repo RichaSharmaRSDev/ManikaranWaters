@@ -705,3 +705,203 @@
   flex: unset;
   overflow-y: visible;
 }
+
+// ── Trip gate screen ──────────────────────────────────────────────────
+.dp-gate {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 64px 24px;
+}
+
+.dp-gate__trip-name {
+  font-size: 24px;
+  font-weight: 800;
+  color: #012e4f;
+  font-family: "Poppins", sans-serif;
+}
+
+.dp-gate__subtitle {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.dp-gate__btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 36px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0163a2, #1a7fc5);
+  box-shadow: 0 4px 18px rgba(1, 99, 162, 0.32);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  transition: opacity 0.15s, transform 0.1s;
+
+  &:active {
+    transform: scale(0.97);
+    opacity: 0.92;
+  }
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────
+.dp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(1, 46, 79, 0.55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.dp-modal {
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px 40px;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 -4px 32px rgba(1, 46, 79, 0.18);
+}
+
+.dp-modal__title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #012e4f;
+  font-family: "Poppins", sans-serif;
+}
+
+.dp-modal__subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-top: -8px;
+}
+
+.dp-modal__input {
+  font-size: 36px;
+  font-weight: 800;
+  padding: 12px;
+}
+
+// ── End trip button ───────────────────────────────────────────────────
+.dp-end-trip-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  border: 1.5px solid #d0dde8;
+  border-radius: 12px;
+  background: #fff;
+  color: #666;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &:hover {
+    border-color: #e03030;
+    color: #c42020;
+    background: #fff5f5;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// ── Deliver button danger variant ─────────────────────────────────────
+.dp-btn-deliver--danger {
+  background: linear-gradient(135deg, #c42020, #e03030);
+  box-shadow: 0 3px 10px rgba(196, 32, 32, 0.28);
+}
+
+// ── Trip ended banner ─────────────────────────────────────────────────
+.dp-trip-ended-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  margin-top: 8px;
+  border-radius: 12px;
+  background: #edf9f3;
+  border: 1px solid #0a7c4e;
+  color: #0a7c4e;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+// ── Admin trip info banner ─────────────────────────────────────────────
+.dp-trip-info-banner {
+  display: flex;
+  gap: 0;
+  background: #f0f7ff;
+  border-top: 1px solid #d0e4f5;
+  border-bottom: 1px solid #d0e4f5;
+  padding: 10px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &--ended {
+    background: #edf9f3;
+    border-color: #b3e8cc;
+  }
+}
+
+.dp-trip-info-banner__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-right: 20px;
+  flex-shrink: 0;
+
+  &:not(:last-child) {
+    border-right: 1px solid rgba(1, 46, 79, 0.1);
+    margin-right: 20px;
+  }
+
+  @media (max-width: 600px) {
+    padding-right: 10px;
+    align-items: center;
+    &:not(:last-child) {
+      margin-right: 10px;
+    }
+  }
+}
+
+.dp-trip-info-banner__label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #888;
+}
+
+.dp-trip-info-banner__value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #012e4f;
+
+  .dp-trip-info-banner--ended & {
+    color: #0a7c4e;
+  }
+}
