@@ -11,7 +11,7 @@ import Title from "../layout/Title";
 const LoginSignUp = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { error, loading, isAuthenticated } = useSelector(
+  const { error, loading, isAuthenticated, user } = useSelector(
     (state) => state.user
   );
 
@@ -29,9 +29,9 @@ const LoginSignUp = () => {
       dispatch(clearErrors());
     }
     if (isAuthenticated) {
-      navigate("/dashboard");
+      navigate(user?.role === "delivery" ? "/deliveryPanel" : "/dashboard");
     }
-  }, [dispatch, error, isAuthenticated, navigate]);
+  }, [dispatch, error, isAuthenticated, navigate, user]);
 
   return (
     <>

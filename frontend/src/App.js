@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import WebFont from "webfontloader";
 import store from "./store.js";
 import { loadUser } from "./actions/userAction.js";
@@ -35,10 +35,22 @@ import DeliveryTrips from "./components/DeliveryTrips/DeliveryTrips.js";
 
 import "./App.css";
 
+// Redirects delivery role away from any sidebar route
+const NonDeliveryGuard = ({ children }) => {
+  const { user } = useSelector((state) => state.user);
+  if (user?.role === "delivery") {
+    return <Navigate to="/deliveryPanel" replace />;
+  }
+  return children;
+};
+
 // Wraps a page in AuthenticatedRoute + AppLayout (sidebar + header)
+// Delivery role users are bounced to /deliveryPanel
 const AuthPage = ({ children }) => (
   <AuthenticatedRoute>
-    <AppLayout>{children}</AppLayout>
+    <NonDeliveryGuard>
+      <AppLayout>{children}</AppLayout>
+    </NonDeliveryGuard>
   </AuthenticatedRoute>
 );
 
@@ -48,6 +60,26 @@ const AdminPage = ({ children }) => (
     <AppLayout>{children}</AppLayout>
   </AdminRoute>
 );
+
+// Delivery Panel: full-screen (no sidebar) for delivery role,
+// normal AppLayout for admin/user
+const DeliveryPanelRoute = () => {
+  const { user } = useSelector((state) => state.user);
+  if (user?.role === "delivery") {
+    return (
+      <AuthenticatedRoute>
+        <DeliveryPanel />
+      </AuthenticatedRoute>
+    );
+  }
+  return (
+    <AuthenticatedRoute>
+      <AppLayout>
+        <DeliveryPanel />
+      </AppLayout>
+    </AuthenticatedRoute>
+  );
+};
 
 
 function App() {
@@ -112,7 +144,7 @@ function App() {
         <Route path="/admin/create-user" element={<AdminPage><AdminCreateUser /></AdminPage>} />
 
         {/* Delivery Panel */}
-        <Route path="/deliveryPanel" element={<AuthPage><DeliveryPanel /></AuthPage>} />
+        <Route path="/deliveryPanel" element={<DeliveryPanelRoute />} />
       </Routes>
     </Router>
   );

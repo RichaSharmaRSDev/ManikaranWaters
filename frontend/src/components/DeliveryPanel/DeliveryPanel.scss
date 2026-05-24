@@ -38,7 +38,7 @@
 
 // ── Header ────────────────────────────────────────────────────────────
 .dp-header {
-  background: linear-gradient(145deg, #012e4f, #0a4068);
+  background: linear-gradient(160deg, #012e4f, #0a4068);
   padding: 14px 16px 0;
   flex-shrink: 0;
   position: relative;
@@ -69,28 +69,82 @@
   }
 }
 
-.dp-header__top {
+.dp-header__row1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
   position: relative;
   z-index: 1;
 }
 
-.dp-header__greeting {
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
+.dp-header__row2 {
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
 }
 
-.dp-header__name {
-  color: #f79c1e;
+.dp-header__row3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.dp-jar-pill {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  flex-shrink: 0;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.dp-jar-pill__icon {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+}
+
+.dp-header__greeting {
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
 }
 
 .dp-header__date {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dp-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+  &:active {
+    background: rgba(220, 38, 38, 0.15);
+    border-color: rgba(220, 38, 38, 0.4);
+    color: #dc2626;
+  }
 }
 
 // ── Trip pills ────────────────────────────────────────────────────────
@@ -222,6 +276,36 @@
   padding: 48px 0;
 }
 
+.dp-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 0;
+  gap: 10px;
+
+  &__emoji {
+    font-size: 48px;
+    line-height: 1;
+  }
+
+  &__text {
+    font-size: 15px;
+    font-weight: 700;
+    color: #555;
+  }
+}
+
+.dp-all-done {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0a7c4e;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 30px auto;
+}
+
 // ── Customer card ─────────────────────────────────────────────────────
 .dp-card {
   display: flex;
@@ -237,7 +321,7 @@
 
   &--delivered {
     background: #edf9f3;
-    border-color: #86efbc;
+    border-color: #0a7c4e;
   }
 
   &--expanded {
@@ -342,6 +426,9 @@
   border-radius: 0 0 16px 16px;
   padding: 14px;
 }
+.dp-card.dp-card--delivered.dp-card--expanded ~ .dp-expanded{
+  border-color: #0a7c4e;
+}
 
 .dp-editing-tag {
   display: inline-block;
@@ -399,6 +486,11 @@
   outline: none;
   text-align: center;
   -moz-appearance: textfield;
+
+  &::placeholder {
+    color: #d0d0d0;
+    font-weight: 400;
+  }
 
   &:focus {
     border-color: #0163a2;
@@ -469,4 +561,141 @@
   &:hover {
     background: #f0f0f0;
   }
+}
+
+// ── Trip pills — light variant (admin view) ───────────────────────────
+.dp-trips-scroll--light {
+  .dp-trip-pill {
+    border-color: #d0dde8;
+    color: #555;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(1, 46, 79, 0.06);
+
+    &--active {
+      background: #012e4f;
+      border-color: #012e4f;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(1, 46, 79, 0.2);
+
+      .dp-trip-pill__count {
+        background: rgba(255, 255, 255, 0.18);
+        color: #fff;
+      }
+    }
+
+    &--done {
+      background: #198752;
+      border-color: #198752;
+      color: #fff;
+      opacity: 0.85;
+    }
+  }
+
+  .dp-trips-loading {
+    color: #888;
+  }
+}
+
+// ── Admin / User view ─────────────────────────────────────────────────
+.dp-admin-root {
+  display: flex;
+  flex-direction: column;
+  background: #f4f6f9;
+  min-height: 100%;
+}
+
+.dp-admin-topbar {
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 12px 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dp-staff-select {
+  display: none; // shown only on mobile via media query below
+  flex: 1;
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  padding: 5px 8px;
+  border: 1.5px solid #d0dde8;
+  border-radius: 8px;
+  color: #333;
+  background: #fff;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.dp-staff-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  flex: 1;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .dp-staff-select {
+    display: block;
+  }
+
+  .dp-staff-tabs {
+    display: none;
+  }
+}
+
+.dp-staff-tab {
+  flex-shrink: 0;
+  border: 1.5px solid #d0dde8;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  background: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  font-family: "Poppins", sans-serif;
+
+  &--active {
+    background: #012e4f;
+    border-color: #012e4f;
+    color: #fff;
+  }
+
+  &:hover:not(&--active) {
+    border-color: #0163a2;
+    color: #0163a2;
+  }
+}
+
+.dp-datepicker {
+  flex-shrink: 0;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 13px;
+  color: #111;
+  cursor: pointer;
+  outline: none;
+  font-family: "Poppins", sans-serif;
+}
+
+.dp-admin-trips-section {
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 10px 16px 0;
+  flex-shrink: 0;
+}
+
+.dp-list--page {
+  flex: unset;
+  overflow-y: visible;
 }
