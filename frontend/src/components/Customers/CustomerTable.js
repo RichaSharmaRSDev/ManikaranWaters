@@ -1,5 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { IconPencil } from "@tabler/icons-react";
 import {
   getCustomerDeliveriesHistory,
   clearCustomerDeliveriesHistory,
@@ -8,6 +10,7 @@ import CustomerFullDetails from "./CustomerFullDetails";
 
 const CustomerTable = ({ customers }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { customerDeliveriesHistory } =
     useSelector((state) => state.customers) || {};
 
@@ -78,6 +81,7 @@ const CustomerTable = ({ customers }) => {
               <br />
               Balance
             </th>
+            <th className="customer-edit"></th>
           </tr>
         </thead>
         <tbody>
@@ -121,6 +125,17 @@ const CustomerTable = ({ customers }) => {
                 ) : (
                   <span>—</span>
                 )}
+              </td>
+              <td
+                className="customer-edit"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => navigate(`/customer/edit/${customer.customerId}`)}
+                  style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}
+                >
+                  <IconPencil size={14} />
+                </button>
               </td>
             </tr>
           ))}

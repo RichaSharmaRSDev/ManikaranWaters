@@ -34,7 +34,7 @@ const Navigation = () => {
   const location = useLocation();
 
   const getInitialMenu = (pathname) => {
-    if (pathname === "/customers" || pathname.startsWith("/customer/") || pathname === "/quickaccess") return "customer";
+    if (pathname === "/customers" || pathname.startsWith("/customer/") || pathname === "/quickaccess" || pathname === "/customers/edit") return "customer";
     if (pathname === "/customers/frequency") return "habits";
     if (pathname === "/delivery/new" || pathname === "/payment/new") return "entries";
     if (pathname.startsWith("/deliveries") || pathname.startsWith("/payments")) return "reports";
@@ -139,8 +139,9 @@ const Navigation = () => {
                   </button>
                   <div className={`submenu${openMenu === "customer" ? " open" : ""}`}>
                     <Link to="/customer/new" className={isActive("/customer/new") ? "active" : ""} onClick={closeNavOnMobile}>New Customer</Link>
-                    <Link to="/customers" className={isActive("/customers") ? "active" : ""} onClick={closeNavOnMobile}>Customer Details</Link>
+                    <Link to="/customers" className={location.pathname === "/customers" ? "active" : ""} onClick={closeNavOnMobile}>Customer Details</Link>
                     <Link to="/quickaccess" className={isActive("/quickaccess") ? "active" : ""} onClick={closeNavOnMobile}>Quick Access</Link>
+                    <Link to="/customers/edit" className={isActive("/customers/edit") ? "active" : ""} onClick={closeNavOnMobile}>Edit Customer</Link>
                   </div>
                 </div>
 

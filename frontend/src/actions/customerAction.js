@@ -178,6 +178,26 @@ export const frequencyCustomers = (days, page) => async (dispatch) => {
   }
 };
 
+export const updateCustomer = (customerId, formData) => async (dispatch) => {
+  try {
+    dispatch({ type: "UpdateCustomerRequest" });
+    const { data } = await axios.put(`/api/v1/customer/${customerId}`, formData);
+    dispatch({
+      type: "UpdateCustomerSuccess",
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: "UpdateCustomerFail",
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const clearUpdatedCustomer = () => async (dispatch) => {
+  dispatch({ type: "clearUpdatedCustomer" });
+};
+
 export const clearErrors = () => async (dispatch) => {
   dispatch({ type: "clearErrors" });
 };

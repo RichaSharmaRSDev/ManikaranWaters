@@ -279,14 +279,28 @@ exports.updateCustomer = catchAsyncError(async (req, res, next) => {
   if (customer === null) {
     return next(new ErrorHandler("Customer not found", 404));
   }
-  customer = await Customer.findOneAndUpdate(
-    { customerId: req.params.customerId },
-    req.body,
-    {
-      new: true,
-      runValidators: true,
+
+  const allowedFields = [
+    "name", "phoneNo", "address", "customerType",
+    "rate", "allotment", "frequency", "nextDelivery",
+    "securityMoney", "couponBalance",
+  ];
+  allowedFields.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      customer[field] = req.body[field];
     }
-  );
+  });
+
+  if (customer.customerType === "subscription") {
+    if (customer.lastDeliveryDate) {
+      const next = new Date(customer.lastDeliveryDate);
+      next.setDate(next.getDate() + Number(customer.frequency));
+      customer.nextDelivery = next;
+    }
+  } else {
+    customer.nextDelivery = undefined;
+    customer.frequency = undefined;
+  }
 
   customer.lastUpdated = Date.now();
 

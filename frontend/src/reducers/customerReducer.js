@@ -29,6 +29,13 @@ export const customerReducer = (state = { customers: [] }, action) => {
         loading: true,
         newCustomer: [],
       };
+    case "UpdateCustomerRequest":
+      return {
+        ...state,
+        loading: true,
+        updatedCustomer: null,
+        updateSuccess: null,
+      };
     case "AllCustomersPredictionsRequest":
       return {
         loading: true,
@@ -86,6 +93,13 @@ export const customerReducer = (state = { customers: [] }, action) => {
         newCustomer: action.payload.customer,
         successCreate: action.payload.success,
       };
+    case "UpdateCustomerSuccess":
+      return {
+        ...state,
+        loading: false,
+        updatedCustomer: action.payload.customer,
+        updateSuccess: action.payload.success,
+      };
     case "AllCustomersFail":
     case "AllCustomersIdNameFail":
     case "AllCustomersBasicFail":
@@ -102,12 +116,25 @@ export const customerReducer = (state = { customers: [] }, action) => {
         loading: false,
         newCustomerError: action.payload,
       };
+    case "UpdateCustomerFail":
+      return {
+        ...state,
+        loading: false,
+        updateError: action.payload,
+      };
 
     case "clearNewCustomer":
       return {
         ...state,
         newCustomer: null,
         successCreate: null,
+      };
+    case "clearUpdatedCustomer":
+      return {
+        ...state,
+        updatedCustomer: null,
+        updateSuccess: null,
+        updateError: null,
       };
     case "clearCustomerFullDetail":
       return {

@@ -14,6 +14,7 @@ import Loader from "./components/layout/Loader/Loader.js";
 
 import Dashboard from "./components/Dashboard/dash.js";
 import CreateCustomer from "./components/Customers/CreateCustomer.js";
+import UpdateCustomer from "./components/Customers/UpdateCustomer.js";
 import AllCustomers from "./components/Customers/AllCustomers.js";
 import FrequencyCustomers from "./components/Customers/FrequencyCustomers.js";
 import QuickAccess from "./components/Customers/QuickAccess.js";
@@ -100,6 +101,7 @@ function App() {
     <Routes>
       <Route path="/" element={<AuthPage><AllCustomers /></AuthPage>} />
       <Route path="/frequency" element={<AuthPage><FrequencyCustomers /></AuthPage>} />
+      <Route path="/edit" element={<AuthPage><UpdateCustomer /></AuthPage>} />
     </Routes>
   );
 
@@ -115,6 +117,7 @@ function App() {
         {/* Customers */}
         <Route path="/customers/*" element={<CustomersNestedRoutes />} />
         <Route path="/customer/new" element={<AuthPage><CreateCustomer /></AuthPage>} />
+        <Route path="/customer/edit/:customerId" element={<AuthPage><UpdateCustomer /></AuthPage>} />
         <Route path="/customers/frequency" element={<AuthPage><FrequencyCustomers /></AuthPage>} />
         <Route path="/quickaccess" element={<AuthPage><QuickAccess /></AuthPage>} />
 
