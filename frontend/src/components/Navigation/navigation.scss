@@ -560,7 +560,7 @@ input[type="checkbox"] {
   }
 
   .navigated-container {
-    nav {overflow: hidden;}
+    nav {height: 100dvh;}
     nav.show {
       border-top-right-radius: 10px;
       border-bottom-right-radius: 10px;
