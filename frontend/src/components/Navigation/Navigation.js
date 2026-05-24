@@ -43,7 +43,7 @@ const Navigation = () => {
     if (pathname.startsWith("/jarInventory")) return "jarcount";
     if (pathname === "/deliverytrips") return "deliverytrips";
     if (pathname.startsWith("/report")) return "sales";
-    if (pathname === "/deliveryPanel") return "delivery-panel";
+    if (pathname === "/deliveryPanel") return null;
     return null;
   };
 
@@ -51,6 +51,15 @@ const Navigation = () => {
 
   const toggleMenu = (key) =>
     setOpenMenu((prev) => (prev === key ? null : key));
+
+  const handleMenuClick = (key) => {
+    if (!showNavigation) {
+      dispatch(toggleNavigation(true));
+      setOpenMenu(key);
+    } else {
+      toggleMenu(key);
+    }
+  };
 
   const isActive = (to) => {
     const [path, qs] = to.split("?");
@@ -65,6 +74,12 @@ const Navigation = () => {
   const toggleNavigationInside = () => {
     showNavigation = !showNavigation;
     dispatch(toggleNavigation(showNavigation));
+  };
+
+  const closeNavOnMobile = () => {
+    if (window.innerWidth <= 600 && showNavigation) {
+      dispatch(toggleNavigation(false));
+    }
   };
 
   const { user, loading, isAuthenticated, error } = useSelector(
@@ -91,26 +106,31 @@ const Navigation = () => {
       ) : (
         <div className="navigated-container">
           <nav className={`${showNavigation ? "show" : "hide"}`}>
-            <Link to="/dashboard" className="nav-brand">
+            <Link to="/dashboard" className="nav-brand" onClick={closeNavOnMobile}>
               <img src={Logo} alt="Manikaran Waters" className="nav-logo" />
               <span className="nav-brand-title">MANIKARAN WATERS</span>
+              <button
+                className="menu-toggle-button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleNavigationInside(); }}
+                title="Collapse sidebar"
+              >
+                <IconLayoutSidebarLeftCollapse size={22} />
+              </button>
             </Link>
+
             <button
-              className="menu-toggle-button"
+              className="nav-expand-trigger"
               onClick={toggleNavigationInside}
-              title={showNavigation ? "Collapse sidebar" : "Expand sidebar"}
+              title="Expand sidebar"
             >
-              {showNavigation
-                ? <IconLayoutSidebarLeftCollapse size={22} />
-                : <IconLayoutSidebarLeftExpand size={22} />
-              }
+              <IconLayoutSidebarLeftExpand size={20} />
             </button>
 
             {(user.role === "admin" || user.role === "user") && (
               <>
                 <div className="nav-section-label">Customers</div>
                 <div className="menu">
-                  <button className="menu-button" onClick={() => toggleMenu("customer")}>
+                  <button className="menu-button" onClick={() => handleMenuClick("customer")}>
                     <IconUsers size={18} />
                     <span>Customer</span>
                     <span className="menu-chevron">
@@ -118,14 +138,14 @@ const Navigation = () => {
                     </span>
                   </button>
                   <div className={`submenu${openMenu === "customer" ? " open" : ""}`}>
-                    <Link to="/customer/new" className={isActive("/customer/new") ? "active" : ""}>New Customer</Link>
-                    <Link to="/customers" className={isActive("/customers") ? "active" : ""}>Customer Details</Link>
-                    <Link to="/quickaccess" className={isActive("/quickaccess") ? "active" : ""}>Quick Access</Link>
+                    <Link to="/customer/new" className={isActive("/customer/new") ? "active" : ""} onClick={closeNavOnMobile}>New Customer</Link>
+                    <Link to="/customers" className={isActive("/customers") ? "active" : ""} onClick={closeNavOnMobile}>Customer Details</Link>
+                    <Link to="/quickaccess" className={isActive("/quickaccess") ? "active" : ""} onClick={closeNavOnMobile}>Quick Access</Link>
                   </div>
                 </div>
 
                 <div className="menu">
-                  <Link to="/customers/frequency" className={`menu-button${isActive("/customers/frequency") ? " active" : ""}`}>
+                  <Link to="/customers/frequency" className={`menu-button${isActive("/customers/frequency") ? " active" : ""}`} onClick={closeNavOnMobile}>
                     <IconRepeat size={18} />
                     <span>Customer Habits</span>
                   </Link>
@@ -133,7 +153,7 @@ const Navigation = () => {
 
                 <div className="nav-section-label">Operations</div>
                 <div className="menu">
-                  <button className="menu-button" onClick={() => toggleMenu("entries")}>
+                  <button className="menu-button" onClick={() => handleMenuClick("entries")}>
                     <IconPencil size={18} />
                     <span>Entries</span>
                     <span className="menu-chevron">
@@ -141,8 +161,8 @@ const Navigation = () => {
                     </span>
                   </button>
                   <div className={`submenu${openMenu === "entries" ? " open" : ""}`}>
-                    <Link to="/delivery/new" className={isActive("/delivery/new") ? "active" : ""}>New Delivery</Link>
-                    <Link to="/payment/new" className={isActive("/payment/new") ? "active" : ""}>New Payment</Link>
+                    <Link to="/delivery/new" className={isActive("/delivery/new") ? "active" : ""} onClick={closeNavOnMobile}>New Delivery</Link>
+                    <Link to="/payment/new" className={isActive("/payment/new") ? "active" : ""} onClick={closeNavOnMobile}>New Payment</Link>
                   </div>
                 </div>
 
@@ -150,6 +170,7 @@ const Navigation = () => {
                   <Link
                     to="/reports"
                     className={`menu-button${isActive("/reports") ? " active" : ""}`}
+                    onClick={closeNavOnMobile}
                   >
                     <IconReportAnalytics size={18} />
                     <span>Reports</span>
@@ -157,7 +178,7 @@ const Navigation = () => {
                 </div>
 
                 <div className="menu">
-                  <button className="menu-button" onClick={() => toggleMenu("expense")}>
+                  <button className="menu-button" onClick={() => handleMenuClick("expense")}>
                     <IconReceipt size={18} />
                     <span>Expense</span>
                     <span className="menu-chevron">
@@ -165,20 +186,20 @@ const Navigation = () => {
                     </span>
                   </button>
                   <div className={`submenu${openMenu === "expense" ? " open" : ""}`}>
-                    <Link to="/expense/new" className={isActive("/expense/new") ? "active" : ""}>New Expense</Link>
-                    <Link to="/expenses" className={isActive("/expenses") ? "active" : ""}>Expense Reports</Link>
+                    <Link to="/expense/new" className={isActive("/expense/new") ? "active" : ""} onClick={closeNavOnMobile}>New Expense</Link>
+                    <Link to="/expenses" className={isActive("/expenses") ? "active" : ""} onClick={closeNavOnMobile}>Expense Reports</Link>
                   </div>
                 </div>
 
                 <div className="menu">
-                  <Link to="/customerspredictions" className={`menu-button${isActive("/customerspredictions") ? " active" : ""}`}>
+                  <Link to="/customerspredictions" className={`menu-button${isActive("/customerspredictions") ? " active" : ""}`} onClick={closeNavOnMobile}>
                     <IconTrendingUp size={18} />
                     <span>Prediction</span>
                   </Link>
                 </div>
 
                 <div className="menu">
-                  <button className="menu-button" onClick={() => toggleMenu("jarcount")}>
+                  <button className="menu-button" onClick={() => handleMenuClick("jarcount")}>
                     <IconHexagon size={18} />
                     <span>Jar Count</span>
                     <span className="menu-chevron">
@@ -186,8 +207,8 @@ const Navigation = () => {
                     </span>
                   </button>
                   <div className={`submenu${openMenu === "jarcount" ? " open" : ""}`}>
-                    <Link to="/jarInventory/today" className={isActive("/jarInventory/today") ? "active" : ""}>Today's Jar Count</Link>
-                    <Link to="/jarInventory" className={isActive("/jarInventory") ? "active" : ""}>Jar Inventory</Link>
+                    <Link to="/jarInventory/today" className={isActive("/jarInventory/today") ? "active" : ""} onClick={closeNavOnMobile}>Today's Jar Count</Link>
+                    <Link to="/jarInventory" className={isActive("/jarInventory") ? "active" : ""} onClick={closeNavOnMobile}>Jar Inventory</Link>
                   </div>
                 </div>
               </>
@@ -197,6 +218,7 @@ const Navigation = () => {
               <Link
                 to="/deliverytrips"
                 className={`menu-button${isActive("/deliverytrips") ? " active" : ""}`}
+                onClick={closeNavOnMobile}
               >
                 <IconTruckDelivery size={18} />
                 <span>Delivery Trips</span>
@@ -211,6 +233,7 @@ const Navigation = () => {
                 <Link
                   to="/report/sales"
                   className={`menu-button${isActive("/report/sales") ? " active" : ""}`}
+                  onClick={closeNavOnMobile}
                 >
                   <IconChartBar size={18} />
                   <span>Sales Report</span>
@@ -225,6 +248,7 @@ const Navigation = () => {
                   <Link
                     to="/admin/create-user"
                     className={`menu-button${isActive("/admin/create-user") ? " active" : ""}`}
+                    onClick={closeNavOnMobile}
                   >
                     <IconUserPlus size={18} />
                     <span>Create User</span>
@@ -235,16 +259,14 @@ const Navigation = () => {
 
             {(user.role === "delivery" || user.role === "admin") && (
               <div className="menu">
-                <button className="menu-button" onClick={() => toggleMenu("delivery-panel")}>
+                <Link
+                  to="/deliveryPanel"
+                  className={`menu-button${isActive("/deliveryPanel") ? " active" : ""}`}
+                  onClick={closeNavOnMobile}
+                >
                   <IconMapPin size={18} />
                   <span>Delivery Panel</span>
-                  <span className="menu-chevron">
-                    {openMenu === "delivery-panel" ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
-                  </span>
-                </button>
-                <div className={`submenu${openMenu === "delivery-panel" ? " open" : ""}`}>
-                  <Link to="/deliveryPanel" className={isActive("/deliveryPanel") ? "active" : ""}>Open Panel</Link>
-                </div>
+                </Link>
               </div>
             )}
 

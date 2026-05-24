@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   flex-wrap: wrap;
 }
 
@@ -60,6 +60,27 @@
   font-size: 13px;
   color: #777;
   padding: 0 2px;
+}
+
+// ── Mobile horizontal scroll ─────────────────────────────────────────
+@media (max-width: 600px) {
+  .dt-tabs {
+    margin-bottom: 10px;
+  }
+
+  .sr-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .sr-table {
+    table-layout: auto;
+  }
+
+  .sr-table th,
+  .sr-table td {
+    white-space: nowrap;
+  }
 }
 
 // ── Action cell ───────────────────────────────────────────────────────

@@ -18,7 +18,7 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            <IconChevronLeft size={14} />
+            <IconChevronLeft size={17} stroke={2.5} />
           </button>
         </li>
         {visiblePageNumbers.map((pageNumber) => (
@@ -37,7 +37,7 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            <IconChevronRight size={14} />
+            <IconChevronRight size={17} stroke={2.5} />
           </button>
         </li>
       </ul>

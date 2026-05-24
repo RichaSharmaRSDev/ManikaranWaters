@@ -16,7 +16,9 @@ import {
   clearCustomerDeliveriesHistory,
 } from "../../actions/customerAction";
 import MetricCard from "../layout/MetricCard";
-import { IconMaximize, IconX } from "@tabler/icons-react";
+import { IconMaximize, IconX, IconDownload, IconCurrencyRupee, IconCash, IconDeviceMobile, IconReceipt, IconUsers, IconChartBar } from "@tabler/icons-react";
+import filledJar from "../../assets/filledJar.png";
+import emptyJar from "../../assets/emptyJar.png";
 import "./SalesReport.scss";
 
 const FS_TITLES = {
@@ -41,13 +43,13 @@ function formatDate(date) {
 
 const ReportCards = ({ report }) => (
   <div className="sr-cards">
-    <MetricCard label="Cans Delivered" value={report?.totalCansDelivered} />
-    <MetricCard label="Cans Returned" value={report?.totalReceivedCans} />
-    <MetricCard label="Cash Received" value={`₹${report?.totalCashReceived ?? 0}`} />
-    <MetricCard label="Online Received" value={`₹${report?.totalOnlineReceived ?? 0}`} />
-    <MetricCard label="Total Revenue" value={`₹${report?.totalSales ?? 0}`} />
-    <MetricCard label="Expenses" value={`₹${report?.totalExpenses ?? 0}`} />
-    <MetricCard label="New Connections" value={report?.newConnections} />
+    <MetricCard label="Cans Delivered" value={report?.totalCansDelivered} icon={<img src={filledJar} alt="" style={{ width: 14, height: 14, objectFit: "contain" }} />} />
+    <MetricCard label="Cans Returned" value={report?.totalReceivedCans} icon={<img src={emptyJar} alt="" style={{ width: 14, height: 14, objectFit: "contain" }} />} />
+    <MetricCard label="Cash Received" value={`₹${report?.totalCashReceived ?? 0}`} icon={<IconCash size={14} />} />
+    <MetricCard label="Online Received" value={`₹${report?.totalOnlineReceived ?? 0}`} icon={<IconDeviceMobile size={14} />} />
+    <MetricCard label="Total Revenue" value={`₹${report?.totalSales ?? 0}`} icon={<IconCurrencyRupee size={14} />} />
+    <MetricCard label="Expenses" value={`₹${report?.totalExpenses ?? 0}`} icon={<IconReceipt size={14} />} />
+    <MetricCard label="New Connections" value={report?.newConnections} icon={<IconUsers size={14} />} />
   </div>
 );
 
@@ -470,11 +472,11 @@ const SalesReport = () => {
             ) : !growthData ? null : (
               <>
                 <div className="sr-growth-metric-cards">
-                  <MetricCard label="Total Revenue" value={`₹${toIndian(totalRevenue)}`} color="#0a7c4e" subtext={`over ${gn} months`} />
-                  <MetricCard label="Avg Monthly Revenue" value={`₹${toIndian(avgRevenue)}`} color="#0163a2" subtext="per month" />
-                  <MetricCard label="Total Cash Collected" value={`₹${toIndian(totalCash)}`} />
-                  <MetricCard label="Total Online Collected" value={`₹${toIndian(totalOnline)}`} />
-                  <MetricCard label="New Connections" value={totalConnections} subtext={`over ${gn} months`} />
+                  <MetricCard label="Total Revenue" value={`₹${toIndian(totalRevenue)}`} color="#0a7c4e" subtext={`over ${gn} months`} icon={<IconCurrencyRupee size={14} />} />
+                  <MetricCard label="Avg Monthly Revenue" value={`₹${toIndian(avgRevenue)}`} color="#0163a2" subtext="per month" icon={<IconChartBar size={14} />} />
+                  <MetricCard label="Total Cash Collected" value={`₹${toIndian(totalCash)}`} icon={<IconCash size={14} />} />
+                  <MetricCard label="Total Online Collected" value={`₹${toIndian(totalOnline)}`} icon={<IconDeviceMobile size={14} />} />
+                  <MetricCard label="New Connections" value={totalConnections} subtext={`over ${gn} months`} icon={<IconUsers size={14} />} />
                 </div>
 
                 <div className="sr-chart-section-heading">Month-wise breakdown</div>
@@ -608,7 +610,7 @@ const SalesReport = () => {
                             className="common-cta common-cta-small"
                             onClick={exportToCSV}
                           >
-                            &#x2B07;
+                            <IconDownload size={12} />
                           </button>
                         </th>
                       </tr>

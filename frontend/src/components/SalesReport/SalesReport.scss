@@ -51,7 +51,12 @@
   color: #999;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
 }
+
+.sr-card__icon { display: none; align-items: center; }
+.sr-card__label-text { display: inline; }
 
 // ── Content ───────────────────────────────────────────────────────────
 .sr-content {
@@ -62,7 +67,7 @@
 .sr-table-wrap {
   border: 1px solid #e8e8e8;
   border-radius: 8px;
-  overflow: hidden;
+  overflow-y: hidden;
 }
 
 table.sr-table {
@@ -108,19 +113,55 @@ table.sr-table {
   }
 }
 
-.sr-th-right,
-.sr-td-right {
-  text-align: right !important;
+.sr-th-right {
+
+  .common-cta {
+    background: transparent;
+    border: 1px solid #0163a2;
+    color: #0163a2;
+    border-radius: 6px;
+    padding: 3px 8px;
+    width: auto;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    vertical-align: middle;
+
+    &:hover { background: #e6f4fb; cursor: pointer; }
+  }
+}
+
+@media (max-width: 600px) {
+  .sr-cards {
+    gap: 8px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .sr-card {
+    padding: 12px 14px;
+    min-width: 70px;
+  }
+
+  .sr-content {
+    margin-top: 10px;
+  }
+
+  .sr-card__icon { display: inline-flex; }
+  .sr-card__label-text { display: none; }
 }
 
 // ── Detailed monthly layout ───────────────────────────────────────────
 .sr-detailed-layout {
   display: flex;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
   align-items: flex-start;
 
   .sr-table-wrap {
-    flex: 0 0 380px;
+    flex: 0 0 100%;
     max-height: 70vh;
     overflow-y: auto;
   }
@@ -140,6 +181,10 @@ table.sr-table {
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
   margin-bottom: 24px;
+  @media (max-width: 600px) {
+    display: flex;
+    flex-wrap: wrap;
+  }
 }
 
 .sr-card__subtext {
@@ -158,11 +203,16 @@ table.sr-table {
 }
 
 .sr-growth-charts {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin: 0 auto;
-  max-width: 60vw;
+  justify-content: center;
+  max-width: 70vw;
+  @media (max-width: 600px) {
+    max-width: none;
+    margin-bottom: 20px;
+  }
 }
 
 .sr-chart-card {
@@ -225,9 +275,9 @@ table.sr-table {
   background: #fff;
   border-radius: 14px;
   padding: 24px;
-  width: 72vw;
+  width: 80vw;
   max-width: 900px;
-  height: 70vh;
+  height: 78vh;
   display: flex;
   flex-direction: column;
 }
@@ -271,6 +321,7 @@ table.sr-table {
 .sr-chart-modal__donut {
   flex: 1;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 48px;

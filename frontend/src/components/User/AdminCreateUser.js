@@ -23,8 +23,11 @@ const AdminCreateUser = () => {
 
   const initialState = { name: "", email: "", password: "", username: "", role: "user" };
   const [formData, setFormData] = useState(initialState);
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const isAdminRole = formData.role === "admin";
 
@@ -35,6 +38,11 @@ const AdminCreateUser = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setSuccessMsg("");
+    setPasswordError("");
+    if (formData.password !== confirmPassword) {
+      setPasswordError("Passwords do not match.");
+      return;
+    }
     dispatch(createUser(formData));
   };
 
@@ -42,6 +50,7 @@ const AdminCreateUser = () => {
     if (adminCreateSuccess) {
       setSuccessMsg("User created successfully.");
       setFormData(initialState);
+      setConfirmPassword("");
       dispatch({ type: "AdminCreateUserReset" });
     }
   }, [adminCreateSuccess]);
@@ -128,6 +137,26 @@ const AdminCreateUser = () => {
                         </button>
                       </div>
                     </div>
+                    <div className="form-field">
+                      <label className="form-label" htmlFor="confirmPassword">
+                        Confirm password
+                      </label>
+                      <div className="form-password-wrap">
+                        <input
+                          className="form-input"
+                          required
+                          type={showConfirmPassword ? "text" : "password"}
+                          id="confirmPassword"
+                          placeholder="Re-enter password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          minLength={8}
+                        />
+                        <button type="button" className="form-eye" onClick={() => setShowConfirmPassword(v => !v)} tabIndex={-1}>
+                          {showConfirmPassword ? <IconEyeOff size={15} /> : <IconEye size={15} />}
+                        </button>
+                      </div>
+                    </div>
                   </>
                 ) : (
                   <>
@@ -167,6 +196,26 @@ const AdminCreateUser = () => {
                         </button>
                       </div>
                     </div>
+                    <div className="form-field">
+                      <label className="form-label" htmlFor="confirmPassword">
+                        Confirm password
+                      </label>
+                      <div className="form-password-wrap">
+                        <input
+                          className="form-input"
+                          required
+                          type={showConfirmPassword ? "text" : "password"}
+                          id="confirmPassword"
+                          placeholder="Re-enter password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          minLength={8}
+                        />
+                        <button type="button" className="form-eye" onClick={() => setShowConfirmPassword(v => !v)} tabIndex={-1}>
+                          {showConfirmPassword ? <IconEyeOff size={15} /> : <IconEye size={15} />}
+                        </button>
+                      </div>
+                    </div>
                   </>
                 )}
               </div>
@@ -175,6 +224,11 @@ const AdminCreateUser = () => {
             {successMsg && (
               <p style={{ color: "var(--color-success)", fontFamily: "Poppins", fontSize: "13px", margin: "0 0 12px" }}>
                 {successMsg}
+              </p>
+            )}
+            {passwordError && (
+              <p style={{ color: "var(--color-danger)", fontFamily: "Poppins", fontSize: "13px", margin: "0 0 12px" }}>
+                {passwordError}
               </p>
             )}
             {adminCreateError && (

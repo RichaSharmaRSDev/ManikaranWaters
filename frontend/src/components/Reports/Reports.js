@@ -15,8 +15,10 @@ import {
   rangePayments,
   deletePayment,
 } from "../../actions/paymentAction";
-import { IconTrash } from "@tabler/icons-react";
+import { IconTrash, IconList, IconCurrencyRupee, IconCash, IconDeviceMobile } from "@tabler/icons-react";
 import MetricCard from "../layout/MetricCard";
+import filledJar from "../../assets/filledJar.png";
+import emptyJar from "../../assets/emptyJar.png";
 import "./Reports.scss";
 
 const formatDate = (date) => {
@@ -195,10 +197,10 @@ const Reports = () => {
             {activeTab === "deliveries" && (
               <>
                 <div className="sr-cards">
-                  <MetricCard label="Total Entries" value={deliveryCount ?? 0} />
-                  <MetricCard label="Cans Delivered" value={deliveryTotal?.totalDeliveredJars ?? 0} />
-                  <MetricCard label="Cans Returned" value={deliveryTotal?.totalReturnedJars ?? 0} />
-                  <MetricCard label="Amount Collected" value={`₹${deliveryTotal?.totalAmountCollected ?? 0}`} />
+                  <MetricCard label="Total Entries" value={deliveryCount ?? 0} icon={<IconList size={14} />} />
+                  <MetricCard label="Cans Delivered" value={deliveryTotal?.totalDeliveredJars ?? 0} icon={<img src={filledJar} alt="" style={{ width: 14, height: 14, objectFit: "contain" }} />} />
+                  <MetricCard label="Cans Returned" value={deliveryTotal?.totalReturnedJars ?? 0} icon={<img src={emptyJar} alt="" style={{ width: 14, height: 14, objectFit: "contain" }} />} />
+                  <MetricCard label="Amount Collected" value={`₹${deliveryTotal?.totalAmountCollected ?? 0}`} icon={<IconCurrencyRupee size={14} />} />
                 </div>
 
                 {deliveries?.length ? (
@@ -252,10 +254,10 @@ const Reports = () => {
             {activeTab === "payments" && (
               <>
                 <div className="sr-cards">
-                  <MetricCard label="Total Entries" value={paymentCount ?? 0} />
-                  <MetricCard label="Cash Received" value={`₹${paymentTotal?.totalCashPayment ?? 0}`} />
-                  <MetricCard label="Online Received" value={`₹${paymentTotal?.totalOnlinePayment ?? 0}`} />
-                  <MetricCard label="Total Received" value={`₹${paymentTotal?.totalPaymentReceived ?? 0}`} />
+                  <MetricCard label="Total Entries" value={paymentCount ?? 0} icon={<IconList size={14} />} />
+                  <MetricCard label="Cash Received" value={`₹${paymentTotal?.totalCashPayment ?? 0}`} icon={<IconCash size={14} />} />
+                  <MetricCard label="Online Received" value={`₹${paymentTotal?.totalOnlinePayment ?? 0}`} icon={<IconDeviceMobile size={14} />} />
+                  <MetricCard label="Total Received" value={`₹${paymentTotal?.totalPaymentReceived ?? 0}`} icon={<IconCurrencyRupee size={14} />} />
                 </div>
 
                 {payments?.length ? (

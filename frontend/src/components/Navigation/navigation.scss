@@ -11,6 +11,7 @@
     background-color: #012e4f;
     overflow-y: auto;
     .nav-brand {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -35,12 +36,17 @@
       }
     }
     .menu-toggle-button {
-      background-color: transparent;
-      align-self: flex-end;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: transparent;
+      border-radius: 6px;
       border: none;
-      padding: 0.4vw 0.5vw;
       cursor: pointer;
       color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       &:hover {
         color: #fff;
       }
@@ -134,35 +140,94 @@
       }
     }
 
-    &.hide {
-      width: 4vw;
-      .nav-user {
-        justify-content: center;
-        padding: 0.8vw 0;
-        .nav-user-avatar {
-          width: 2.5vw;
-          height: 2.5vw;
-          font-size: clamp(12px, 0.8vw, 14px);
-        }
-        .nav-user-info {
-          display: none;
-        }
+    .nav-expand-trigger {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      margin: 2px auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.65);
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
       }
+    }
+
+    &.hide {
+      width: 48px;
+      overflow: hidden;
+      transition: width 0.2s ease;
+
       .nav-brand {
-        padding: 0.8vw 0.2vw;
+        padding: 12px 0 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
         .nav-logo {
-          width: 2.5vw;
-          height: 2.5vw;
+          width: 28px;
+          height: 28px;
+          margin-bottom: 0;
         }
         .nav-brand-title {
           display: none;
         }
+        .menu-toggle-button {
+          display: none;
+        }
       }
-      .menu {
-        display: none;
-      }
+
       .nav-section-label {
         display: none;
+      }
+
+      .menu {
+        padding: 2px 4px 0;
+      }
+
+      .menu-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        justify-content: center;
+        margin: 2px auto;
+        padding: 0;
+        gap: 0;
+
+        span:not(.menu-chevron) {
+          display: none;
+        }
+        .menu-chevron {
+          display: none;
+        }
+      }
+
+      .submenu {
+        display: none !important;
+      }
+
+      .nav-expand-trigger {
+        display: flex;
+      }
+
+      .nav-user {
+        justify-content: center;
+        padding: 10px 0 14px;
+        gap: 0;
+
+        .nav-user-info {
+          display: none;
+        }
+        .nav-user-avatar {
+          width: 32px;
+          height: 32px;
+          font-size: 11px;
+        }
       }
     }
   }
@@ -232,6 +297,9 @@
       border-radius: 50%;
       background-color: rgba(255, 255, 255, 0.25);
       transition: background-color 0.12s;
+      @media (max-width: 600px) {
+        left: 2.7vw;
+      }
     }
 
     &:hover {
@@ -258,12 +326,12 @@
 // common code for other components
 
 .beNeutral {
-  margin: 0 10px;
+  margin: 0 10px 0 10px;
   min-height: 100vh;
   position: relative;
 }
 .shiftLeft {
-  margin: 0 10px;
+  margin: 0 10px 0 10px;
   min-height: 100vh;
   position: relative;
 }
@@ -456,17 +524,8 @@
 .noResults {
   font-family: "Architects Daughter";
   font-family: "Coming Soon";
-  font-size: 3vw;
   display: flex;
   justify-content: center;
-  span {
-    width: 95%;
-    height: 70vh;
-    margin-top: 10vh;
-    text-align: center;
-    line-height: 70vh;
-    background-color: #ebf7ff;
-  }
 }
 .yesterdayButton {
   margin-left: 0.7vw;
@@ -501,56 +560,71 @@ input[type="checkbox"] {
   }
 
   .navigated-container {
-    nav {
+    nav.show {
       border-top-right-radius: 10px;
       border-bottom-right-radius: 10px;
       width: 40vw;
+      z-index: 300;
 
       .nav-brand {
-        padding: 3vw 1vw 2vw;
+        padding: 16px 8px 12px;
         .nav-logo {
-          width: 10vw;
-          height: 10vw;
+          width: 36px;
+          height: 36px;
         }
         .nav-brand-title {
-          font-size: 2vw;
+          font-size: 10px;
         }
       }
 
       .menu {
         .menu-button {
-          font-size: 16px;
+          font-size: 14px;
         }
         .submenu {
           font-size: 14px;
-          padding-left: 6vw;
           a, .submenu-item {
-            padding: 1.5vw 1vw 1.5vw 3vw;
+            padding: 6px 10px 6px 24px;
             &::before {
-              width: 6px;
-              height: 6px;
+              width: 5px;
+              height: 5px;
             }
           }
         }
       }
-    }
-    nav {
+
       .nav-user {
-        gap: 2vw;
-        padding: 3vw 2vw;
+        gap: 10px;
+        padding: 12px 10px;
         .nav-user-avatar {
-          width: 8vw;
-          height: 8vw;
-          font-size: 3vw;
+          width: 32px;
+          height: 32px;
+          font-size: 12px;
         }
         .nav-user-name {
-          font-size: 3vw;
+          font-size: 13px;
         }
         .nav-user-meta {
-          font-size: 2.5vw;
+          font-size: 11px;
         }
       }
     }
+  }
+
+  // When open on mobile, add a tap-away overlay
+  .navigated-container nav.show::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: -1;
+  }
+
+  .beNeutral {
+    margin-left: 10px;
+  }
+  .shiftLeft {
+    margin-left: 10px;
   }
 }
 

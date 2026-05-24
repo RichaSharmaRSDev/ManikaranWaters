@@ -11,11 +11,11 @@
 
     &__label {
       font-family: "Poppins";
-      font-size: 0.65vw;
+      font-size: 8px;
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.45);
+      color: rgba(255, 255, 255, 0.7);
       margin: 0 0 0.5vw;
     }
 
@@ -29,8 +29,8 @@
 
     &__date {
       font-family: "Poppins";
-      font-size: 0.75vw;
-      color: rgba(255, 255, 255, 0.45);
+      font-size: 8px;
+      color: rgba(255, 255, 255, 0.7);
       margin: 0;
     }
   }
@@ -49,7 +49,7 @@
       }
 
       &__greeting {
-        font-size: 5.5vw;
+        font-size: 4.5vw;
         margin-bottom: 1.5vw;
       }
 

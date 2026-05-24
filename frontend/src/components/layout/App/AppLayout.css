@@ -20,12 +20,11 @@
 }
 
 .app-main.nav-closed {
-  margin-left: 4vw;
+  margin-left: 48px;
 }
 
 .app-content {
   flex: 1;
-  overflow-y: auto;
   padding: 0;
 }
 
@@ -35,6 +34,6 @@
     margin-left: 40vw;
   }
   .app-main.nav-closed {
-    margin-left: 0;
+    margin-left: 48px;
   }
 }

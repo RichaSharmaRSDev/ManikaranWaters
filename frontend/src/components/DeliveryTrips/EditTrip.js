@@ -1,10 +1,25 @@
 import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import {
+  DndContext,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import Loader from "../layout/Loader/Loader";
 import { todayIST } from "../../utils/istDate";
 import { getTripsByDate } from "../../actions/tripsAction";
 import { getCustomersIdName } from "../../actions/customerAction";
 import Alert from "../layout/Alert/Alert";
+import filledJar from "../../assets/filledJar.png";
 import {
   IconGripVertical,
   IconTrash,
@@ -13,6 +28,115 @@ import {
   IconPlus,
 } from "@tabler/icons-react";
 
+// ── Sortable desktop row ─────────────────────────────────────────────
+const SortableRow = ({ customer, index, onUpdate, onRemove }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: customer.customerId });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.45 : 1,
+    position: "relative",
+    zIndex: isDragging ? 1 : "auto",
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="edittrip-row">
+      <div className="et-drag" {...listeners} {...attributes} style={{ cursor: isDragging ? "grabbing" : "grab" }}>
+        <IconGripVertical size={14} color="#bbb" />
+      </div>
+      <div className="et-num">{index + 1}</div>
+      <div className="et-id">{customer.customerId}</div>
+      <div className="et-name">{customer.name}</div>
+      <div className="et-allot">{customer.allotment}</div>
+      <div className="et-qty">
+        <input
+          type="number"
+          min={1}
+          placeholder={customer.allotment}
+          value={customer.qtyOverride ?? ""}
+          onChange={(e) =>
+            onUpdate(index, "qtyOverride", e.target.value ? Number(e.target.value) : null)
+          }
+        />
+      </div>
+      <div className="et-note">
+        <input
+          type="text"
+          placeholder="Note…"
+          value={customer.deliveryNote ?? ""}
+          onChange={(e) => onUpdate(index, "deliveryNote", e.target.value)}
+        />
+      </div>
+      <div className="et-actions">
+        <button className="edittrip-delete" onClick={() => onRemove(index)}>
+          <IconTrash size={14} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ── Sortable mobile card ─────────────────────────────────────────────
+const SortableCard = ({ customer, index, onUpdate, onRemove }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: customer.customerId });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.45 : 1,
+    position: "relative",
+    zIndex: isDragging ? 1 : "auto",
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes} className="et-card">
+      <span className="et-card-num">{index + 1}</span>
+      <div className="et-card-center">
+        <div className="et-card-name">{customer.name}</div>
+        <div className="et-card-meta">
+          {customer.customerId} &middot; <strong>{customer.allotment} jars</strong>
+        </div>
+      </div>
+      <div className="et-card-right">
+        <input
+          type="number"
+          className="et-card-qty"
+          min={1}
+          placeholder={customer.allotment}
+          value={customer.qtyOverride ?? ""}
+          onPointerDown={(e) => e.stopPropagation()}
+          onChange={(e) =>
+            onUpdate(index, "qtyOverride", e.target.value ? Number(e.target.value) : null)
+          }
+        />
+        <button
+          className="edittrip-delete"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={() => onRemove(index)}
+        >
+          <IconTrash size={14} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ── Main component ───────────────────────────────────────────────────
 const EditTrip = ({ onSwitchTab }) => {
   const dispatch = useDispatch();
   const { tripsByDate, tripsByDateLoading } = useSelector((state) => state.trips || {});
@@ -27,9 +151,8 @@ const EditTrip = ({ onSwitchTab }) => {
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [alert, setAlert] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
 
-  const dragCustomer = useRef(null);
-  const draggedOverCustomer = useRef(null);
   const dropdownRef = useRef(null);
 
   const currentTrip = tripsByDate?.[currentTripIndex];
@@ -51,6 +174,11 @@ const EditTrip = ({ onSwitchTab }) => {
     ? `${selectedCustomer.name} | ${selectedCustomer.customerId}`
     : searchQuery;
 
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
+  );
+
   // Close dropdown on outside click
   useEffect(() => {
     const handler = (e) => {
@@ -60,6 +188,12 @@ const EditTrip = ({ onSwitchTab }) => {
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 600);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -86,6 +220,15 @@ const EditTrip = ({ onSwitchTab }) => {
     }
   }, [tripsByDate, currentTripIndex]);
 
+  const handleDragEnd = ({ active, over }) => {
+    if (!over || active.id === over.id) return;
+    setCustomers((prev) => {
+      const oldIndex = prev.findIndex((c) => c.customerId === active.id);
+      const newIndex = prev.findIndex((c) => c.customerId === over.id);
+      return arrayMove(prev, oldIndex, newIndex);
+    });
+  };
+
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     setSelectedCustomer(null);
@@ -111,14 +254,6 @@ const EditTrip = ({ onSwitchTab }) => {
     } else if (e.key === "Escape") {
       setIsDropdownOpen(false);
     }
-  };
-
-  const handleSort = () => {
-    const list = [...customers];
-    const dragged = list[dragCustomer.current];
-    list.splice(dragCustomer.current, 1);
-    list.splice(draggedOverCustomer.current, 0, dragged);
-    setCustomers(list);
   };
 
   const handleAddCustomer = async () => {
@@ -179,42 +314,131 @@ const EditTrip = ({ onSwitchTab }) => {
     }
   };
 
-  return (
-    <>
-      <div className="edittrip-topbar">
+  const searchRow = (
+    <div className="edittrip-addrow">
+      <div className="customer-search-wrap edittrip-search-wrap" ref={dropdownRef}>
         <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          className="edittrip-datepicker"
+          className="form-input customer-search-input"
+          type="text"
+          placeholder="Search by name or ID…"
+          value={displayValue}
+          onChange={handleSearchChange}
+          onKeyDown={handleSearchKeyDown}
+          onFocus={() => { if (!selectedCustomer) setIsDropdownOpen(true); }}
+          autoComplete="off"
         />
-
-        {tripsByDate?.length > 0 && (
-          <>
-            <button
-              className="edittrip-nav"
-              onClick={() => setCurrentTripIndex((i) => Math.max(i - 1, 0))}
-              disabled={currentTripIndex === 0}
-            >
-              <IconChevronLeft size={15} />
-            </button>
-            <span className="edittrip-tripname">
-              {currentTrip?.tripNumber?.replace("trip", "Trip ")}
-            </span>
-            <button
-              className="edittrip-nav"
-              onClick={() =>
-                setCurrentTripIndex((i) => Math.min(i + 1, tripsByDate.length - 1))
-              }
-              disabled={currentTripIndex === tripsByDate.length - 1}
-            >
-              <IconChevronRight size={15} />
-            </button>
-            <span className="edittrip-staffname">— {currentTrip?.deliveryGuy}</span>
-            <span className="edittrip-jarbadge">&#x1FAD9; {jarTotal} jars total</span>
-          </>
+        {selectedCustomer && (
+          <button
+            type="button"
+            className="customer-clear-btn"
+            onClick={() => { setSelectedCustomer(null); setSearchQuery(""); }}
+          >
+            ✕
+          </button>
+        )}
+        {isDropdownOpen && !selectedCustomer && (
+          <div className="customer-dropdown">
+            {filteredCustomers.length > 0 ? (
+              filteredCustomers.map((c, idx) => (
+                <div
+                  key={c.customerId}
+                  className={`customer-dropdown__item${idx === highlightedIndex ? " customer-dropdown__item--highlighted" : ""}`}
+                  onMouseDown={() => handleCustomerSelect(c)}
+                >
+                  <span className="customer-dropdown__name">{c.name}</span>
+                  <span className="customer-dropdown__id">{c.customerId}</span>
+                </div>
+              ))
+            ) : (
+              <div className="customer-dropdown__empty">No customers found</div>
+            )}
+          </div>
         )}
       </div>
+      <button
+        className="edittrip-add-btn"
+        onClick={handleAddCustomer}
+        disabled={!selectedCustomer}
+        title="Add customer"
+      >
+        <IconPlus size={16} />
+      </button>
+    </div>
+  );
+
+  return (
+    <>
+      {isMobile ? (
+        <div className="et-mobile-header">
+          <div className="et-mobile-row1">
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="et-mobile-datepicker"
+            />
+            {tripsByDate?.length > 0 && (
+              <span className="et-mobile-jarbadge"><img src={filledJar} alt="" style={{ width: 14, height: 14, objectFit: "contain" }} /> <span>{jarTotal} jars total</span></span>
+            )}
+          </div>
+          {tripsByDate?.length > 0 && (
+            <div className="et-mobile-row2">
+              <button
+                className="edittrip-nav"
+                onClick={() => setCurrentTripIndex((i) => Math.max(i - 1, 0))}
+                disabled={currentTripIndex === 0}
+              >
+                <IconChevronLeft size={17} />
+              </button>
+              <span className="et-mobile-tripname">
+                {currentTrip?.tripNumber?.replace("trip", "Trip ")}
+              </span>
+              <button
+                className="edittrip-nav"
+                onClick={() => setCurrentTripIndex((i) => Math.min(i + 1, tripsByDate.length - 1))}
+                disabled={currentTripIndex === tripsByDate.length - 1}
+              >
+                <IconChevronRight size={17} />
+              </button>
+              <span className="et-mobile-staffname">{currentTrip?.deliveryGuy}</span>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="edittrip-topbar">
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="edittrip-datepicker"
+          />
+          {tripsByDate?.length > 0 && (
+            <>
+              <button
+                className="edittrip-nav"
+                onClick={() => setCurrentTripIndex((i) => Math.max(i - 1, 0))}
+                disabled={currentTripIndex === 0}
+              >
+                <IconChevronLeft size={15} />
+              </button>
+              <span className="edittrip-tripname">
+                {currentTrip?.tripNumber?.replace("trip", "Trip ")}
+              </span>
+              <button
+                className="edittrip-nav"
+                onClick={() =>
+                  setCurrentTripIndex((i) => Math.min(i + 1, tripsByDate.length - 1))
+                }
+                disabled={currentTripIndex === tripsByDate.length - 1}
+              >
+                <IconChevronRight size={15} />
+              </button>
+              <span className="edittrip-staffname">— {currentTrip?.deliveryGuy}</span>
+              <span className="edittrip-jarbadge"><img src={filledJar} alt="" style={{ width: 14, height: 14, objectFit: "contain" }} /> {jarTotal} jars total</span>
+            </>
+          )}
+        </div>
+      )}
 
       {tripsByDateLoading ? (
         <Loader />
@@ -222,7 +446,7 @@ const EditTrip = ({ onSwitchTab }) => {
         <div className="edittrip-empty">
           <p>No trips found for this date</p>
           <button
-            className="common-cta common-cta-small"
+            className="btn btn--primary"
             onClick={() => onSwitchTab("make")}
           >
             Go to Make Trip
@@ -230,128 +454,66 @@ const EditTrip = ({ onSwitchTab }) => {
         </div>
       ) : (
         <>
-          <div className="edittrip-addrow">
-            <div className="customer-search-wrap edittrip-search-wrap" ref={dropdownRef}>
-              <input
-                className="form-input customer-search-input"
-                type="text"
-                placeholder="Search by name or ID…"
-                value={displayValue}
-                onChange={handleSearchChange}
-                onKeyDown={handleSearchKeyDown}
-                onFocus={() => { if (!selectedCustomer) setIsDropdownOpen(true); }}
-                autoComplete="off"
-              />
-              {selectedCustomer && (
-                <button
-                  type="button"
-                  className="customer-clear-btn"
-                  onClick={() => { setSelectedCustomer(null); setSearchQuery(""); }}
-                >
-                  ✕
-                </button>
-              )}
-              {isDropdownOpen && !selectedCustomer && (
-                <div className="customer-dropdown">
-                  {filteredCustomers.length > 0 ? (
-                    filteredCustomers.map((c, idx) => (
-                      <div
-                        key={c.customerId}
-                        className={`customer-dropdown__item${idx === highlightedIndex ? " customer-dropdown__item--highlighted" : ""}`}
-                        onMouseDown={() => handleCustomerSelect(c)}
-                      >
-                        <span className="customer-dropdown__name">{c.name}</span>
-                        <span className="customer-dropdown__id">{c.customerId}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="customer-dropdown__empty">No customers found</div>
-                  )}
-                </div>
-              )}
-            </div>
-            <button
-              className="edittrip-add-btn"
-              onClick={handleAddCustomer}
-              disabled={!selectedCustomer}
-              title="Add customer"
+          {searchRow}
+
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={customers.map((c) => c.customerId)}
+              strategy={verticalListSortingStrategy}
             >
-              <IconPlus size={16} />
-            </button>
-          </div>
+              {isMobile ? (
+                <div className="et-cardlist">
+                  {customers.map((customer, index) => (
+                    <SortableCard
+                      key={customer.customerId}
+                      customer={customer}
+                      index={index}
+                      onUpdate={updateCustomer}
+                      onRemove={removeCustomer}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="edittrip-table">
+                  <div className="edittrip-thead">
+                    <div className="et-drag" />
+                    <div className="et-num">#</div>
+                    <div className="et-id">ID</div>
+                    <div className="et-name">NAME</div>
+                    <div className="et-allot">ALLOTMENT</div>
+                    <div className="et-qty">QTY OVERRIDE</div>
+                    <div className="et-note">NOTE</div>
+                    <div className="et-actions">ACTIONS</div>
+                  </div>
+                  {customers.map((customer, index) => (
+                    <SortableRow
+                      key={customer.customerId}
+                      customer={customer}
+                      index={index}
+                      onUpdate={updateCustomer}
+                      onRemove={removeCustomer}
+                    />
+                  ))}
+                </div>
+              )}
+            </SortableContext>
+          </DndContext>
 
-          <div className="edittrip-table">
-            <div className="edittrip-thead">
-              <div className="et-drag" />
-              <div className="et-num">#</div>
-              <div className="et-id">ID</div>
-              <div className="et-name">NAME</div>
-              <div className="et-allot">ALLOTMENT</div>
-              <div className="et-qty">QTY OVERRIDE</div>
-              <div className="et-note">NOTE</div>
-              <div className="et-actions">ACTIONS</div>
+          {isMobile ? (
+            <div className="et-mobile-savebar">
+              <button className="et-mobile-save-btn" onClick={handleSave}>
+                Save trip
+              </button>
+              {saveSuccess && <span className="edittrip-saved">&#10003; Saved</span>}
             </div>
-
-            {customers.map((customer, index) => (
-              <div
-                key={`${customer.customerId}-${index}`}
-                className="edittrip-row"
-                draggable
-                onDragStart={() => (dragCustomer.current = index)}
-                onDragEnd={handleSort}
-                onDragOver={(e) => e.preventDefault()}
-                onDragEnter={() => (draggedOverCustomer.current = index)}
-              >
-                <div className="et-drag">
-                  <IconGripVertical size={14} color="#bbb" />
-                </div>
-                <div className="et-num">{index + 1}</div>
-                <div className="et-id">{customer.customerId}</div>
-                <div className="et-name">{customer.name}</div>
-                <div className="et-allot">{customer.allotment}</div>
-                <div className="et-qty">
-                  <input
-                    type="number"
-                    min={1}
-                    placeholder={customer.allotment}
-                    value={customer.qtyOverride ?? ""}
-                    onChange={(e) =>
-                      updateCustomer(
-                        index,
-                        "qtyOverride",
-                        e.target.value ? Number(e.target.value) : null
-                      )
-                    }
-                  />
-                </div>
-                <div className="et-note">
-                  <input
-                    type="text"
-                    placeholder="Note…"
-                    value={customer.deliveryNote ?? ""}
-                    onChange={(e) =>
-                      updateCustomer(index, "deliveryNote", e.target.value)
-                    }
-                  />
-                </div>
-                <div className="et-actions">
-                  <button
-                    className="edittrip-delete"
-                    onClick={() => removeCustomer(index)}
-                  >
-                    <IconTrash size={14} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="edittrip-footer">
-            <button className="btn btn--primary" onClick={handleSave}>
-              Save trip
-            </button>
-            {saveSuccess && <span className="edittrip-saved">&#10003; Saved</span>}
-          </div>
+          ) : (
+            <div className="et-desktop-savebar">
+              <button className="btn btn--primary edittrip-save-cta" onClick={handleSave}>
+                Save trip
+              </button>
+              {saveSuccess && <span className="edittrip-saved">&#10003; Saved</span>}
+            </div>
+          )}
 
           {alert && (
             <Alert

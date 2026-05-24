@@ -29,6 +29,11 @@
   column-gap: clamp(16px, 2vw, 36px);
   row-gap: clamp(14px, 1.1vw, 20px);
   padding: clamp(16px, 1.4vw, 24px) 20px clamp(18px, 1.6vw, 28px);
+
+  @media (max-width: 600px) {
+    display: flex;
+    flex-wrap: wrap;
+  }
 }
 
 .form-field {
