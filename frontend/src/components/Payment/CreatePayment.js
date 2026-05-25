@@ -125,8 +125,16 @@ const CreatePayment = () => {
     ? `${selectedCustomerName} | ${formData.customerId}`
     : searchQuery;
 
+  const expectedCouponAmount =
+    formData.paymentType === "coupon" && selectedCustomerRate && formData.couponQuantity
+      ? selectedCustomerRate * formData.couponQuantity
+      : null;
+
   const handlePaymentSubmit = (e) => {
     e.preventDefault();
+    if (expectedCouponAmount !== null && parseInt(formData.amount, 10) !== expectedCouponAmount) {
+      return;
+    }
     dispatch(createPayment(formData));
   };
 
@@ -254,8 +262,9 @@ const CreatePayment = () => {
                         required
                       />
                       {formData.paymentType === "coupon" && selectedCustomerRate && (
-                        <span style={{ fontSize: "11px", color: "#888", marginTop: "3px" }}>
-                          Expected: ₹{selectedCustomerRate} × {formData.couponQuantity} = ₹{selectedCustomerRate * formData.couponQuantity}
+                        <span style={{ fontSize: "11px", marginTop: "3px", color: formData.amount && parseInt(formData.amount, 10) !== expectedCouponAmount ? "#e53e3e" : "#888" }}>
+                          Expected: ₹{selectedCustomerRate} × {formData.couponQuantity} = ₹{expectedCouponAmount}
+                          {formData.amount && parseInt(formData.amount, 10) !== expectedCouponAmount && " — amount doesn't match"}
                         </span>
                       )}
                     </div>
