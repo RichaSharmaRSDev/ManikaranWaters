@@ -13,7 +13,8 @@ import { getTripsByDateAndDeliveryGuy, getAllDeliveryGuyName, clearTripData } fr
 import { createDelivery } from "../../actions/deliveryAction";
 import { logout } from "../../actions/userAction";
 import { todayIST } from "../../utils/istDate";
-import filledJar from "../../assets/filledJar.png";
+import filledJarLarge from "../../assets/filledJarLarge.png";
+import emptyJarLarge from "../../assets/emptyJarLarge.png";
 import "./DeliveryPanel.scss";
 
 // TODO: backend now supports deliveryNote (new) and qtyOverride (new) fields on
@@ -555,17 +556,18 @@ const DeliveryView = ({ deliveryGuyName }) => {
             <div className="dp-modal__title">
               Starting {activeTrip?.tripNumber.replace("trip", "Trip ")}
             </div>
-            <div className="dp-modal__subtitle">
-              How many filled jars are you taking?
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", margin: "12px 0" }}>
+              <img src={filledJarLarge} alt="filled jar" style={{ width: "50px", height: "50px" }} />
+              <input
+                type="number"
+                className="dp-form-input dp-modal__input"
+                style={{ margin: 0 }}
+                value={startJars}
+                onChange={(e) => setStartJars(e.target.value)}
+                placeholder="0"
+                autoFocus
+              />
             </div>
-            <input
-              type="number"
-              className="dp-form-input dp-modal__input"
-              value={startJars}
-              onChange={(e) => setStartJars(e.target.value)}
-              placeholder="0"
-              autoFocus
-            />
             <button
               className="dp-btn-deliver"
               onClick={handleStartTrip}
@@ -586,7 +588,7 @@ const DeliveryView = ({ deliveryGuyName }) => {
             </div>
             <div className="dp-form-row">
               <div className="dp-form-field">
-                <label className="dp-form-label">Empty Jars Returned</label>
+                <label className="dp-form-label"><img src={emptyJarLarge} alt="empty jars returned" style={{ width: "32px", height: "32px" }} /></label>
                 <input
                   type="number"
                   className="dp-form-input"
@@ -596,7 +598,7 @@ const DeliveryView = ({ deliveryGuyName }) => {
                 />
               </div>
               <div className="dp-form-field">
-                <label className="dp-form-label">Filled Jars Returned</label>
+                <label className="dp-form-label"><img src={filledJarLarge} alt="filled jars returned" style={{ width: "32px", height: "32px" }} /></label>
                 <input
                   type="number"
                   className="dp-form-input"
@@ -646,7 +648,7 @@ const DeliveryView = ({ deliveryGuyName }) => {
             />
             {jarTotal > 0 && (
               <span className="dp-jar-pill">
-                <img src={filledJar} alt="" className="dp-jar-pill__icon" />
+                <img src={filledJarLarge} alt="" className="dp-jar-pill__icon" />
                 {jarTotal}
               </span>
             )}
@@ -667,7 +669,7 @@ const DeliveryView = ({ deliveryGuyName }) => {
                 {activeTrip?.tripNumber.replace("trip", "Trip ")}
               </div>
               <div className="dp-gate__subtitle">
-                {activeTrip?.customers?.length} customers on this route
+                {activeTrip?.customers?.length} customers · {jarTotal} jars
               </div>
               <button
                 className="dp-gate__btn"

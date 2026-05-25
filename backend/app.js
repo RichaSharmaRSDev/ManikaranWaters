@@ -19,7 +19,7 @@ const delivery = require("./routes/deliveryRoute");
 const payment = require("./routes/paymentRoute");
 const report = require("./reports/reportRoutes");
 const expense = require("./routes/expenseRoute");
-const jar = require("./routes/jarInventoryRoute");
+
 const trip = require("./routes/tripsRoute");
 const dashboard = require("./routes/dashboardRoute");
 app.use("/api/v1", customer);
@@ -28,7 +28,7 @@ app.use("/api/v1", delivery);
 app.use("/api/v1", payment);
 app.use("/api/v1", report);
 app.use("/api/v1", expense);
-app.use("/api/v1", jar);
+
 app.use("/api/v1", trip);
 app.use("/api/v1", dashboard);
 

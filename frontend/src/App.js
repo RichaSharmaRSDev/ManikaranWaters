@@ -27,8 +27,6 @@ import CreateExpense from "./components/Expenses/CreateExpense.js";
 import AllExpenses from "./components/Expenses/AllExpenses.js";
 
 import AllPredictions from "./components/Predictions/AllPredictions.js";
-import CreateJarsCount from "./components/Jar/CreateJarsCount.js";
-import AllJarsCount from "./components/Jar/AllJarsCount.js";
 
 import SalesReport from "./components/SalesReport/SalesReport.js";
 import DeliveryPanel from "./components/DeliveryPanel/DeliveryPanel.js";
@@ -132,10 +130,6 @@ function App() {
 
         {/* Predictions */}
         <Route path="/customerspredictions" element={<AuthPage><AllPredictions /></AuthPage>} />
-
-        {/* Jar count */}
-        <Route path="/jarInventory" element={<AuthPage><AllJarsCount /></AuthPage>} />
-        <Route path="/jarInventory/*" element={<AuthPage><CreateJarsCount /></AuthPage>} />
 
         {/* Reports — admin only */}
         <Route path="/report/sales" element={<AdminPage><SalesReport /></AdminPage>} />

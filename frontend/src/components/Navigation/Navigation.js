@@ -14,7 +14,7 @@ import {
   IconReportAnalytics,
   IconReceipt,
   IconTrendingUp,
-  IconHexagon,
+
   IconTruckDelivery,
   IconChartBar,
   IconMapPin,
@@ -40,7 +40,7 @@ const Navigation = () => {
     if (pathname.startsWith("/deliveries") || pathname.startsWith("/payments")) return "reports";
     if (pathname === "/expense/new" || pathname === "/expenses") return "expense";
     if (pathname === "/customerspredictions") return "prediction";
-    if (pathname.startsWith("/jarInventory")) return "jarcount";
+
     if (pathname === "/deliverytrips") return "deliverytrips";
     if (pathname.startsWith("/report")) return "sales";
     if (pathname === "/deliveryPanel") return null;
@@ -199,19 +199,6 @@ const Navigation = () => {
                   </Link>
                 </div>
 
-                <div className="menu">
-                  <button className="menu-button" onClick={() => handleMenuClick("jarcount")}>
-                    <IconHexagon size={18} />
-                    <span>Jar Count</span>
-                    <span className="menu-chevron">
-                      {openMenu === "jarcount" ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
-                    </span>
-                  </button>
-                  <div className={`submenu${openMenu === "jarcount" ? " open" : ""}`}>
-                    <Link to="/jarInventory/today" className={isActive("/jarInventory/today") ? "active" : ""} onClick={closeNavOnMobile}>Today's Jar Count</Link>
-                    <Link to="/jarInventory" className={isActive("/jarInventory") ? "active" : ""} onClick={closeNavOnMobile}>Jar Inventory</Link>
-                  </div>
-                </div>
               </>
             )}
 
